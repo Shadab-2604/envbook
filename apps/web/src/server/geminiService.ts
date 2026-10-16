@@ -261,7 +261,129 @@ export async function callEdenAiApi(options: GenerateOptions): Promise<{
 }
 
 /**
- * Executes a call to Google Gemini API (or delegates to Eden AI if configured)
+ * Checks whether an API key or model corresponds to direct OpenAI
+ */
+export function isOpenAi(apiKey?: string, model?: string): boolean {
+  if (apiKey) {
+    const cleanKey = apiKey.trim();
+    if (cleanKey.startsWith('sk-proj-')) return true;
+    if (cleanKey.startsWith('sk-') && !cleanKey.startsWith('sk-eden-')) return true;
+  }
+  if (model) {
+    if (model.startsWith('gpt-') || model.startsWith('o1') || model.startsWith('o3')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Executes a call to OpenAI API (e.g. gpt-4o, gpt-4o-mini)
+ */
+export async function callOpenAiApi(options: GenerateOptions): Promise<{
+  text: string;
+  citations: EnvAiCitation[];
+  redactedCount: number;
+}> {
+  const apiKey = options.apiKey?.trim();
+  if (!apiKey) {
+    throw new Error('OpenAI API key is not configured. Please add your key in Settings → envAi.');
+  }
+
+  // 1. Redaction of sensitive secrets
+  const { redactedText: safePrompt, count: pCount } = redactSecrets(options.prompt);
+  const { redactedText: safeContext, count: cCount } = redactSecrets(options.contextText || '');
+  const totalRedacted = pCount + cCount;
+
+  // 2. Build full prompt
+  let fullPrompt = buildPromptForAction(options.action, safePrompt, safeContext, options.tone);
+
+  // Add attached files
+  if (options.files && options.files.length > 0) {
+    const fileTexts: string[] = [];
+    for (const f of options.files) {
+      if (f.type.startsWith('image/') || f.type === 'application/pdf') {
+        fileTexts.push(`[Attached Document: ${f.name} (${f.type})]`);
+      } else {
+        const { redactedText: safeFileContent } = redactSecrets(f.content);
+        fileTexts.push(`--- ATTACHED FILE: ${f.name} (${f.type}) ---\n${safeFileContent.slice(0, 40000)}\n--- END FILE ---`);
+      }
+    }
+    if (fileTexts.length > 0) {
+      fullPrompt = `${fileTexts.join('\n\n')}\n\n${fullPrompt}`;
+    }
+  }
+
+  // 3. Build messages
+  const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+    {
+      role: 'system',
+      content: ENVAI_BASE_SYSTEM_INSTRUCTION,
+    },
+  ];
+
+  if (options.conversationHistory && options.conversationHistory.length > 0) {
+    for (const msg of options.conversationHistory.slice(-10)) {
+      messages.push({
+        role: msg.role === 'assistant' ? 'assistant' : 'user',
+        content: msg.content,
+      });
+    }
+  }
+
+  messages.push({
+    role: 'user',
+    content: fullPrompt,
+  });
+
+  const model = options.model?.startsWith('gpt-') ? options.model : 'gpt-4o';
+
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature: 0.7,
+      max_tokens: 4096,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const message = errorData?.error?.message || `HTTP ${response.status}`;
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Invalid or expired OpenAI API key. Please check your key in Settings → envAi (or generate one at platform.openai.com/api-keys).');
+    } else if (response.status === 429) {
+      throw new Error(`OpenAI quota or rate limit error: ${message}`);
+    } else if (response.status >= 500) {
+      throw new Error('OpenAI service is temporarily unavailable. Please try again shortly.');
+    }
+
+    throw new Error(`OpenAI error (${response.status}): ${message}`);
+  }
+
+  const data = await response.json();
+  const choice = data.choices?.[0];
+  const generatedText = choice?.message?.content || '';
+
+  if (!generatedText) {
+    throw new Error('OpenAI returned an empty response.');
+  }
+
+  return {
+    text: generatedText,
+    citations: options.citations || [],
+    redactedCount: totalRedacted,
+  };
+}
+
+/**
+ * Executes a call to Google Gemini API (or delegates to Eden AI / OpenAI if configured)
  */
 export async function callGeminiApi(options: GenerateOptions): Promise<{
   text: string;
@@ -270,6 +392,9 @@ export async function callGeminiApi(options: GenerateOptions): Promise<{
 }> {
   if (isEdenAi(options.apiKey, options.model)) {
     return callEdenAiApi(options);
+  }
+  if (isOpenAi(options.apiKey, options.model)) {
+    return callOpenAiApi(options);
   }
 
   let model = normalizeGeminiModel(options.model || DEFAULT_GEMINI_MODEL);
@@ -485,7 +610,90 @@ export async function testEdenAiApiKey(
 }
 
 /**
- * Tests Gemini or Eden AI API key validity with a lightweight prompt
+ * Tests OpenAI API key validity with model catalog and lightweight test
+ */
+export async function testOpenAiApiKey(
+  apiKey: string,
+  rawModel: string = 'gpt-4o'
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const cleanKey = apiKey.trim();
+
+    // 1. Authenticate against OpenAI /v1/models
+    const authRes = await fetch('https://api.openai.com/v1/models', {
+      headers: { Authorization: `Bearer ${cleanKey}` },
+    });
+
+    if (!authRes.ok) {
+      const err = await authRes.json().catch(() => null);
+      const msg = err?.error?.message || `Status ${authRes.status}`;
+      if (authRes.status === 401 || authRes.status === 403) {
+        return {
+          success: false,
+          message: `Invalid or expired OpenAI API key: ${msg}. Please check platform.openai.com/api-keys.`,
+        };
+      }
+      return {
+        success: false,
+        message: `OpenAI connection failed (${authRes.status}): ${msg}`,
+      };
+    }
+
+    // 2. Perform lightweight completion test
+    const model = rawModel.startsWith('gpt-') ? rawModel : 'gpt-4o';
+    const compRes = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cleanKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: 'Respond strictly with the single word: READY' }],
+        max_tokens: 10,
+      }),
+    });
+
+    if (!compRes.ok) {
+      const err = await compRes.json().catch(() => null);
+      const msg = err?.error?.message || `Status ${compRes.status}`;
+
+      if (err?.error?.code === 'credit_balance_exhausted' || err?.error?.type === 'insufficient_quota' || compRes.status === 429) {
+        return {
+          success: true,
+          message: `OpenAI API key verified successfully (${model}). Note: Account has no remaining credits. Please add credits at platform.openai.com/settings/organization/billing/ to execute queries.`,
+        };
+      }
+
+      return {
+        success: false,
+        message: `OpenAI completion failed (${compRes.status}): ${msg}`,
+      };
+    }
+
+    const resData = await compRes.json();
+    const txt = resData.choices?.[0]?.message?.content;
+    if (txt !== undefined) {
+      return {
+        success: true,
+        message: `Successfully connected to OpenAI (${model}).`,
+      };
+    }
+
+    return {
+      success: true,
+      message: `Successfully connected to OpenAI (${model}).`,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || 'Network error connecting to OpenAI API.',
+    };
+  }
+}
+
+/**
+ * Tests Gemini, OpenAI, or Eden AI API key validity with a lightweight prompt
  */
 export async function testGeminiApiKey(
   apiKey: string,
@@ -493,6 +701,9 @@ export async function testGeminiApiKey(
 ): Promise<{ success: boolean; message: string }> {
   if (isEdenAi(apiKey, rawModel)) {
     return testEdenAiApiKey(apiKey, rawModel);
+  }
+  if (isOpenAi(apiKey, rawModel)) {
+    return testOpenAiApiKey(apiKey, rawModel);
   }
 
   const model = normalizeGeminiModel(rawModel);

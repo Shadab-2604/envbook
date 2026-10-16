@@ -1043,6 +1043,21 @@ export const AVAILABLE_GEMINI_MODELS: GeminiModelInfo[] = [
     isRecommended: true,
   },
   {
+    id: 'gpt-4o',
+    name: 'OpenAI GPT-4o (Omni)',
+    description: 'Flagship high-intelligence reasoning model from OpenAI for coding, synthesis, and deep logic (OpenAI Recommended)',
+    contextWindow: '128,000 tokens',
+    outputLimit: '16,384 tokens',
+    isRecommended: true,
+  },
+  {
+    id: 'gpt-4o-mini',
+    name: 'OpenAI GPT-4o Mini',
+    description: 'Ultra-fast and cost-efficient multimodal intelligence model from OpenAI',
+    contextWindow: '128,000 tokens',
+    outputLimit: '16,384 tokens',
+  },
+  {
     id: 'openai/gpt-latest',
     name: 'Eden AI — OpenAI GPT Latest (gpt-6-astra)',
     description: 'OpenAI flagship multi-modal reasoning model via Eden AI Unified Gateway with 1M context window',
@@ -1131,6 +1146,9 @@ export function normalizeGeminiModel(rawModel?: string): string {
   let model = rawModel.trim();
   if (model.startsWith('models/')) {
     model = model.slice(7);
+  }
+  if (model.startsWith('gpt-') || model.startsWith('o1') || model.startsWith('o3')) {
+    return model;
   }
   if (model === 'openai/gpt-latest' || model.startsWith('openai/')) {
     return model;

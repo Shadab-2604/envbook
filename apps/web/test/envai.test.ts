@@ -13,6 +13,7 @@ import {
   buildPromptForAction,
   DEFAULT_GEMINI_MODEL,
   isEdenAi,
+  isOpenAi,
 } from '../src/server/geminiService';
 import {
   ENVAI_ACTIONS,
@@ -215,23 +216,23 @@ describe('envAi Schemas & Slash Command Verification', () => {
     expect(DEFAULT_GEMINI_MODEL).toBe('gemini-3.8-flash');
   });
 
-  it('contains curated models with gemini-3.8-flash marked recommended and Eden AI models directly below it', () => {
-    const recommended = AVAILABLE_GEMINI_MODELS.find((m) => m.isRecommended);
-    expect(recommended).toBeDefined();
-    expect(recommended?.id).toBe('gemini-3.8-flash');
-    // Eden AI models must be positioned immediately below recommended
-    const recommendedIndex = AVAILABLE_GEMINI_MODELS.findIndex((m) => m.id === 'gemini-3.8-flash');
-    expect(AVAILABLE_GEMINI_MODELS[recommendedIndex + 1].id).toBe('openai/gpt-latest');
-    expect(AVAILABLE_GEMINI_MODELS[recommendedIndex + 1].name).toContain('OpenAI GPT Latest');
-    expect(AVAILABLE_GEMINI_MODELS[recommendedIndex + 2].id).toBe('edenai');
+  it('contains curated models with gpt-4o and gemini-3.8-flash marked recommended and Eden AI models directly below them', () => {
+    const recommendedList = AVAILABLE_GEMINI_MODELS.filter((m) => m.isRecommended);
+    expect(recommendedList.some((m) => m.id === 'gpt-4o')).toBe(true);
+    expect(recommendedList.some((m) => m.id === 'gemini-3.8-flash')).toBe(true);
+    expect(AVAILABLE_GEMINI_MODELS.some((m) => m.id === 'gpt-4o-mini')).toBe(true);
+    expect(AVAILABLE_GEMINI_MODELS.some((m) => m.id === 'openai/gpt-latest')).toBe(true);
+    expect(AVAILABLE_GEMINI_MODELS.some((m) => m.id === 'edenai')).toBe(true);
     expect(AVAILABLE_GEMINI_MODELS.some((m) => m.id === 'gemini-flash-latest')).toBe(true);
     expect(AVAILABLE_GEMINI_MODELS.some((m) => m.id === 'gemini-3.1-pro-preview')).toBe(true);
   });
 
-  it('normalizes model input and auto-migrates deprecated models while preserving edenai and openai/gpt-latest', () => {
+  it('normalizes model input and auto-migrates deprecated models while preserving openai, edenai and gpt-latest', () => {
     expect(normalizeGeminiModel('models/gemini-3.8-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('gemini-2.0-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('models/gemini-2.0-flash')).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('gpt-4o')).toBe('gpt-4o');
+    expect(normalizeGeminiModel('gpt-4o-mini')).toBe('gpt-4o-mini');
     expect(normalizeGeminiModel('openai/gpt-latest')).toBe('openai/gpt-latest');
     expect(normalizeGeminiModel('edenai')).toBe('edenai');
     expect(normalizeGeminiModel('eden-ai')).toBe('edenai');
@@ -242,6 +243,15 @@ describe('envAi Schemas & Slash Command Verification', () => {
     expect(isEdenAi(undefined, 'edenai')).toBe(true);
     expect(isEdenAi(undefined, 'openai/gpt-latest')).toBe(true);
     expect(isEdenAi('AIzaSyDummyKey', 'gemini-3.8-flash')).toBe(false);
+  });
+
+  it('detects OpenAI keys and models correctly via isOpenAi', () => {
+    expect(isOpenAi('sk-proj-ilbg1AJHRxPCK8K04OZBbXeNlQbT')).toBe(true);
+    expect(isOpenAi('sk-abcdef1234567890')).toBe(true);
+    expect(isOpenAi('sk-eden-live-abcdef123456')).toBe(false);
+    expect(isOpenAi(undefined, 'gpt-4o')).toBe(true);
+    expect(isOpenAi(undefined, 'gpt-4o-mini')).toBe(true);
+    expect(isOpenAi('AIzaSyDummyKey', 'gemini-3.8-flash')).toBe(false);
   });
 
   it('rejects empty or whitespace-only API key', () => {
