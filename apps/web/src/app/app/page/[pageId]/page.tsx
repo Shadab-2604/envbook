@@ -29,6 +29,8 @@ import {
   Share2,
   Users,
   FilePlus,
+  Smile,
+  Eye,
 } from 'lucide-react';
 import { useVault } from '@/contexts/VaultContext';
 import {
@@ -46,6 +48,8 @@ import { CreateItemModal } from '@/components/layout/CreateItemModal';
 import { EnvAiPanel } from '@/components/ai/EnvAiPanel';
 import { ShareModal } from '@/components/share/ShareModal';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { DocumentEmojiPicker } from '@/components/ui/DocumentEmojiPicker';
+import { SnapshotDiffView } from '@/components/ui/SnapshotDiffView';
 import { usePageCollaboration } from '@/lib/socket';
 import { EntryRecord, DecryptedNotePayload, EntryVersionSnapshot, WorkspaceItemType } from '@envbook/shared';
 
@@ -61,6 +65,10 @@ export default function NotePage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [icon, setIcon] = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [isDirty, setIsDirty] = useState(false);
   const [newTagInput, setNewTagInput] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [isRawMarkdown, setIsRawMarkdown] = useState(false);
@@ -70,7 +78,22 @@ export default function NotePage() {
   const [showHistory, setShowHistory] = useState(false);
   const [historyList, setHistoryList] = useState<EntryVersionSnapshot[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
-  const [previewVersion, setPreviewVersion] = useState<{ id: string; title: string; content: string } | null>(null);
+  const [previewSnapshot, setPreviewSnapshot] = useState<{
+    version: EntryVersionSnapshot;
+    title: string;
+    content: string;
+  } | null>(null);
+  const [previewLoadingId, setPreviewLoadingId] = useState<string | null>(null);
+
+  // Load auto-save setting from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('envbook:auto-save-enabled');
+      if (stored !== null) {
+        setAutoSaveEnabled(stored === 'true');
+      }
+    } catch {}
+  }, []);
 
   // Modal triggered by slash command /page, /section, etc.
   const [editorCreateModalOpen, setEditorCreateModalOpen] = useState(false);
@@ -126,7 +149,9 @@ export default function NotePage() {
       setTitle(decrypted.title || 'Untitled');
       setContent(decrypted.content || '');
       setTags(decrypted.tags || []);
+      setIcon(decrypted.icon || rec.icon || null);
       isDirtyRef.current = false;
+      setIsDirty(false);
     } catch (err: any) {
       console.error('[NotePage] Error loading entry:', err);
       setError(err.message || 'Failed to decrypt and load page.');
@@ -145,7 +170,12 @@ export default function NotePage() {
 
   // Autosave handler with debounce
   const triggerSave = useCallback(
-    async (newTitle: string, newContent: string, newTags: string[]) => {
+    async (
+      newTitle: string,
+      newContent: string,
+      newTags: string[],
+      newIcon: string | null = icon
+    ) => {
       if (!entry || !vault.isUnlocked) return;
 
       try {
@@ -154,6 +184,7 @@ export default function NotePage() {
           title: newTitle,
           content: newContent,
           tags: newTags,
+          icon: newIcon || undefined,
           updatedAt: new Date().toISOString(),
         };
 
@@ -161,41 +192,73 @@ export default function NotePage() {
         const res = await apiUpdateEntry(entry.entryId, {
           encryptedPayload: ciphertext,
           nonce,
+          icon: newIcon,
         });
 
         setEntry(res.entry);
         setSaveStatus('saved');
         isDirtyRef.current = false;
+        setIsDirty(false);
+        window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
         setTimeout(() => setSaveStatus('idle'), 2500);
       } catch (err: any) {
         console.error('[NotePage] Save failed:', err);
         setSaveStatus('error');
       }
     },
-    [entry, vault]
+    [entry, vault, icon]
   );
 
   const queueSave = useCallback(
-    (newTitle: string, newContent: string, newTags: string[]) => {
+    (
+      newTitle: string,
+      newContent: string,
+      newTags: string[],
+      newIcon: string | null = icon
+    ) => {
       isDirtyRef.current = true;
+      setIsDirty(true);
+      if (!autoSaveEnabled) {
+        return;
+      }
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       saveTimerRef.current = setTimeout(() => {
-        triggerSave(newTitle, newContent, newTags);
+        triggerSave(newTitle, newContent, newTags, newIcon);
       }, 1200); // 1.2s debounce
     },
-    [triggerSave]
+    [triggerSave, autoSaveEnabled, icon]
   );
+
+  const handleSelectIcon = (selectedEmoji: string) => {
+    setIcon(selectedEmoji);
+    setShowEmojiPicker(false);
+    triggerSave(title, content, tags, selectedEmoji);
+  };
+
+  const handleRemoveIcon = () => {
+    setIcon(null);
+    setShowEmojiPicker(false);
+    triggerSave(title, content, tags, null);
+  };
+
+  const handleToggleAutoSave = () => {
+    const next = !autoSaveEnabled;
+    setAutoSaveEnabled(next);
+    try {
+      localStorage.setItem('envbook:auto-save-enabled', String(next));
+    } catch {}
+  };
 
   const handleTitleChange = (val: string) => {
     setTitle(val);
     broadcastChange(content, val);
-    queueSave(val, content, tags);
+    queueSave(val, content, tags, icon);
   };
 
   const handleContentChange = (val: string) => {
     setContent(val);
     broadcastChange(val, title);
-    queueSave(title, val, tags);
+    queueSave(title, val, tags, icon);
   };
 
   const handleRequestCreateChildPage = useCallback(
@@ -370,12 +433,12 @@ export default function NotePage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        triggerSave(title, content, tags);
+        triggerSave(title, content, tags, icon);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [triggerSave, title, content, tags]);
+  }, [triggerSave, title, content, tags, icon]);
 
   // Client-side export handlers (Markdown, PDF, HTML)
   const handleExportMarkdown = () => {
@@ -391,13 +454,14 @@ export default function NotePage() {
   };
 
   const handleManualSave = () => {
-    triggerSave(title, content, tags);
+    triggerSave(title, content, tags, icon);
   };
 
   // Safe client-side Markdown export fallback
   // Load version history
   const handleOpenHistory = async () => {
     setShowHistory(true);
+    setPreviewSnapshot(null);
     setHistoryLoading(true);
     try {
       const res = await apiGetHistory(pageId);
@@ -409,6 +473,27 @@ export default function NotePage() {
     }
   };
 
+  const handlePreviewSnapshot = async (version: EntryVersionSnapshot) => {
+    if (!entry || !vault.isUnlocked) return;
+    try {
+      setPreviewLoadingId(version.versionId);
+      const dec = await vault.decrypt<DecryptedNotePayload>(
+        version.encryptedPayload,
+        version.nonce,
+        entry.entryId
+      );
+      setPreviewSnapshot({
+        version,
+        title: dec?.title || 'Untitled',
+        content: dec?.content || '',
+      });
+    } catch (err: any) {
+      alert('Failed to decrypt snapshot: ' + (err.message || 'Unknown error'));
+    } finally {
+      setPreviewLoadingId(null);
+    }
+  };
+
   const handleRestoreVersion = async (version: EntryVersionSnapshot) => {
     if (!entry || !vault.isUnlocked) return;
     if (!confirm(`Restore note to snapshot from ${new Date(version.createdAt).toLocaleString()}?`)) return;
@@ -417,7 +502,7 @@ export default function NotePage() {
       await apiRestoreHistoryVersion(entry.entryId, version.versionId);
       await loadEntry();
       setShowHistory(false);
-      setPreviewVersion(null);
+      setPreviewSnapshot(null);
     } catch (err: any) {
       alert(`Failed to restore: ${err.message}`);
     }
@@ -460,7 +545,10 @@ export default function NotePage() {
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
           <span className="text-text-secondary text-xs font-label-mono shrink-0">Pages</span>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
-          <span className="text-text-primary text-xs font-medium truncate max-w-[180px] sm:max-w-xs">{title || 'Untitled'}</span>
+          <span className="text-text-primary text-xs font-medium truncate max-w-[180px] sm:max-w-xs flex items-center gap-1.5">
+            {icon && <span className="shrink-0 text-sm">{icon}</span>}
+            <span className="truncate">{title || 'Untitled'}</span>
+          </span>
 
           {/* Save Status Badge */}
           <div className="ml-2 flex items-center gap-1.5 text-[11px] font-label-mono">
@@ -493,6 +581,48 @@ export default function NotePage() {
 
         {/* Action Controls */}
         <div className="flex items-center gap-1 sm:gap-2">
+          {/* Auto-save Toggle */}
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-surface-panel border border-border-subtle text-xs font-label-mono">
+            <button
+              type="button"
+              onClick={handleToggleAutoSave}
+              className="flex items-center gap-1.5 focus:outline-none cursor-pointer group"
+              title={autoSaveEnabled ? 'Auto-save is ON (click to disable)' : 'Auto-save is OFF (click to enable)'}
+              aria-label={autoSaveEnabled ? 'Auto-save enabled' : 'Auto-save disabled'}
+            >
+              <span
+                className={`w-7 h-4 flex items-center rounded-full p-0.5 transition-colors duration-200 ease-in-out ${
+                  autoSaveEnabled ? 'bg-accent-emerald' : 'bg-surface-raised border border-border-muted'
+                }`}
+              >
+                <span
+                  className={`bg-white w-3 h-3 rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                    autoSaveEnabled ? 'translate-x-3' : 'translate-x-0'
+                  }`}
+                />
+              </span>
+              <span className={`text-[11px] font-medium hidden md:inline ${autoSaveEnabled ? 'text-accent-emerald' : 'text-text-muted group-hover:text-text-primary'}`}>
+                Auto-save {autoSaveEnabled ? 'ON' : 'OFF'}
+              </span>
+            </button>
+
+            {!autoSaveEnabled && (
+              <button
+                type="button"
+                onClick={() => triggerSave(title, content, tags, icon)}
+                className={`ml-1 px-2 py-0.5 rounded text-[11px] font-semibold flex items-center gap-1 transition-all ${
+                  isDirty
+                    ? 'bg-accent-emerald text-black shadow-sm ring-2 ring-accent-emerald/40'
+                    : 'bg-surface-raised text-text-muted hover:text-text-primary'
+                }`}
+                title="Manual Save to Vault (Ctrl+S)"
+              >
+                <Save className="w-3 h-3" />
+                <span>Save</span>
+              </button>
+            )}
+          </div>
+
           {/* Table of Contents trigger */}
           <button
             onClick={() => setShowToc(!showToc)}
@@ -714,14 +844,66 @@ export default function NotePage() {
             {/* Semantic H1 for screen readers and document outline */}
             <h1 className="sr-only">{title || 'Untitled Document'} — EnvBook</h1>
 
-            {/* Note Title Input */}
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              placeholder="Untitled Document..."
-              className="w-full bg-transparent border-none text-2xl sm:text-3xl font-headline-lg font-bold text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:ring-0 p-0 tracking-tight"
-            />
+            {/* Document Emoji Icon & Add Icon on Hover */}
+            <div className="relative group/title-header flex flex-col gap-2 pt-2">
+              {icon ? (
+                <div className="relative inline-block self-start">
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                    className="text-4xl sm:text-5xl hover:opacity-85 transition-transform hover:scale-105 p-1 -ml-1 rounded-lg hover:bg-surface-panel/60 cursor-pointer flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-accent-emerald/40"
+                    title="Change document icon"
+                    aria-label="Change document icon"
+                  >
+                    {icon}
+                  </button>
+
+                  {showEmojiPicker && (
+                    <div className="absolute left-0 top-full mt-2 z-50">
+                      <DocumentEmojiPicker
+                        currentIcon={icon}
+                        onSelect={handleSelectIcon}
+                        onRemove={handleRemoveIcon}
+                        onClose={() => setShowEmojiPicker(false)}
+                      />
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="relative inline-block self-start">
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                    className="opacity-0 group-hover/title-header:opacity-100 focus:opacity-100 transition-opacity flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium text-text-muted hover:text-text-primary hover:bg-surface-panel border border-dashed border-border-subtle hover:border-border-muted cursor-pointer"
+                    title="Add document icon"
+                    aria-label="Add icon"
+                  >
+                    <Smile className="w-3.5 h-3.5 text-accent-emerald" />
+                    <span>Add icon</span>
+                  </button>
+
+                  {showEmojiPicker && (
+                    <div className="absolute left-0 top-full mt-2 z-50">
+                      <DocumentEmojiPicker
+                        currentIcon={null}
+                        onSelect={handleSelectIcon}
+                        onRemove={handleRemoveIcon}
+                        onClose={() => setShowEmojiPicker(false)}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Note Title Input */}
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => handleTitleChange(e.target.value)}
+                placeholder="Untitled Document..."
+                className="w-full bg-transparent border-none text-2xl sm:text-3xl font-headline-lg font-bold text-text-primary placeholder:text-text-muted/50 focus:outline-none focus:ring-0 p-0 tracking-tight"
+              />
+            </div>
 
             {/* Tags strip */}
             <div className="flex flex-wrap items-center gap-1.5 py-1 border-b border-border-subtle/60 text-xs">
@@ -925,18 +1107,43 @@ export default function NotePage() {
       {/* Version History Modal */}
       {showHistory && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-xl bg-surface-panel border border-border-subtle rounded-lg shadow-2xl flex flex-col max-h-[80vh] overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-surface-subtle">
+          <div
+            className={`w-full ${
+              previewSnapshot ? 'max-w-3xl' : 'max-w-xl'
+            } bg-surface-panel border border-border-subtle rounded-lg shadow-2xl flex flex-col max-h-[85vh] h-[85vh] overflow-hidden transition-all duration-200`}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-surface-subtle shrink-0">
               <div className="flex items-center gap-2">
                 <History className="w-4 h-4 text-primary" />
-                <h3 className="text-sm font-semibold text-text-primary">Version History Snapshots</h3>
+                <h3 className="text-sm font-semibold text-text-primary">
+                  {previewSnapshot ? 'Snapshot Preview & Changes' : 'Version History Snapshots'}
+                </h3>
               </div>
-              <button onClick={() => setShowHistory(false)} className="text-text-muted hover:text-text-primary">
+              <button
+                onClick={() => {
+                  setShowHistory(false);
+                  setPreviewSnapshot(null);
+                }}
+                className="text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors"
+              >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {previewSnapshot ? (
+              <div className="flex-1 overflow-hidden">
+                <SnapshotDiffView
+                  snapshotDate={previewSnapshot.version.createdAt}
+                  snapshotTitle={previewSnapshot.title}
+                  snapshotContent={previewSnapshot.content}
+                  currentContent={content}
+                  onRestore={() => handleRestoreVersion(previewSnapshot.version)}
+                  onBack={() => setPreviewSnapshot(null)}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="flex-1 overflow-y-auto p-4 space-y-2">
               {historyLoading ? (
                 <div className="text-center py-6 text-xs text-text-muted font-label-mono">
                   Loading snapshots...
@@ -962,6 +1169,22 @@ export default function NotePage() {
 
                     <div className="flex items-center gap-2">
                       <button
+                        type="button"
+                        onClick={() => handlePreviewSnapshot(ver)}
+                        disabled={previewLoadingId === ver.versionId}
+                        className="px-2.5 py-1 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary hover:text-text-primary font-label-ui flex items-center gap-1 transition-colors disabled:opacity-50"
+                        title="Preview changes in this snapshot"
+                      >
+                        {previewLoadingId === ver.versionId ? (
+                          <span className="w-3.5 h-3.5 border-2 border-accent-emerald/40 border-t-accent-emerald rounded-full animate-spin" />
+                        ) : (
+                          <Eye className="w-3.5 h-3.5 text-primary" />
+                        )}
+                        <span>Preview</span>
+                      </button>
+
+                      <button
+                        type="button"
                         onClick={() => handleRestoreVersion(ver)}
                         className="px-2.5 py-1 rounded bg-surface-raised hover:bg-surface-bright border border-border-subtle text-text-primary font-label-ui flex items-center gap-1 transition-colors"
                       >
@@ -974,14 +1197,19 @@ export default function NotePage() {
               )}
             </div>
 
-            <div className="p-3 border-t border-border-subtle bg-surface-subtle flex justify-end">
+            <div className="p-3 border-t border-border-subtle bg-surface-subtle flex justify-end shrink-0">
               <button
-                onClick={() => setShowHistory(false)}
+                onClick={() => {
+                  setShowHistory(false);
+                  setPreviewSnapshot(null);
+                }}
                 className="px-3 py-1.5 rounded bg-surface border border-border-subtle text-xs text-text-secondary hover:text-text-primary"
               >
                 Close
               </button>
             </div>
+          </>
+        )}
           </div>
         </div>
       )}

@@ -26,6 +26,7 @@ import {
   Check,
   X,
   Loader2,
+  Smile,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useVault } from '@/contexts/VaultContext';
@@ -33,6 +34,7 @@ import { EntryRecord, WorkspaceItemType } from '@envbook/shared';
 import { apiGetEntries, apiUpdateEntry, apiDeleteEntry, apiArchiveEntry } from '@/lib/api';
 import { useRealTimeEvents } from '@/lib/socket';
 import { CreateItemModal } from './CreateItemModal';
+import { DocumentEmojiPicker } from '@/components/ui/DocumentEmojiPicker';
 
 interface SideNavBarProps {
   mobileOpen?: boolean;
@@ -43,6 +45,7 @@ interface SideNavBarProps {
 interface DecryptedTreeItem {
   entry: EntryRecord;
   title: string;
+  icon?: string | null;
 }
 
 export function SideNavBar({
@@ -70,6 +73,10 @@ export function SideNavBar({
   const [renameValue, setRenameValue] = useState('');
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
 
+  // Emoji Picker State
+  const [emojiPickerItem, setEmojiPickerItem] = useState<DecryptedTreeItem | null>(null);
+  const [emojiPickerPosition, setEmojiPickerPosition] = useState<{ top: number; left: number } | null>(null);
+
   // Fetch full tree from user's persisted records
   const loadWorkspaceTree = useCallback(async () => {
     if (!isUnlocked) return;
@@ -84,13 +91,14 @@ export function SideNavBar({
         try {
           const dec: any = await decrypt(entry.encryptedPayload, entry.nonce, entry.entryId);
           const title = dec?.title || (entry.type.includes('env') ? 'Environment Variables' : 'Untitled');
-          decryptedList.push({ entry, title });
+          const icon = dec?.icon || entry.icon || null;
+          decryptedList.push({ entry, title, icon });
         } catch {
           let fallback = 'Encrypted Item';
           if (entry.type === 'section' || entry.type === 'notes_section' || entry.type === 'folder') fallback = 'Encrypted Section';
           else if (entry.type === 'environment_page' || entry.type === 'environment') fallback = 'Encrypted Environment';
           else fallback = 'Encrypted Note';
-          decryptedList.push({ entry, title: fallback });
+          decryptedList.push({ entry, title: fallback, icon: entry.icon || null });
         }
       }
 
@@ -101,6 +109,29 @@ export function SideNavBar({
       setLoadingTree(false);
     }
   }, [isUnlocked, decrypt]);
+
+  const handleUpdateTreeItemIcon = async (item: DecryptedTreeItem, newIcon: string | null) => {
+    try {
+      const oldDecrypted: any = await decrypt(item.entry.encryptedPayload, item.entry.nonce, item.entry.entryId);
+      const newPayload = { ...oldDecrypted, icon: newIcon || undefined, updatedAt: new Date().toISOString() };
+      const { ciphertext, nonce } = await encrypt(newPayload, item.entry.entryId);
+
+      await apiUpdateEntry(item.entry.entryId, { encryptedPayload: ciphertext, nonce, icon: newIcon });
+
+      // Update local tree immediately
+      setTreeItems((prev) =>
+        prev.map((i) =>
+          i.entry.entryId === item.entry.entryId
+            ? { ...i, icon: newIcon, entry: { ...i.entry, icon: newIcon } }
+            : i
+        )
+      );
+
+      window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
+    } catch (err) {
+      console.error('[SideNavBar] Failed to update icon:', err);
+    }
+  };
 
   useEffect(() => {
     loadWorkspaceTree();
@@ -250,112 +281,166 @@ export function SideNavBar({
           }`}
           style={{ paddingLeft: `${Math.max(8, depth * 14 + 8)}px` }}
         >
-          {/* Main click target */}
-          <div className="flex items-center gap-1.5 min-w-0 flex-1">
-            {isContainer ? (
-              <button
-                type="button"
-                onClick={(e) => toggleContainer(item.entry.entryId, e)}
-                className="p-0.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised shrink-0 transition-transform"
-                aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
-              >
-                {isExpanded ? (
-                  <ChevronDown className="w-3.5 h-3.5" />
-                ) : (
-                  <ChevronRight className="w-3.5 h-3.5" />
-                )}
-              </button>
-            ) : (
-              <span className="w-3.5 h-3.5 shrink-0" />
-            )}
-
-            <Link
-              href={itemHref}
-              onClick={() => {
-                if (onCloseMobile) onCloseMobile();
-              }}
-              className="flex items-center gap-1.5 truncate flex-1"
-            >
-              <IconComponent
-                className={`w-3.5 h-3.5 shrink-0 ${
-                  item.entry.type === 'environment_page' || item.entry.type === 'environment'
-                    ? 'text-cyan-400'
-                    : item.entry.type === 'notes_section'
-                    ? 'text-indigo-400'
-                    : item.entry.type === 'section' || item.entry.type === 'folder'
-                    ? 'text-amber-400'
-                    : 'text-text-muted group-hover:text-accent-emerald'
-                }`}
-              />
-              <span className="truncate">{item.title}</span>
-            </Link>
-          </div>
-
-          {/* Quick Context Actions on Hover */}
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1">
-            {isContainer && (
-              <button
-                type="button"
-                title="Add inside this section"
-                onClick={(e) => handleOpenCreateModal('notes_page', item.entry.entryId, e)}
-                className="p-1 rounded text-text-muted hover:text-accent-emerald hover:bg-surface-raised transition-colors"
-                aria-label="Add child item"
-              >
-                <Plus className="w-3 h-3" />
-              </button>
-            )}
-
-            <div className="relative">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveMenuId(activeMenuId === item.entry.entryId ? null : item.entry.entryId);
-                }}
-                className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors"
-                aria-label="Item options"
-              >
-                <MoreVertical className="w-3 h-3" />
-              </button>
-
-              {/* Context Dropdown */}
-              {activeMenuId === item.entry.entryId && (
-                <div
-                  className="absolute right-0 top-full mt-1 w-36 bg-surface-raised border border-border-muted rounded-md shadow-xl z-50 py-1 flex flex-col text-[11px] font-sans"
-                  onClick={(e) => e.stopPropagation()}
+            {/* Main click target */}
+            <div className="flex items-center gap-1.5 min-w-0 flex-1">
+              {isContainer ? (
+                <button
+                  type="button"
+                  onClick={(e) => toggleContainer(item.entry.entryId, e)}
+                  className="p-0.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised shrink-0 transition-transform"
+                  aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
                 >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRenamingItem({ id: item.entry.entryId, currentTitle: item.title });
-                      setRenameValue(item.title);
-                      setActiveMenuId(null);
-                    }}
-                    className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-panel text-left"
-                  >
-                    <Edit2 className="w-3 h-3" />
-                    <span>Rename</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => handleArchiveItem(item.entry.entryId, e)}
-                    className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-panel text-left"
-                  >
-                    <Archive className="w-3 h-3" />
-                    <span>Archive</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={(e) => handleDeleteItem(item.entry.entryId, e)}
-                    className="flex items-center gap-2 px-2.5 py-1.5 text-red-400 hover:text-red-300 hover:bg-red-950/30 text-left border-t border-border-subtle mt-0.5"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                    <span>Move to Trash</span>
-                  </button>
-                </div>
+                  {isExpanded ? (
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  ) : (
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              ) : (
+                <span className="w-3.5 h-3.5 shrink-0" />
               )}
+
+              {/* Document Icon (Clickable Emoji or Default Type Icon) */}
+              {item.icon ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    setEmojiPickerPosition({
+                      top: Math.min(rect.bottom + 4, window.innerHeight - 440),
+                      left: Math.max(10, Math.min(rect.left, window.innerWidth - 340)),
+                    });
+                    setEmojiPickerItem(item);
+                  }}
+                  className="w-4 h-4 text-xs flex items-center justify-center shrink-0 hover:scale-125 transition-transform cursor-pointer"
+                  title="Change document icon"
+                  aria-label={`Change icon for ${item.title}`}
+                >
+                  {item.icon}
+                </button>
+              ) : (
+                <IconComponent
+                  className={`w-3.5 h-3.5 shrink-0 ${
+                    item.entry.type === 'environment_page' || item.entry.type === 'environment'
+                      ? 'text-cyan-400'
+                      : item.entry.type === 'notes_section'
+                      ? 'text-indigo-400'
+                      : item.entry.type === 'section' || item.entry.type === 'folder'
+                      ? 'text-amber-400'
+                      : 'text-text-muted group-hover:text-accent-emerald'
+                  }`}
+                />
+              )}
+
+              <Link
+                href={itemHref}
+                onClick={() => {
+                  if (onCloseMobile) onCloseMobile();
+                }}
+                className="truncate flex-1"
+              >
+                {item.title}
+              </Link>
             </div>
-          </div>
+
+            {/* Quick Context Actions on Hover */}
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ml-1">
+              {isContainer && (
+                <button
+                  type="button"
+                  title="Add inside this section"
+                  onClick={(e) => handleOpenCreateModal('notes_page', item.entry.entryId, e)}
+                  className="p-1 rounded text-text-muted hover:text-accent-emerald hover:bg-surface-raised transition-colors"
+                  aria-label="Add child item"
+                >
+                  <Plus className="w-3 h-3" />
+                </button>
+              )}
+
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveMenuId(activeMenuId === item.entry.entryId ? null : item.entry.entryId);
+                  }}
+                  className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors"
+                  aria-label="Item options"
+                >
+                  <MoreVertical className="w-3 h-3" />
+                </button>
+
+                {/* Context Dropdown */}
+                {activeMenuId === item.entry.entryId && (
+                  <div
+                    className="absolute right-0 top-full mt-1 w-36 bg-surface-raised border border-border-muted rounded-md shadow-xl z-50 py-1 flex flex-col text-[11px] font-sans"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        setEmojiPickerPosition({
+                          top: Math.min(rect.bottom + 4, window.innerHeight - 440),
+                          left: Math.max(10, Math.min(rect.left - 180, window.innerWidth - 340)),
+                        });
+                        setEmojiPickerItem(item);
+                        setActiveMenuId(null);
+                      }}
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-panel text-left"
+                    >
+                      <Smile className="w-3 h-3 text-primary" />
+                      <span>{item.icon ? 'Change Icon' : 'Add Icon'}</span>
+                    </button>
+                    {item.icon && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUpdateTreeItemIcon(item, null);
+                          setActiveMenuId(null);
+                        }}
+                        className="flex items-center gap-2 px-2.5 py-1.5 text-status-danger hover:bg-status-danger/10 text-left"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Remove Icon</span>
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRenamingItem({ id: item.entry.entryId, currentTitle: item.title });
+                        setRenameValue(item.title);
+                        setActiveMenuId(null);
+                      }}
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-panel text-left border-t border-border-subtle/60"
+                    >
+                      <Edit2 className="w-3 h-3" />
+                      <span>Rename</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleArchiveItem(item.entry.entryId, e)}
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-panel text-left"
+                    >
+                      <Archive className="w-3 h-3" />
+                      <span>Archive</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDeleteItem(item.entry.entryId, e)}
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-red-400 hover:text-red-300 hover:bg-red-950/30 text-left border-t border-border-subtle mt-0.5"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Move to Trash</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
         </div>
 
         {/* Render nested children if expanded */}
@@ -618,6 +703,32 @@ export function SideNavBar({
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Workspace Tree Emoji Picker Popover */}
+      {emojiPickerItem && emojiPickerPosition && (
+        <div
+          className="fixed z-[100]"
+          style={{
+            top: `${emojiPickerPosition.top}px`,
+            left: `${emojiPickerPosition.left}px`,
+          }}
+        >
+          <DocumentEmojiPicker
+            currentIcon={emojiPickerItem.icon}
+            onSelect={(emoji) => {
+              handleUpdateTreeItemIcon(emojiPickerItem, emoji);
+              setEmojiPickerItem(null);
+            }}
+            onRemove={() => {
+              handleUpdateTreeItemIcon(emojiPickerItem, null);
+              setEmojiPickerItem(null);
+            }}
+            onClose={() => {
+              setEmojiPickerItem(null);
+            }}
+          />
         </div>
       )}
     </>

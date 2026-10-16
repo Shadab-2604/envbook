@@ -124,6 +124,7 @@ export const CreateEntrySchema = z.object({
   cryptoVersion: z.string().optional().default('1.0'),
   isFavorite: z.boolean().optional().default(false),
   isArchived: z.boolean().optional().default(false),
+  icon: z.string().max(32).nullable().optional(),
 });
 
 export type CreateEntryInput = z.input<typeof CreateEntrySchema>;
@@ -137,6 +138,7 @@ export const UpdateEntrySchema = z.object({
   cryptoVersion: z.string().optional(),
   isFavorite: z.boolean().optional(),
   isArchived: z.boolean().optional(),
+  icon: z.string().max(32).nullable().optional(),
 });
 
 export type UpdateEntryInput = z.infer<typeof UpdateEntrySchema>;
@@ -146,6 +148,7 @@ export interface EntryRecord {
   entryId: string;
   parentId: string | null;
   type: EntryType;
+  icon?: string | null;
   sortOrder: number;
   encryptedPayload: string;
   nonce: string;

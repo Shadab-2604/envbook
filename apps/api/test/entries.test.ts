@@ -153,4 +153,69 @@ describe('Entries API & Ownership Isolation', () => {
     expect(restoreRes.status).toBe(200);
     expect(restoreRes.body.entry.encryptedPayload).toBe('VERSION_1_CODE');
   });
+
+  it('persists, updates, and removes document emoji icons', async () => {
+    const cookie = await createTestUser('user_emoji', 'user_emoji@envbook.local');
+    const entryId = randomUUID();
+
+    // 1. Create entry with initial emoji icon
+    const createRes = await request(app)
+      .post('/api/v1/entries')
+      .set('Cookie', cookie)
+      .send({
+        entryId,
+        type: 'notes_page',
+        encryptedPayload: 'ENCRYPTED_NOTE_WITH_ROCKET',
+        nonce: 'NONCE_EMOJI_1',
+        icon: '🚀',
+      });
+
+    expect(createRes.status).toBe(201);
+    expect(createRes.body.entry.icon).toBe('🚀');
+
+    // 2. Fetch entry and verify icon is preserved
+    const getRes = await request(app)
+      .get(`/api/v1/entries/${entryId}`)
+      .set('Cookie', cookie);
+
+    expect(getRes.status).toBe(200);
+    expect(getRes.body.entry.icon).toBe('🚀');
+
+    // 3. Update icon to a different emoji
+    const updateRes = await request(app)
+      .put(`/api/v1/entries/${entryId}`)
+      .set('Cookie', cookie)
+      .send({
+        icon: '💡',
+      });
+
+    expect(updateRes.status).toBe(200);
+    expect(updateRes.body.entry.icon).toBe('💡');
+
+    // 4. Remove icon (set to null)
+    const removeRes = await request(app)
+      .put(`/api/v1/entries/${entryId}`)
+      .set('Cookie', cookie)
+      .send({
+        icon: null,
+      });
+
+    expect(removeRes.status).toBe(200);
+    expect(removeRes.body.entry.icon).toBeNull();
+
+    // 5. Create entry without icon and verify default is null
+    const noIconId = randomUUID();
+    const createDefaultRes = await request(app)
+      .post('/api/v1/entries')
+      .set('Cookie', cookie)
+      .send({
+        entryId: noIconId,
+        type: 'notes_page',
+        encryptedPayload: 'ENCRYPTED_NOTE_NO_ICON',
+        nonce: 'NONCE_NO_ICON',
+      });
+
+    expect(createDefaultRes.status).toBe(201);
+    expect(createDefaultRes.body.entry.icon).toBeNull();
+  });
 });

@@ -11,6 +11,7 @@ function formatEntry(entry: IEntry): EntryRecord {
     entryId: entry.entryId,
     parentId: entry.parentId,
     type: entry.type,
+    icon: entry.icon || null,
     sortOrder: entry.sortOrder,
     encryptedPayload: entry.encryptedPayload,
     nonce: entry.nonce,
@@ -131,6 +132,7 @@ export async function createEntry(
       entryId: input.entryId,
       parentId: input.parentId || null,
       type: input.type,
+      icon: input.icon || null,
       sortOrder: input.sortOrder ?? 0,
       encryptedPayload: input.encryptedPayload,
       nonce: input.nonce,
@@ -208,6 +210,10 @@ export async function updateEntry(
 
     if (input.isArchived !== undefined) {
       entry.isArchived = input.isArchived;
+    }
+
+    if (input.icon !== undefined) {
+      entry.icon = input.icon;
     }
 
     // Version history snapshot when payload changes

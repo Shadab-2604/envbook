@@ -13,6 +13,7 @@ export interface IEntry extends Document {
   entryId: string;
   parentId: string | null;
   type: EntryType;
+  icon?: string | null;
   sortOrder: number;
   encryptedPayload: string;
   nonce: string;
@@ -59,6 +60,10 @@ const EntrySchema = new Schema<IEntry>(
       enum: ENTRY_TYPES,
       required: true,
       index: true,
+    },
+    icon: {
+      type: String,
+      default: null,
     },
     sortOrder: {
       type: Number,
