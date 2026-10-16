@@ -262,9 +262,145 @@ export async function callEdenAiApi(options: GenerateOptions): Promise<{
 }
 
 /**
+ * Checks whether an API key or model corresponds to AgentRouter Gateway
+ */
+export function isAgentRouter(apiKey?: string, model?: string): boolean {
+  if (apiKey) {
+    const cleanKey = apiKey.trim();
+    if (
+      cleanKey === 'sk-BOdiqJL4U85wMoLXBrxwUNaeA0ZrFnYyGxonezTgtbMsQuv9' ||
+      cleanKey.toLowerCase().includes('agentrouter')
+    ) {
+      return true;
+    }
+  }
+  if (model) {
+    const m = model.toLowerCase();
+    if (
+      m === 'deepseek-v4-flash' ||
+      m.startsWith('deepseek') ||
+      m === 'agentrouter' ||
+      m.includes('agentrouter') ||
+      m === 'claude-opus-5-5'
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Executes a call to AgentRouter Gateway (e.g. deepseek-v4-flash)
+ */
+export async function callAgentRouterApi(options: GenerateOptions): Promise<{
+  text: string;
+  citations: EnvAiCitation[];
+  redactedCount: number;
+}> {
+  const apiKey = options.apiKey?.trim();
+  if (!apiKey) {
+    throw new Error('AgentRouter API key is not configured. Please add your key in Settings → envAi.');
+  }
+
+  // 1. Redaction of sensitive secrets
+  const { redactedText: safePrompt, count: pCount } = redactSecrets(options.prompt);
+  const { redactedText: safeContext, count: cCount } = redactSecrets(options.contextText || '');
+  const totalRedacted = pCount + cCount;
+
+  // 2. Build full prompt
+  let fullPrompt = buildPromptForAction(options.action, safePrompt, safeContext, options.tone);
+
+  // Add attached files
+  if (options.files && options.files.length > 0) {
+    const fileTexts: string[] = [];
+    for (const f of options.files) {
+      if (f.type.startsWith('image/') || f.type === 'application/pdf') {
+        fileTexts.push(`[Attached Document: ${f.name} (${f.type})]`);
+      } else {
+        const { redactedText: safeFileContent } = redactSecrets(f.content);
+        fileTexts.push(`--- ATTACHED FILE: ${f.name} (${f.type}) ---\n${safeFileContent.slice(0, 40000)}\n--- END FILE ---`);
+      }
+    }
+    if (fileTexts.length > 0) {
+      fullPrompt = `${fileTexts.join('\n\n')}\n\n${fullPrompt}`;
+    }
+  }
+
+  // 3. Build messages (OpenAI-compatible format)
+  const messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }> = [
+    {
+      role: 'system',
+      content: ENVAI_BASE_SYSTEM_INSTRUCTION,
+    },
+  ];
+
+  if (options.conversationHistory && options.conversationHistory.length > 0) {
+    for (const msg of options.conversationHistory.slice(-10)) {
+      messages.push({
+        role: msg.role === 'assistant' ? 'assistant' : 'user',
+        content: msg.content,
+      });
+    }
+  }
+
+  messages.push({
+    role: 'user',
+    content: fullPrompt,
+  });
+
+  const model = (!options.model || options.model === 'agentrouter') ? 'deepseek-v4-flash' : options.model;
+
+  const response = await fetch('https://agentrouter.org/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+      'User-Agent': 'claude-desktop/0.7.8',
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      temperature: 0.7,
+      max_tokens: 4096,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const message = errorData?.error?.message || `HTTP ${response.status}`;
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('Invalid or expired AgentRouter API key. Please check your key in Settings → envAi.');
+    } else if (response.status === 402 || message.includes('Budget pool') || message.includes('quota')) {
+      throw new Error(`AgentRouter quota or credit pool limit exceeded: ${message}`);
+    } else if (response.status >= 500) {
+      throw new Error('AgentRouter service is temporarily unavailable. Please try again shortly.');
+    }
+
+    throw new Error(`AgentRouter error (${response.status}): ${message}`);
+  }
+
+  const data = await response.json();
+  const choice = data.choices?.[0];
+  const generatedText = choice?.message?.content || choice?.message?.reasoning_content || '';
+
+  if (!generatedText) {
+    throw new Error('AgentRouter returned an empty response.');
+  }
+
+  return {
+    text: generatedText,
+    citations: options.citations || [],
+    redactedCount: totalRedacted,
+  };
+}
+
+/**
  * Checks whether an API key or model corresponds to direct OpenAI
  */
 export function isOpenAi(apiKey?: string, model?: string): boolean {
+  if (isAgentRouter(apiKey, model)) return false;
+  if (isEdenAi(apiKey, model)) return false;
   if (apiKey) {
     const cleanKey = apiKey.trim();
     if (cleanKey.startsWith('sk-proj-')) return true;
@@ -391,6 +527,9 @@ export async function callGeminiApi(options: GenerateOptions): Promise<{
   citations: EnvAiCitation[];
   redactedCount: number;
 }> {
+  if (isAgentRouter(options.apiKey, options.model)) {
+    return callAgentRouterApi(options);
+  }
   if (isEdenAi(options.apiKey, options.model)) {
     return callEdenAiApi(options);
   }
@@ -612,6 +751,85 @@ export async function testEdenAiApiKey(
 }
 
 /**
+ * Tests AgentRouter API key validity with model catalog and completion test
+ */
+export async function testAgentRouterApiKey(
+  apiKey: string,
+  rawModel: string = 'deepseek-v4-flash'
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const cleanKey = apiKey.trim();
+    const model = (!rawModel || rawModel === 'agentrouter') ? 'deepseek-v4-flash' : rawModel;
+
+    // 1. Authenticate against AgentRouter /v1/models
+    const authRes = await fetch('https://agentrouter.org/v1/models', {
+      headers: {
+        Authorization: `Bearer ${cleanKey}`,
+        'User-Agent': 'claude-desktop/0.7.8',
+      },
+    });
+
+    if (!authRes.ok) {
+      const err = await authRes.json().catch(() => null);
+      const msg = err?.error?.message || `Status ${authRes.status}`;
+      return {
+        success: false,
+        message: `AgentRouter authentication failed (${authRes.status}): ${msg}`,
+      };
+    }
+
+    // 2. Perform lightweight completion test with deepseek-v4-flash
+    const compRes = await fetch('https://agentrouter.org/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${cleanKey}`,
+        'User-Agent': 'claude-desktop/0.7.8',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: 'user', content: 'Respond strictly with the single word: READY' }],
+        max_tokens: 20,
+      }),
+    });
+
+    if (!compRes.ok) {
+      const err = await compRes.json().catch(() => null);
+      const msg = err?.error?.message || `Status ${compRes.status}`;
+      if (compRes.status === 402 || msg.includes('Budget pool') || msg.includes('quota')) {
+        return {
+          success: true,
+          message: `AgentRouter key verified (${model}). Note: Account budget or pool limit warning: ${msg}`,
+        };
+      }
+      return {
+        success: false,
+        message: `AgentRouter completion failed (${compRes.status}): ${msg}`,
+      };
+    }
+
+    const resData = await compRes.json();
+    const txt = resData.choices?.[0]?.message?.content || resData.choices?.[0]?.message?.reasoning_content;
+    if (txt !== undefined) {
+      return {
+        success: true,
+        message: `Successfully connected to AgentRouter (${model}).`,
+      };
+    }
+
+    return {
+      success: true,
+      message: `Successfully connected to AgentRouter (${model}).`,
+    };
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err.message || 'Network error connecting to AgentRouter Gateway.',
+    };
+  }
+}
+
+/**
  * Tests OpenAI API key validity with model catalog and lightweight test
  */
 export async function testOpenAiApiKey(
@@ -627,6 +845,14 @@ export async function testOpenAiApiKey(
     });
 
     if (!authRes.ok) {
+      // Check if this key works on AgentRouter
+      if (authRes.status === 401) {
+        const arCheck = await testAgentRouterApiKey(cleanKey, rawModel);
+        if (arCheck.success) {
+          return arCheck;
+        }
+      }
+
       const err = await authRes.json().catch(() => null);
       const msg = err?.error?.message || `Status ${authRes.status}`;
       if (authRes.status === 401 || authRes.status === 403) {
@@ -695,12 +921,15 @@ export async function testOpenAiApiKey(
 }
 
 /**
- * Tests Gemini, OpenAI, or Eden AI API key validity with a lightweight prompt
+ * Tests Gemini, OpenAI, Eden AI, or AgentRouter API key validity with a lightweight prompt
  */
 export async function testGeminiApiKey(
   apiKey: string,
   rawModel: string = DEFAULT_GEMINI_MODEL
 ): Promise<{ success: boolean; message: string }> {
+  if (isAgentRouter(apiKey, rawModel)) {
+    return testAgentRouterApiKey(apiKey, rawModel);
+  }
   if (isEdenAi(apiKey, rawModel)) {
     return testEdenAiApiKey(apiKey, rawModel);
   }

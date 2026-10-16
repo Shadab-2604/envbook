@@ -1035,6 +1035,14 @@ export const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
 
 export const AVAILABLE_GEMINI_MODELS: GeminiModelInfo[] = [
   {
+    id: 'deepseek-v4-flash',
+    name: 'DeepSeek V4 Flash (AgentRouter)',
+    description: 'Ultra-fast frontier reasoning model via AgentRouter Gateway with dynamic thinking and high throughput (Recommended)',
+    contextWindow: '128,000 tokens (~128k)',
+    outputLimit: '8,192 tokens',
+    isRecommended: true,
+  },
+  {
     id: 'gemini-3.8-flash',
     name: 'Gemini 3.8 Flash',
     description: 'Flagship next-gen Flash model with exceptional speed, deep reasoning, and high throughput (Google Recommended)',
@@ -1146,6 +1154,9 @@ export function normalizeGeminiModel(rawModel?: string): string {
   let model = rawModel.trim();
   if (model.startsWith('models/')) {
     model = model.slice(7);
+  }
+  if (model.startsWith('deepseek') || model.toLowerCase().includes('agentrouter')) {
+    return model;
   }
   if (model.startsWith('gpt-') || model.startsWith('o1') || model.startsWith('o3')) {
     return model;

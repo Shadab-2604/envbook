@@ -528,7 +528,7 @@ export default function SettingsPage() {
           </div>
 
           <p className="text-xs text-text-muted leading-relaxed">
-            envAi connects to OpenAI, Google Gemini, or Eden AI Multi-Model Gateway for AI-powered note writing, code explanations, cybersecurity analysis, and contextual synthesis.
+            envAi connects to DeepSeek/AgentRouter, OpenAI, Google Gemini, or Eden AI Multi-Model Gateway for AI-powered note writing, code explanations, cybersecurity analysis, and contextual synthesis.
             Your API key is never stored in plaintext and never stored in <code className="text-text-primary font-mono text-[11px]">.env</code> files. It is securely encrypted in MongoDB using an HKDF-derived AES-256-GCM key from your authentication secret.
           </p>
 
@@ -635,7 +635,7 @@ export default function SettingsPage() {
                 </button>
               </div>
               <p className="text-[10px] text-text-muted mt-1">
-                Get an API key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-primary hover:underline">OpenAI</a>, <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary hover:underline">Google AI Studio</a>, or <a href="https://app.edenai.run/settings/api-keys" target="_blank" rel="noreferrer" className="text-primary hover:underline">Eden AI</a>.
+                Get an API key from <a href="https://agentrouter.org" target="_blank" rel="noreferrer" className="text-primary hover:underline">AgentRouter</a>, <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer" className="text-primary hover:underline">OpenAI</a>, <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary hover:underline">Google AI Studio</a>, or <a href="https://app.edenai.run/settings/api-keys" target="_blank" rel="noreferrer" className="text-primary hover:underline">Eden AI</a>.
               </p>
             </div>
 

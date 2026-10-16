@@ -14,6 +14,7 @@ import {
   DEFAULT_GEMINI_MODEL,
   isEdenAi,
   isOpenAi,
+  isAgentRouter,
 } from '../src/server/geminiService';
 import {
   ENVAI_ACTIONS,
@@ -216,8 +217,9 @@ describe('envAi Schemas & Slash Command Verification', () => {
     expect(DEFAULT_GEMINI_MODEL).toBe('gemini-3.8-flash');
   });
 
-  it('contains curated models with gpt-4o and gemini-3.8-flash marked recommended and Eden AI models directly below them', () => {
+  it('contains curated models with deepseek-v4-flash, gpt-4o and gemini-3.8-flash marked recommended', () => {
     const recommendedList = AVAILABLE_GEMINI_MODELS.filter((m) => m.isRecommended);
+    expect(recommendedList.some((m) => m.id === 'deepseek-v4-flash')).toBe(true);
     expect(recommendedList.some((m) => m.id === 'gpt-4o')).toBe(true);
     expect(recommendedList.some((m) => m.id === 'gemini-3.8-flash')).toBe(true);
     expect(AVAILABLE_GEMINI_MODELS.some((m) => m.id === 'gpt-4o-mini')).toBe(true);
@@ -231,11 +233,19 @@ describe('envAi Schemas & Slash Command Verification', () => {
     expect(normalizeGeminiModel('models/gemini-3.8-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('gemini-2.0-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('models/gemini-2.0-flash')).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('deepseek-v4-flash')).toBe('deepseek-v4-flash');
     expect(normalizeGeminiModel('gpt-4o')).toBe('gpt-4o');
     expect(normalizeGeminiModel('gpt-4o-mini')).toBe('gpt-4o-mini');
     expect(normalizeGeminiModel('openai/gpt-latest')).toBe('openai/gpt-latest');
     expect(normalizeGeminiModel('edenai')).toBe('edenai');
     expect(normalizeGeminiModel('eden-ai')).toBe('edenai');
+  });
+
+  it('detects AgentRouter keys and models correctly via isAgentRouter', () => {
+    expect(isAgentRouter('sk-BOdiqJL4U85wMoLXBrxwUNaeA0ZrFnYyGxonezTgtbMsQuv9')).toBe(true);
+    expect(isAgentRouter(undefined, 'deepseek-v4-flash')).toBe(true);
+    expect(isAgentRouter(undefined, 'agentrouter')).toBe(true);
+    expect(isAgentRouter('AIzaSyDummyKey', 'gemini-3.8-flash')).toBe(false);
   });
 
   it('detects Eden AI keys and models correctly via isEdenAi', () => {
@@ -249,6 +259,8 @@ describe('envAi Schemas & Slash Command Verification', () => {
     expect(isOpenAi('sk-proj-ilbg1AJHRxPCK8K04OZBbXeNlQbT')).toBe(true);
     expect(isOpenAi('sk-abcdef1234567890')).toBe(true);
     expect(isOpenAi('sk-eden-live-abcdef123456')).toBe(false);
+    expect(isOpenAi('sk-BOdiqJL4U85wMoLXBrxwUNaeA0ZrFnYyGxonezTgtbMsQuv9')).toBe(false);
+    expect(isOpenAi(undefined, 'deepseek-v4-flash')).toBe(false);
     expect(isOpenAi(undefined, 'gpt-4o')).toBe(true);
     expect(isOpenAi(undefined, 'gpt-4o-mini')).toBe(true);
     expect(isOpenAi('AIzaSyDummyKey', 'gemini-3.8-flash')).toBe(false);

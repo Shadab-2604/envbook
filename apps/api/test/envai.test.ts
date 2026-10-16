@@ -13,6 +13,7 @@ import {
   DEFAULT_GEMINI_MODEL,
   isEdenAi,
   isOpenAi,
+  isAgentRouter,
 } from '../src/services/envai/geminiService.js';
 import {
   ENVAI_ACTIONS,
@@ -72,6 +73,7 @@ describe('Express Backend envAi Cryptographic & Security Layer', () => {
     expect(normalizeGeminiModel('models/gemini-2.0-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('gemini-1.5-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel(undefined)).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('deepseek-v4-flash')).toBe('deepseek-v4-flash');
     expect(normalizeGeminiModel('gpt-4o')).toBe('gpt-4o');
     expect(normalizeGeminiModel('gpt-4o-mini')).toBe('gpt-4o-mini');
     expect(normalizeGeminiModel('openai/gpt-latest')).toBe('openai/gpt-latest');
@@ -79,10 +81,15 @@ describe('Express Backend envAi Cryptographic & Security Layer', () => {
     expect(normalizeGeminiModel('eden-ai')).toBe('edenai');
   });
 
-  it('positions OpenAI and Eden AI models and detects keys', () => {
+  it('positions OpenAI, Eden AI, and AgentRouter models and detects keys', () => {
     const recommendedList = AVAILABLE_GEMINI_MODELS.filter((m) => m.isRecommended);
+    expect(recommendedList.some((m) => m.id === 'deepseek-v4-flash')).toBe(true);
     expect(recommendedList.some((m) => m.id === 'gpt-4o')).toBe(true);
     expect(recommendedList.some((m) => m.id === 'gemini-3.8-flash')).toBe(true);
+    expect(isAgentRouter('sk-BOdiqJL4U85wMoLXBrxwUNaeA0ZrFnYyGxonezTgtbMsQuv9')).toBe(true);
+    expect(isAgentRouter(undefined, 'deepseek-v4-flash')).toBe(true);
+    expect(isAgentRouter(undefined, 'agentrouter')).toBe(true);
+    expect(isAgentRouter('AIzaSyKey', 'gemini-3.8-flash')).toBe(false);
     expect(isEdenAi('sk-eden-live-key123')).toBe(true);
     expect(isEdenAi(undefined, 'edenai')).toBe(true);
     expect(isEdenAi(undefined, 'openai/gpt-latest')).toBe(true);
@@ -90,6 +97,7 @@ describe('Express Backend envAi Cryptographic & Security Layer', () => {
     expect(isOpenAi('sk-proj-key123')).toBe(true);
     expect(isOpenAi('sk-abcdef123')).toBe(true);
     expect(isOpenAi(undefined, 'gpt-4o')).toBe(true);
+    expect(isOpenAi('sk-BOdiqJL4U85wMoLXBrxwUNaeA0ZrFnYyGxonezTgtbMsQuv9')).toBe(false);
     expect(isOpenAi('sk-eden-live-key123')).toBe(false);
   });
 
