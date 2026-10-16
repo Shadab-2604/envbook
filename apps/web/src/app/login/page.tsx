@@ -54,11 +54,11 @@ export default function LoginPage() {
       <header className="w-full max-w-4xl flex justify-between items-center px-4 py-2 border-b border-border-subtle bg-surface-subtle/80 rounded backdrop-blur-md">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
-          <span className="font-mono text-[11px] text-text-muted">HOST: 127.0.0.1</span>
+          <span className="font-mono text-[11px] text-text-muted">HOST: envbook.vercel.app</span>
         </div>
         <div className="flex items-center gap-1.5 font-mono text-[11px] text-accent-emerald">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Local-Only Session</span>
+          <span>Zero-Knowledge Secure Session</span>
         </div>
       </header>
 

@@ -52,6 +52,10 @@ export default function CredentialsPage() {
   const remaskTimersRef = useRef<Record<string, NodeJS.Timeout>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
+  useEffect(() => {
+    document.title = 'Credentials Vault — EnvBook';
+  }, []);
+
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<CredentialItem | null>(null);
@@ -256,10 +260,10 @@ export default function CredentialsPage() {
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
           <span className="text-text-secondary text-xs font-label-mono">Security</span>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
-          <span className="text-text-primary text-xs font-medium flex items-center gap-1.5">
+          <h1 className="text-text-primary text-xs font-medium flex items-center gap-1.5 inline-flex">
             <Key className="w-3.5 h-3.5 text-primary" />
             Credentials Vault
-          </span>
+          </h1>
           <span className="ml-1 text-[10px] font-label-mono text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.2 rounded">
             AES-256-GCM
           </span>

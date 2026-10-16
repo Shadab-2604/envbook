@@ -47,7 +47,7 @@ export function TopNavBar({
           <Menu className="w-4 h-4" />
         </button>
 
-        <nav className="flex items-center gap-1.5 text-xs text-text-muted truncate">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-text-muted truncate">
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={idx}>
               {idx > 0 && <span className="text-border-muted">/</span>}

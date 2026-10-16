@@ -92,6 +92,10 @@ export default function FolderPage() {
     loadFolder();
   }, [loadFolder]);
 
+  useEffect(() => {
+    document.title = `${folderTitle} — EnvBook`;
+  }, [folderTitle]);
+
   const handleSaveTitle = async () => {
     if (!folderRecord || !vault.isUnlocked || !editTitleValue.trim()) return;
     try {

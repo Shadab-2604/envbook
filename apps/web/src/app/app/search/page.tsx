@@ -33,6 +33,10 @@ export default function GlobalSearchPage() {
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState('ALL');
 
+  useEffect(() => {
+    document.title = 'Vault Search — EnvBook';
+  }, []);
+
   const loadAndDecryptAll = useCallback(async () => {
     if (!vault.isUnlocked) return;
 
@@ -133,10 +137,10 @@ export default function GlobalSearchPage() {
             EnvBook
           </Link>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
-          <span className="text-text-primary text-xs font-medium flex items-center gap-1.5">
+          <h1 className="text-text-primary text-xs font-medium flex items-center gap-1.5 inline-flex">
             <Search className="w-3.5 h-3.5 text-primary" />
             Zero-Knowledge Global Search
-          </span>
+          </h1>
         </div>
         <div className="flex items-center gap-1.5 text-[11px] font-label-mono text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded">
           <Shield className="w-3.5 h-3.5" />

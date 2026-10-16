@@ -27,6 +27,10 @@ export default function TrashPage() {
   const [trashed, setTrashed] = useState<Array<{ record: EntryRecord; title: string }>>([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    document.title = 'Workspace Trash — EnvBook';
+  }, []);
+
   const loadTrash = useCallback(async () => {
     if (!vault.isUnlocked) return;
 
@@ -110,10 +114,10 @@ export default function TrashPage() {
             EnvBook
           </Link>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
-          <span className="text-text-primary text-xs font-medium flex items-center gap-1.5">
+          <h1 className="text-text-primary text-xs font-medium flex items-center gap-1.5 inline-flex">
             <Trash2 className="w-3.5 h-3.5 text-status-danger" />
-            Trash
-          </span>
+            Workspace Trash
+          </h1>
           <span className="ml-1 text-[10px] font-label-mono text-text-muted bg-surface-panel border border-border-subtle px-1.5 py-0.2 rounded">
             {trashed.length} items
           </span>

@@ -51,6 +51,10 @@ export default function SettingsPage() {
   const [backupError, setBackupError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  React.useEffect(() => {
+    document.title = 'Settings & Security — EnvBook';
+  }, []);
+
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setPasswordError(null);
@@ -182,10 +186,10 @@ export default function SettingsPage() {
             EnvBook
           </Link>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
-          <span className="text-text-primary text-xs font-medium flex items-center gap-1.5">
+          <h1 className="text-text-primary text-xs font-medium flex items-center gap-1.5 inline-flex">
             <Settings className="w-3.5 h-3.5 text-primary" />
             Workspace Settings &amp; Security
-          </span>
+          </h1>
         </div>
       </header>
 

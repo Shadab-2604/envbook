@@ -22,6 +22,10 @@ export default function ArchivePage() {
   const [archived, setArchived] = useState<Array<{ record: EntryRecord; title: string }>>([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    document.title = 'Vault Archive — EnvBook';
+  }, []);
+
   const loadArchived = useCallback(async () => {
     if (!vault.isUnlocked) return;
 
@@ -78,10 +82,10 @@ export default function ArchivePage() {
             EnvBook
           </Link>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
-          <span className="text-text-primary text-xs font-medium flex items-center gap-1.5">
+          <h1 className="text-text-primary text-xs font-medium flex items-center gap-1.5 inline-flex">
             <Archive className="w-3.5 h-3.5 text-secondary" />
-            Archive
-          </span>
+            Vault Archive
+          </h1>
           <span className="ml-1 text-[10px] font-label-mono text-text-muted bg-surface-panel border border-border-subtle px-1.5 py-0.2 rounded">
             {archived.length} archived
           </span>

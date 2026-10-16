@@ -1,0 +1,56 @@
+# EnvBook (Env Book)
+
+> The Zero-Knowledge Developer Workspace, Notion-Style Block Editor & Bulk .env Secrets Manager.
+> Canonical URL: https://envbook.vercel.app
+
+## Overview
+EnvBook is a private, client-side encrypted developer productivity platform that bridges the gap between engineering documentation and environment variable configuration. It provides a Notion-style inline WYSIWYG block editor alongside a bulk `.env` manager, protected by zero-knowledge AES-256-GCM authenticated encryption.
+
+## Key Capabilities
+
+### 1. Notion-Style Inline Block Editor
+- Inline rich text canvas powered by Tiptap and ProseMirror.
+- Keyboard-driven slash commands (`/`):
+  - Headings (H1, H2, H3), blockquotes, code blocks with syntax highlighting
+  - Bulleted, numbered, and interactive task / checklists
+  - Interactive tables and horizontal dividers
+  - Direct workspace creation commands (`/page`, `/section`)
+- Markdown shortcuts (`#`, `- `, `1. `, ```` `, `> `) transformed in real time.
+- Debounced autosave (1000ms) with visual status indicators.
+
+### 2. Bulk .env Credential Manager & Parsing Engine
+- Multiline `.env` block importer: paste complete configurations in one action.
+- Robust dotenv parsing:
+  - Supports LF and CRLF line breaks
+  - Strips comments (`#`) and trailing whitespace
+  - Splits exclusively on first `=` to preserve complex tokens, URLs (`://`), query strings (`?`, `&`), and nested secrets
+  - Unescapes single and double-quoted values (`"value"`, `'value'`)
+  - Validates key names against `^[A-Za-z_][A-Za-z0-9_]*$`
+  - In-batch duplicate detection and existing database key collision resolution
+- Individual variable management:
+  - Key and masked value (`••••••••••••`) default display
+  - Individual reveal/hide with 15-second automatic re-masking timeout
+  - One-click clipboard copy with feedback
+  - Inline editing and deletion with confirmation
+  - Safe key search without exposing decrypted secrets in memory or logs
+  - Environment Parity Matrix & Diff View across dev, staging, and prod
+
+### 3. Zero-Knowledge Cryptographic Architecture
+- Key Derivation: Argon2id / PBKDF2 (100,000 iterations, SHA-256) deriving Key Encryption Key (KEK).
+- Data Encryption: AES-256-GCM with unique 96-bit initialization vectors (IV / nonce) per entry.
+- Plaintext secrets and user master passwords never leave the client browser.
+- Encrypted ciphertext, IVs, auth tags, and salts are stored at rest in MongoDB.
+- Cryptographic zeroing and memory hygiene upon vault locking.
+
+### 4. Dynamic Hierarchical Workspace
+- Four native item types:
+  - `notes_page`: Leaf document with block editor
+  - `section`: Standard folder / container
+  - `environment_page`: Dedicated .env secrets page
+  - `notes_section`: Structured notes container
+- User-defined tree navigation with drag/drop, quick item creation (`+`), and contextual options.
+
+## Deployment & Verification
+- Hosted on Vercel: https://envbook.vercel.app
+- Backend: Integrated Next.js App Router API endpoints with MongoDB persistence.
+- Open Source repository: https://github.com/Shadab-2604/envbook

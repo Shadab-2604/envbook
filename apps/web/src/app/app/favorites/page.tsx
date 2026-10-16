@@ -21,6 +21,10 @@ export default function FavoritesPage() {
   const [favorites, setFavorites] = useState<Array<{ record: EntryRecord; title: string }>>([]);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    document.title = 'Starred Favorites — EnvBook';
+  }, []);
+
   const loadFavorites = useCallback(async () => {
     if (!vault.isUnlocked) return;
 
@@ -84,10 +88,10 @@ export default function FavoritesPage() {
             EnvBook
           </Link>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
-          <span className="text-text-primary text-xs font-medium flex items-center gap-1.5">
+          <h1 className="text-text-primary text-xs font-medium flex items-center gap-1.5 inline-flex">
             <Star className="w-3.5 h-3.5 text-status-warning fill-current" />
             Starred &amp; Favorites
-          </span>
+          </h1>
           <span className="ml-1 text-[10px] font-label-mono text-text-muted bg-surface-panel border border-border-subtle px-1.5 py-0.2 rounded">
             {favorites.length} items
           </span>

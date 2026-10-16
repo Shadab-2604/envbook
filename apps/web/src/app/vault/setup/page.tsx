@@ -34,6 +34,10 @@ export default function VaultSetupPage() {
   const [copiedRecovery, setCopiedRecovery] = useState(false);
   const [confirmedSaved, setConfirmedSaved] = useState(false);
 
+  useEffect(() => {
+    document.title = 'Setup Master Key — EnvBook';
+  }, []);
+
   // If already initialized and not currently showing recovery key, redirect to unlock
   useEffect(() => {
     if (!loading && user && isInitialized && !recoveryKey) {
@@ -127,7 +131,7 @@ export default function VaultSetupPage() {
             <div className="w-12 h-12 rounded bg-surface-panel border border-border-muted flex items-center justify-center mb-2 shadow-inner">
               <Lock className="w-6 h-6 text-accent-emerald" />
             </div>
-            <h1 className="text-xl font-bold text-text-primary tracking-tight">EnvBook</h1>
+            <h1 className="text-xl font-bold text-text-primary tracking-tight">Initialize Master Key — EnvBook</h1>
             <p className="font-mono text-xs text-text-muted mt-1">
               Encrypted Vault &amp; Zero-Trust Runtime
             </p>

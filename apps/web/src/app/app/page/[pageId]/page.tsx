@@ -100,6 +100,10 @@ export default function NotePage() {
     loadEntry();
   }, [loadEntry]);
 
+  useEffect(() => {
+    document.title = title ? `${title} — EnvBook` : 'Page Editor — EnvBook';
+  }, [title]);
+
   // Autosave handler with debounce
   const triggerSave = useCallback(
     async (newTitle: string, newContent: string, newTags: string[]) => {
@@ -386,6 +390,9 @@ export default function NotePage() {
         {/* Editor Main Canvas */}
         <main className="flex-1 overflow-y-auto px-4 sm:px-8 py-6 mono-scroll">
           <div className="max-w-3xl mx-auto flex flex-col gap-4">
+            {/* Semantic H1 for screen readers and document outline */}
+            <h1 className="sr-only">{title || 'Untitled Document'} — EnvBook</h1>
+
             {/* Note Title Input */}
             <input
               type="text"

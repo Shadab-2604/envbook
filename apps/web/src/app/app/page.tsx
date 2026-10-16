@@ -33,6 +33,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = 'Dashboard — EnvBook';
+  }, []);
+
+  useEffect(() => {
     if (!isUnlocked) return;
 
     let mounted = true;

@@ -54,6 +54,10 @@ export default function EnvironmentsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'variables' | 'diff'>('variables');
 
+  useEffect(() => {
+    document.title = 'Environment Variables & Bulk .env Manager — EnvBook';
+  }, []);
+
   // 15-second auto-remasking for environment variables
   const [revealedKeys, setRevealedKeys] = useState<Record<string, boolean>>({});
   const remaskTimersRef = useRef<Record<string, NodeJS.Timeout>>({});

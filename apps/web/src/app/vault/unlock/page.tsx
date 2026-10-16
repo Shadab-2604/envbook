@@ -28,6 +28,10 @@ export default function VaultUnlockPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    document.title = 'Unlock Vault — EnvBook';
+  }, []);
+
   // If already unlocked, redirect to app
   useEffect(() => {
     if (isUnlocked) {
@@ -110,7 +114,7 @@ export default function VaultUnlockPage() {
             <div className="w-12 h-12 rounded bg-surface-panel border border-border-muted flex items-center justify-center mb-2 shadow-inner">
               <Lock className="w-6 h-6 text-accent-emerald" />
             </div>
-            <h1 className="text-xl font-bold text-text-primary tracking-tight">EnvBook</h1>
+            <h1 className="text-xl font-bold text-text-primary tracking-tight">Unlock EnvBook Vault</h1>
             <p className="font-mono text-xs text-text-muted mt-1">
               Encrypted Vault &amp; Zero-Trust Runtime
             </p>

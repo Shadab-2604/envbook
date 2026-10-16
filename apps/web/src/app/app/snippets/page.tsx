@@ -78,6 +78,10 @@ export default function SnippetsPage() {
   }, [vault]);
 
   useEffect(() => {
+    document.title = 'Code Snippets & Library — EnvBook';
+  }, []);
+
+  useEffect(() => {
     loadSnippets();
   }, [loadSnippets]);
 
@@ -185,10 +189,10 @@ export default function SnippetsPage() {
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
           <span className="text-text-secondary text-xs font-label-mono">Developer Tools</span>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
-          <span className="text-text-primary text-xs font-medium flex items-center gap-1.5">
+          <h1 className="text-text-primary text-xs font-medium flex items-center gap-1.5 inline-flex">
             <Code className="w-3.5 h-3.5 text-primary" />
             Code &amp; Terminal Library
-          </span>
+          </h1>
           <span className="ml-1 text-[10px] font-label-mono text-text-muted bg-surface-panel border border-border-subtle px-1.5 py-0.2 rounded">
             {snippets.length} snippets
           </span>
