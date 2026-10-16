@@ -1043,6 +1043,13 @@ export const AVAILABLE_GEMINI_MODELS: GeminiModelInfo[] = [
     isRecommended: true,
   },
   {
+    id: 'edenai',
+    name: 'Eden AI (Unified Multi-Model Gateway)',
+    description: 'Unified AI engine aggregating top LLMs with automated provider routing, fallbacks, and multi-model access via Eden AI API key',
+    contextWindow: '128,000+ tokens',
+    outputLimit: '4,096 tokens',
+  },
+  {
     id: 'gemini-flash-latest',
     name: 'Gemini Flash Latest',
     description: 'Always routes to the newest stable production Flash model released by Google',
@@ -1118,6 +1125,9 @@ export function normalizeGeminiModel(rawModel?: string): string {
   if (model.startsWith('models/')) {
     model = model.slice(7);
   }
+  if (model.toLowerCase().includes('edenai') || model.toLowerCase().includes('eden-ai')) {
+    return 'edenai';
+  }
   // Auto-migrate retired or deprecated models to Google recommended gemini-3.8-flash
   if (
     model === 'gemini-2.0-flash' ||
@@ -1130,7 +1140,7 @@ export function normalizeGeminiModel(rawModel?: string): string {
 }
 
 export const EnvAiConfigSchema = z.object({
-  apiKey: z.string().min(10, 'Gemini API key must be at least 10 characters').max(200),
+  apiKey: z.string().min(10, 'API key must be at least 10 characters').max(300),
   model: z.string().optional().default(DEFAULT_GEMINI_MODEL),
 });
 

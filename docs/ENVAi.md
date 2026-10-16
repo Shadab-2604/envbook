@@ -1,7 +1,7 @@
 # envAi — Google Gemini AI Integration Specification & Architecture
 
 ## 1. Overview
-**envAi** is the private, intelligent writing and documentation assistant natively integrated into EnvBook. Powered by Google Gemini (default model: `gemini-3.8-flash` Recommended), envAi is designed to assist software engineers, security researchers, and DevOps practitioners in drafting technical proposals, explaining complex code, summarizing documentation, creating Product Requirement Documents (PRDs), and conducting authorized cybersecurity reviews.
+**envAi** is the private, intelligent writing and documentation assistant natively integrated into EnvBook. Powered by Google Gemini (default model: `gemini-3.8-flash` Recommended) alongside the **Eden AI (Unified Multi-Model Gateway)**, envAi is designed to assist software engineers, security researchers, and DevOps practitioners in drafting technical proposals, explaining complex code, summarizing documentation, creating Product Requirement Documents (PRDs), and conducting authorized cybersecurity reviews. Users can configure either a Google AI Studio Gemini API key or an Eden AI unified API key (`sk-eden-live...`).
 
 ---
 

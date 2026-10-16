@@ -11,8 +11,14 @@ import {
 import {
   buildPromptForAction,
   DEFAULT_GEMINI_MODEL,
+  isEdenAi,
 } from '../src/services/envai/geminiService.js';
-import { ENVAI_ACTIONS, EnvAiConfigSchema, normalizeGeminiModel } from '@envbook/shared';
+import {
+  ENVAI_ACTIONS,
+  EnvAiConfigSchema,
+  normalizeGeminiModel,
+  AVAILABLE_GEMINI_MODELS,
+} from '@envbook/shared';
 
 describe('Express Backend envAi Cryptographic & Security Layer', () => {
   const secret = 'backend-test-jwt-secret-with-sufficient-entropy-for-hkdf-test';
@@ -57,7 +63,7 @@ describe('Express Backend envAi Cryptographic & Security Layer', () => {
     expect(DEFAULT_GEMINI_MODEL).toBe('gemini-3.8-flash');
   });
 
-  it('normalizes model strings and auto-migrates deprecated models', () => {
+  it('normalizes model strings and auto-migrates deprecated models while preserving edenai', () => {
     expect(normalizeGeminiModel('models/gemini-3.8-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('gemini-3.8-flash')).toBe('gemini-3.8-flash');
     // Deprecated models auto-migrate to DEFAULT_GEMINI_MODEL
@@ -65,6 +71,16 @@ describe('Express Backend envAi Cryptographic & Security Layer', () => {
     expect(normalizeGeminiModel('models/gemini-2.0-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('gemini-1.5-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel(undefined)).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('edenai')).toBe('edenai');
+    expect(normalizeGeminiModel('eden-ai')).toBe('edenai');
+  });
+
+  it('positions Eden AI directly below recommended model and detects keys', () => {
+    const recommendedIndex = AVAILABLE_GEMINI_MODELS.findIndex((m) => m.id === 'gemini-3.8-flash');
+    expect(AVAILABLE_GEMINI_MODELS[recommendedIndex + 1].id).toBe('edenai');
+    expect(isEdenAi('sk-eden-live-key123')).toBe(true);
+    expect(isEdenAi(undefined, 'edenai')).toBe(true);
+    expect(isEdenAi('AIzaSyKey', 'gemini-3.8-flash')).toBe(false);
   });
 
   it('builds valid prompts for all 15 actions', () => {

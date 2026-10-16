@@ -528,7 +528,7 @@ export default function SettingsPage() {
           </div>
 
           <p className="text-xs text-text-muted leading-relaxed">
-            envAi connects to Google Gemini for AI-powered note writing, code explanations, cybersecurity analysis, and contextual synthesis.
+            envAi connects to Google Gemini or Eden AI Unified Gateway for AI-powered note writing, code explanations, cybersecurity analysis, and contextual synthesis.
             Your API key is never stored in plaintext and never stored in <code className="text-text-primary font-mono text-[11px]">.env</code> files. It is securely encrypted in MongoDB using an HKDF-derived AES-256-GCM key from your authentication secret.
           </p>
 
@@ -616,14 +616,14 @@ export default function SettingsPage() {
 
             <div>
               <label className="block text-[11px] font-label-mono uppercase text-text-muted mb-1">
-                Gemini API Key *
+                API Key (Gemini or Eden AI) *
               </label>
               <div className="relative">
                 <input
                   type={aiShowKey ? 'text' : 'password'}
                   value={aiApiKey}
                   onChange={(e) => setAiApiKey(e.target.value)}
-                  placeholder="AIzaSy... or AQ..."
+                  placeholder="AIzaSy... (Gemini) or sk-eden-live... (Eden AI)"
                   className="w-full bg-surface-raised border border-border-subtle focus:border-primary focus:outline-none rounded px-3 py-2 pr-10 text-xs font-mono text-text-primary"
                 />
                 <button
@@ -635,7 +635,7 @@ export default function SettingsPage() {
                 </button>
               </div>
               <p className="text-[10px] text-text-muted mt-1">
-                Get an API key free from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary hover:underline">Google AI Studio</a>.
+                Get an API key free from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary hover:underline">Google AI Studio</a> or create one on <a href="https://app.edenai.run/settings/api-keys" target="_blank" rel="noreferrer" className="text-primary hover:underline">Eden AI</a>.
               </p>
             </div>
 
