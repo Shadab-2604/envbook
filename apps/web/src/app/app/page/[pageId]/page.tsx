@@ -21,6 +21,10 @@ import {
   ChevronLeft,
   X,
   RotateCcw,
+  FileCode,
+  FileDown,
+  Globe,
+  ChevronDown,
 } from 'lucide-react';
 import { useVault } from '@/contexts/VaultContext';
 import {
@@ -31,6 +35,7 @@ import {
   apiGetHistory,
   apiRestoreHistoryVersion,
 } from '@/lib/api';
+import { exportToMarkdown, exportToHtml, exportToPdf } from '@/lib/exportUtils';
 import { BlockEditor } from '@/components/editor/BlockEditor';
 import { CreateItemModal } from '@/components/layout/CreateItemModal';
 import { EntryRecord, DecryptedNotePayload, EntryVersionSnapshot, WorkspaceItemType } from '@envbook/shared';
@@ -199,17 +204,52 @@ export default function NotePage() {
     }
   };
 
-  // Safe client-side Markdown export
+  // Save / Export options dropdown
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close export dropdown when clicking outside
+  useEffect(() => {
+    if (!exportMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target as Node)) {
+        setExportMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [exportMenuOpen]);
+
+  // Keyboard shortcut Ctrl+S / Cmd+S for immediate save to vault
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        triggerSave(title, content, tags);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [triggerSave, title, content, tags]);
+
+  // Client-side export handlers (Markdown, PDF, HTML)
   const handleExportMarkdown = () => {
-    const element = document.createElement('a');
-    const file = new Blob([`# ${title}\n\n${content}`], { type: 'text/markdown' });
-    element.href = URL.createObjectURL(file);
-    element.download = `${title.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'note'}.md`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    exportToMarkdown(title, content);
   };
 
+  const handleExportHtml = () => {
+    exportToHtml(title, content, tags);
+  };
+
+  const handleExportPdf = () => {
+    exportToPdf(title, content, tags);
+  };
+
+  const handleManualSave = () => {
+    triggerSave(title, content, tags);
+  };
+
+  // Safe client-side Markdown export fallback
   // Load version history
   const handleOpenHistory = async () => {
     setShowHistory(true);
@@ -356,14 +396,103 @@ export default function NotePage() {
             <Star className="w-4 h-4 fill-current" />
           </button>
 
-          {/* Export Markdown */}
-          <button
-            onClick={handleExportMarkdown}
-            className="p-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-muted hover:text-text-primary transition-colors"
-            title="Export as Markdown (.md)"
-          >
-            <Download className="w-4 h-4" />
-          </button>
+          {/* Save / Export Options Dropdown */}
+          <div className="relative" ref={exportMenuRef}>
+            <button
+              onClick={() => setExportMenuOpen(!exportMenuOpen)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-primary text-xs font-label-ui transition-colors shadow-sm"
+              title="Save & Export Options (Markdown, PDF, HTML)"
+            >
+              <Download className="w-3.5 h-3.5 text-accent-emerald" />
+              <span className="hidden sm:inline font-medium">Export</span>
+              <ChevronDown className="w-3 h-3 text-text-muted" />
+            </button>
+
+            {exportMenuOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-64 bg-surface-panel border border-border-muted rounded-lg shadow-[0_12px_32px_rgba(0,0,0,0.85)] z-50 overflow-hidden flex flex-col p-1.5 animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-2.5 py-1.5 border-b border-border-subtle/80 flex items-center justify-between text-[10px] font-label-mono text-text-muted uppercase tracking-wider">
+                  <span>Save / Export</span>
+                  <span className="text-accent-emerald">3 Formats</span>
+                </div>
+
+                {/* Option 1: Markdown (.md) */}
+                <button
+                  onClick={() => {
+                    handleExportMarkdown();
+                    setExportMenuOpen(false);
+                  }}
+                  className="flex items-start gap-2.5 px-2.5 py-2 rounded hover:bg-surface-raised transition-colors text-left group w-full"
+                >
+                  <FileCode className="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-medium text-text-primary group-hover:text-accent-emerald transition-colors">
+                      Markdown (.md)
+                    </span>
+                    <span className="text-[10px] text-text-muted font-label-mono">
+                      Clean raw Markdown text file
+                    </span>
+                  </div>
+                </button>
+
+                {/* Option 2: PDF Document (.pdf) */}
+                <button
+                  onClick={() => {
+                    handleExportPdf();
+                    setExportMenuOpen(false);
+                  }}
+                  className="flex items-start gap-2.5 px-2.5 py-2 rounded hover:bg-surface-raised transition-colors text-left group w-full"
+                >
+                  <FileDown className="w-4 h-4 text-status-warning shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-medium text-text-primary group-hover:text-status-warning transition-colors">
+                      PDF Document (.pdf)
+                    </span>
+                    <span className="text-[10px] text-text-muted font-label-mono">
+                      Print-ready formatted PDF document
+                    </span>
+                  </div>
+                </button>
+
+                {/* Option 3: HTML Document (.html) */}
+                <button
+                  onClick={() => {
+                    handleExportHtml();
+                    setExportMenuOpen(false);
+                  }}
+                  className="flex items-start gap-2.5 px-2.5 py-2 rounded hover:bg-surface-raised transition-colors text-left group w-full"
+                >
+                  <Globe className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  <div className="flex flex-col">
+                    <span className="text-xs font-medium text-text-primary group-hover:text-primary transition-colors">
+                      HTML Document (.html)
+                    </span>
+                    <span className="text-[10px] text-text-muted font-label-mono">
+                      Standalone styled web page
+                    </span>
+                  </div>
+                </button>
+
+                <div className="my-1 border-t border-border-subtle/80" />
+
+                {/* Manual Save to Vault */}
+                <button
+                  onClick={() => {
+                    handleManualSave();
+                    setExportMenuOpen(false);
+                  }}
+                  className="flex items-center justify-between px-2.5 py-1.5 rounded hover:bg-surface-raised transition-colors text-text-secondary hover:text-text-primary text-xs w-full"
+                >
+                  <div className="flex items-center gap-2">
+                    <Save className="w-3.5 h-3.5 text-text-muted" />
+                    <span>Save to Vault</span>
+                  </div>
+                  <kbd className="font-label-mono text-[10px] bg-surface-subtle border border-border-muted px-1 rounded text-text-muted">
+                    Ctrl+S
+                  </kbd>
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Archive */}
           <button
