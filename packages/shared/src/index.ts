@@ -4,6 +4,10 @@ import { z } from 'zod';
 // 1. ENTRY TYPES & CONSTANTS
 // ==========================================
 export const ENTRY_TYPES = [
+  'notes_page',
+  'section',
+  'environment_page',
+  'notes_section',
   'page',
   'folder',
   'idea',
@@ -17,6 +21,8 @@ export const ENTRY_TYPES = [
 ] as const;
 
 export type EntryType = (typeof ENTRY_TYPES)[number];
+
+export type WorkspaceItemType = 'notes_page' | 'section' | 'environment_page' | 'notes_section';
 
 // ==========================================
 // 2. AUTHENTICATION & USER SCHEMAS
@@ -632,20 +638,47 @@ export const SLASH_COMMANDS: SlashCommandItem[] = [
   {
     id: 'page',
     command: '/page',
-    aliases: ['/page', '/subpage'],
-    label: 'Nested Page',
-    description: 'Create and embed a child subpage',
+    aliases: ['/page', '/subpage', '/new-page'],
+    label: 'New Page',
+    description: 'Open type selector to create a page or container',
     category: 'Page',
     icon: 'article',
   },
   {
-    id: 'folder',
-    command: '/folder',
-    aliases: ['/folder', '/dir'],
-    label: 'Subfolder',
-    description: 'Create an organizational container',
+    id: 'section',
+    command: '/section',
+    aliases: ['/section', '/new-section', '/folder', '/dir'],
+    label: 'New Section',
+    description: 'Create an organizational container for child items',
     category: 'Page',
     icon: 'folder',
+  },
+  {
+    id: 'notes-page',
+    command: '/notes-page',
+    aliases: ['/notes-page', '/note', '/notes'],
+    label: 'Notes Page',
+    description: 'Create a standard rich-text document with inline editor',
+    category: 'Page',
+    icon: 'description',
+  },
+  {
+    id: 'environment',
+    command: '/environment',
+    aliases: ['/environment', '/env-page', '/env-vars'],
+    label: 'Environment Page',
+    description: 'Create a page for managing bulk .env variables',
+    category: 'Page',
+    icon: 'tune',
+  },
+  {
+    id: 'notes-section',
+    command: '/notes-section',
+    aliases: ['/notes-section'],
+    label: 'Notes Section',
+    description: 'Create a container specifically for organizing notes',
+    category: 'Page',
+    icon: 'folder_special',
   },
   {
     id: 'breadcrumb',

@@ -32,7 +32,8 @@ import {
   apiRestoreHistoryVersion,
 } from '@/lib/api';
 import { BlockEditor } from '@/components/editor/BlockEditor';
-import { EntryRecord, DecryptedNotePayload, EntryVersionSnapshot } from '@envbook/shared';
+import { CreateItemModal } from '@/components/layout/CreateItemModal';
+import { EntryRecord, DecryptedNotePayload, EntryVersionSnapshot, WorkspaceItemType } from '@envbook/shared';
 
 export default function NotePage() {
   const params = useParams();
@@ -56,6 +57,10 @@ export default function NotePage() {
   const [historyList, setHistoryList] = useState<EntryVersionSnapshot[]>([]);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [previewVersion, setPreviewVersion] = useState<{ id: string; title: string; content: string } | null>(null);
+
+  // Modal triggered by slash command /page, /section, etc.
+  const [editorCreateModalOpen, setEditorCreateModalOpen] = useState(false);
+  const [editorCreateModalType, setEditorCreateModalType] = useState<WorkspaceItemType>('notes_page');
 
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isDirtyRef = useRef(false);
@@ -432,8 +437,20 @@ export default function NotePage() {
                 onChange={handleContentChange}
                 isRawMarkdown={isRawMarkdown}
                 onHeadingsChange={setHeadings}
+                onRequestCreateItem={(type) => {
+                  setEditorCreateModalType(type);
+                  setEditorCreateModalOpen(true);
+                }}
               />
             </div>
+
+            {/* Creation Dialog invoked via slash commands */}
+            <CreateItemModal
+              isOpen={editorCreateModalOpen}
+              onClose={() => setEditorCreateModalOpen(false)}
+              initialType={editorCreateModalType}
+              initialParentId={entry?.parentId || null}
+            />
           </div>
         </main>
 

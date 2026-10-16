@@ -245,10 +245,12 @@ export default function DashboardPage() {
                   <Link
                     key={entry.entryId}
                     href={
-                      entry.type === 'credential'
+                      entry.type === 'section' || entry.type === 'notes_section' || entry.type === 'folder'
+                        ? `/app/folder/${entry.entryId}`
+                        : entry.type === 'environment_page' || entry.type === 'environment'
+                        ? `/app/environments?id=${entry.entryId}`
+                        : entry.type === 'credential'
                         ? '/app/credentials'
-                        : entry.type === 'environment'
-                        ? '/app/environments'
                         : entry.type === 'idea'
                         ? '/app/ideas'
                         : `/app/page/${entry.entryId}`
@@ -289,10 +291,12 @@ export default function DashboardPage() {
                   <Link
                     key={entry.entryId}
                     href={
-                      entry.type === 'credential'
+                      entry.type === 'section' || entry.type === 'notes_section' || entry.type === 'folder'
+                        ? `/app/folder/${entry.entryId}`
+                        : entry.type === 'environment_page' || entry.type === 'environment'
+                        ? `/app/environments?id=${entry.entryId}`
+                        : entry.type === 'credential'
                         ? '/app/credentials'
-                        : entry.type === 'environment'
-                        ? '/app/environments'
                         : entry.type === 'idea'
                         ? '/app/ideas'
                         : `/app/page/${entry.entryId}`

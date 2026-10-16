@@ -266,6 +266,13 @@ export default function CredentialsPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Link
+            href="/app/environments"
+            className="px-3 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary hover:text-text-primary text-xs font-medium flex items-center gap-1.5 transition-colors"
+          >
+            <Database className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Import / Paste .env</span>
+          </Link>
           <button
             onClick={() => {
               resetForm();

@@ -50,3 +50,156 @@
   border-color: #10b981;
   box-shadow: 0 0 0 1px #10b981, 0 0 12px rgba(16, 185, 129, 0.2);
 }
+
+/* Notion-Style WYSIWYG Block Editor Canvas */
+.ProseMirror {
+  outline: none;
+  min-height: 480px;
+  color: #f0f6fc;
+  font-family: inherit;
+  line-height: 1.7;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #6e7681;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseMirror h1 {
+  font-size: 1.85rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  color: #ffffff;
+  letter-spacing: -0.025em;
+  border-bottom: 1px solid #21262d;
+  padding-bottom: 0.35rem;
+}
+
+.ProseMirror h2 {
+  font-size: 1.45rem;
+  font-weight: 600;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: #e6edf3;
+  letter-spacing: -0.015em;
+}
+
+.ProseMirror h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #c9d1d9;
+}
+
+.ProseMirror p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ProseMirror ul:not([data-type="taskList"]) {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0.35rem 0;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label {
+  user-select: none;
+  margin-top: 0.2rem;
+}
+
+.ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] {
+  accent-color: #10b981;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid #10b981;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #8b949e;
+  font-style: italic;
+  background-color: rgba(16, 185, 129, 0.04);
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  border-radius: 0 4px 4px 0;
+}
+
+.ProseMirror pre {
+  background: #090d13;
+  color: #79c0ff;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #30363d;
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+.ProseMirror code {
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(110, 118, 129, 0.2);
+  color: #38bdf8;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.ProseMirror pre code {
+  color: inherit;
+  padding: 0;
+  background: none;
+  font-size: 0.85rem;
+}
+
+.ProseMirror hr {
+  border: none;
+  border-top: 1px solid #30363d;
+  margin: 1.5rem 0;
+}
+
+.ProseMirror table {
+  border-collapse: collapse;
+  margin: 1rem 0;
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+.ProseMirror th,
+.ProseMirror td {
+  border: 1px solid #30363d;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.ProseMirror th {
+  background-color: #161b22;
+  font-weight: 600;
+  color: #58a6ff;
+}
