@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.js';
 import vaultRoutes from './routes/vaultRoutes.js';
 import entryRoutes from './routes/entryRoutes.js';
 import backupRoutes from './routes/backupRoutes.js';
+import envaiRoutes from './routes/envaiRoutes.js';
 import { apiRateLimiter } from './middleware/rateLimiter.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
@@ -56,6 +57,7 @@ export function createApp(): express.Application {
   app.use('/api/v1/vault', vaultRoutes);
   app.use('/api/v1/entries', entryRoutes);
   app.use('/api/v1/backup', backupRoutes);
+  app.use('/api/v1/envai', envaiRoutes);
 
   // 404 Catch-All for undefined API routes
   app.use('/api/*', (req, res) => {

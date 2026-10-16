@@ -15,6 +15,11 @@ import {
   RotateCcw,
   Check,
   AlertCircle,
+  Sparkles,
+  Eye,
+  EyeOff,
+  Trash2,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useVault } from '@/contexts/VaultContext';
@@ -22,12 +27,28 @@ import {
   apiChangePassword,
   apiExportBackup,
   apiRestoreBackup,
+  apiGetEnvAiStatus,
+  apiSaveEnvAiConfig,
+  apiTestEnvAi,
+  apiDeleteEnvAiConfig,
 } from '@/lib/api';
+import { EnvAiConfigStatus } from '@envbook/shared';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 
 export default function SettingsPage() {
   const { user, refreshUser } = useAuth();
   const vault = useVault();
+
+  // envAi state
+  const [aiStatus, setAiStatus] = useState<EnvAiConfigStatus | null>(null);
+  const [aiApiKey, setAiApiKey] = useState('');
+  const [aiModel, setAiModel] = useState('gemini-flash-latest');
+  const [aiShowKey, setAiShowKey] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiTesting, setAiTesting] = useState(false);
+  const [aiDeleting, setAiDeleting] = useState(false);
+  const [aiSuccess, setAiSuccess] = useState<string | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -51,9 +72,90 @@ export default function SettingsPage() {
   const [backupError, setBackupError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const loadAiStatus = async () => {
+    try {
+      const status = await apiGetEnvAiStatus();
+      setAiStatus(status);
+      if (status.model) setAiModel(status.model);
+    } catch {
+      // Ignored if user not authenticated or network error
+    }
+  };
+
   React.useEffect(() => {
     document.title = 'Settings & Security — EnvBook';
+    loadAiStatus();
   }, []);
+
+  const handleSaveAiConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAiError(null);
+    setAiSuccess(null);
+
+    if (!aiApiKey.trim()) {
+      setAiError('Please enter a valid Google Gemini API Key.');
+      return;
+    }
+
+    try {
+      setAiLoading(true);
+      const res = await apiSaveEnvAiConfig({
+        apiKey: aiApiKey.trim(),
+        model: aiModel,
+      });
+
+      if (res.testResult?.success) {
+        setAiSuccess(`envAi configured and verified successfully with ${aiModel}!`);
+      } else {
+        setAiSuccess('envAi key saved (AES-256-GCM encrypted in database).');
+      }
+      setAiApiKey('');
+      await loadAiStatus();
+      setTimeout(() => setAiSuccess(null), 5000);
+    } catch (err: any) {
+      setAiError(err.message || 'Failed to save and test envAi configuration.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleTestAiConnection = async () => {
+    setAiError(null);
+    setAiSuccess(null);
+    try {
+      setAiTesting(true);
+      const res = await apiTestEnvAi();
+      if (res.success) {
+        setAiSuccess(`Connection test passed: ${res.message}`);
+      } else {
+        setAiError(`Connection test failed: ${res.message}`);
+      }
+      await loadAiStatus();
+      setTimeout(() => setAiSuccess(null), 5000);
+    } catch (err: any) {
+      setAiError(err.message || 'Connection test error.');
+    } finally {
+      setAiTesting(false);
+    }
+  };
+
+  const handleDeleteAiConfig = async () => {
+    if (!confirm('Are you sure you want to remove your envAi provider key?')) return;
+    setAiError(null);
+    setAiSuccess(null);
+    try {
+      setAiDeleting(true);
+      await apiDeleteEnvAiConfig();
+      setAiSuccess('envAi configuration removed successfully.');
+      await loadAiStatus();
+      setTimeout(() => setAiSuccess(null), 4000);
+    } catch (err: any) {
+      setAiError(err.message || 'Failed to remove envAi configuration.');
+    } finally {
+      setAiDeleting(false);
+    }
+  };
+
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -398,6 +500,158 @@ export default function SettingsPage() {
               />
             </label>
           </div>
+        </section>
+
+        {/* 5. envAi Assistant & Gemini Provider Settings */}
+        <section id="envai" className="p-5 rounded-lg bg-surface-panel border border-border-subtle space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-semibold text-text-primary">envAi Assistant &amp; Gemini Provider</h3>
+            </div>
+            {aiStatus?.isConfigured ? (
+              <span className="flex items-center gap-1.5 text-[10px] font-label-mono text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/30 px-2 py-0.5 rounded">
+                <Check className="w-3 h-3" />
+                <span>Configured (AES-256-GCM Encrypted)</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-[10px] font-label-mono text-status-warning bg-status-warning/10 border border-status-warning/30 px-2 py-0.5 rounded">
+                <AlertTriangle className="w-3 h-3" />
+                <span>Not Configured</span>
+              </span>
+            )}
+          </div>
+
+          <p className="text-xs text-text-muted leading-relaxed">
+            envAi connects to Google Gemini for AI-powered note writing, code explanations, cybersecurity analysis, and contextual synthesis.
+            Your API key is never stored in plaintext and never stored in <code className="text-text-primary font-mono text-[11px]">.env</code> files. It is securely encrypted in MongoDB using an HKDF-derived AES-256-GCM key from your authentication secret.
+          </p>
+
+          <div className="p-3 rounded bg-surface border border-border-subtle text-[11px] text-text-muted space-y-1">
+            <div className="flex items-center gap-2 text-text-primary font-medium">
+              <Shield className="w-3.5 h-3.5 text-primary shrink-0" />
+              <span>Strict Zero-Knowledge &amp; Credential Privacy Policy</span>
+            </div>
+            <p>
+              Environment variables, database credentials, and raw private keys are strictly blocked and filtered from AI context. envAi only operates on your documentation and notes.
+            </p>
+          </div>
+
+          {aiError && (
+            <div className="p-2.5 rounded bg-status-danger/10 border border-status-danger/30 text-status-danger text-xs flex items-center gap-2">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{aiError}</span>
+            </div>
+          )}
+          {aiSuccess && (
+            <div className="p-2.5 rounded bg-accent-emerald/10 border border-accent-emerald/30 text-accent-emerald text-xs flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+              <span>{aiSuccess}</span>
+            </div>
+          )}
+
+          {aiStatus?.isConfigured && (
+            <div className="p-3 rounded bg-surface border border-border-subtle text-xs space-y-2">
+              <div className="flex items-center justify-between text-[11px] font-label-mono">
+                <span className="text-text-muted">ACTIVE MODEL</span>
+                <span className="text-primary font-semibold">{aiStatus.model || 'gemini-flash-latest'}</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] font-label-mono">
+                <span className="text-text-muted">LAST TESTED</span>
+                <span className="text-text-secondary">
+                  {aiStatus.lastTestedAt ? new Date(aiStatus.lastTestedAt).toLocaleString() : 'Never'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] font-label-mono">
+                <span className="text-text-muted">HEALTH STATUS</span>
+                <span className={aiStatus.lastTestStatus === 'success' ? 'text-accent-emerald font-semibold' : 'text-status-warning font-semibold'}>
+                  {aiStatus.lastTestStatus?.toUpperCase() || 'UNTESTED'}
+                </span>
+              </div>
+              {aiStatus.message && (
+                <div className="text-[11px] text-text-muted pt-1 border-t border-border-subtle">
+                  {aiStatus.message}
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={handleTestAiConnection}
+                  disabled={aiTesting}
+                  className="px-3 py-1 rounded bg-surface-raised hover:bg-surface-bright border border-border-subtle text-text-primary text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 text-primary ${aiTesting ? 'animate-spin' : ''}`} />
+                  <span>{aiTesting ? 'Testing...' : 'Test Connection'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteAiConfig}
+                  disabled={aiDeleting}
+                  className="px-3 py-1 rounded bg-status-danger/10 hover:bg-status-danger/20 border border-status-danger/30 text-status-danger text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>{aiDeleting ? 'Removing...' : 'Remove Key'}</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleSaveAiConfig} className="space-y-3 max-w-md text-xs pt-1">
+            <h4 className="text-xs font-semibold text-text-primary">
+              {aiStatus?.isConfigured ? 'Replace Google Gemini API Key' : 'Configure Google Gemini API Key'}
+            </h4>
+
+            <div>
+              <label className="block text-[11px] font-label-mono uppercase text-text-muted mb-1">
+                Gemini API Key *
+              </label>
+              <div className="relative">
+                <input
+                  type={aiShowKey ? 'text' : 'password'}
+                  value={aiApiKey}
+                  onChange={(e) => setAiApiKey(e.target.value)}
+                  placeholder="AIzaSy... or AQ..."
+                  className="w-full bg-surface-raised border border-border-subtle focus:border-primary focus:outline-none rounded px-3 py-2 pr-10 text-xs font-mono text-text-primary"
+                />
+                <button
+                  type="button"
+                  onClick={() => setAiShowKey(!aiShowKey)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
+                >
+                  {aiShowKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <p className="text-[10px] text-text-muted mt-1">
+                Get an API key free from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-primary hover:underline">Google AI Studio</a>.
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-label-mono uppercase text-text-muted mb-1">
+                Model Tier
+              </label>
+              <select
+                value={aiModel}
+                onChange={(e) => setAiModel(e.target.value)}
+                className="w-full bg-surface-raised border border-border-subtle focus:border-primary focus:outline-none rounded px-3 py-2 text-xs text-text-primary"
+              >
+                <option value="gemini-flash-latest">gemini-flash-latest (Recommended, Ultra Fast &amp; Multimodal)</option>
+                <option value="gemini-1.5-flash">gemini-1.5-flash (Standard Flash)</option>
+                <option value="gemini-1.5-pro">gemini-1.5-pro (High Reasoning)</option>
+                <option value="gemini-2.0-flash">gemini-2.0-flash (Experimental)</option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              disabled={aiLoading}
+              className="px-4 py-2 rounded bg-primary text-black hover:bg-accent-emerald-bright text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{aiLoading ? 'Verifying & Saving...' : 'Save & Verify Key'}</span>
+            </button>
+          </form>
         </section>
       </main>
     </div>

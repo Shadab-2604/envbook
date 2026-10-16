@@ -13,7 +13,13 @@ import {
   CreateEntrySchema,
   UpdateEntrySchema,
   SafeUser,
+  EnvAiConfigSchema,
+  EnvAiGenerateSchema,
 } from '@envbook/shared';
+import { AiProviderSettings } from '@/server/models/AiProviderSettings';
+import { encryptProviderKey, decryptProviderKey } from '@/server/keyCrypto';
+import { testGeminiApiKey, callGeminiApi, DEFAULT_GEMINI_MODEL } from '@/server/geminiService';
+import { isResourceAllowed } from '@/server/securityFilter';
 import { randomUUID } from 'crypto';
 
 export const dynamic = 'force-dynamic';
@@ -104,6 +110,31 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ path
       recoverySalt: meta?.recoverySalt,
       recoveryWrappedDEK: meta?.recoveryWrappedDEK,
       recoveryNonce: meta?.recoveryNonce,
+    });
+  }
+
+  // envAi Status: /v1/envai/status
+  if (pathStr === 'v1/envai/status') {
+    const user = await getAuthUser(req);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+    }
+
+    const settings = await AiProviderSettings.findOne({ userId: user._id });
+    if (!settings) {
+      return NextResponse.json({
+        isConfigured: false,
+        model: DEFAULT_GEMINI_MODEL,
+        lastTestStatus: 'untested',
+      });
+    }
+
+    return NextResponse.json({
+      isConfigured: true,
+      model: settings.model || DEFAULT_GEMINI_MODEL,
+      lastTestedAt: settings.lastTestedAt?.toISOString(),
+      lastTestStatus: settings.lastTestStatus || 'untested',
+      message: settings.lastTestMessage,
     });
   }
 
@@ -552,6 +583,176 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pat
     return NextResponse.json({ message: 'Backup restored successfully', restoredCount: count });
   }
 
+  // 14. envAi Test Connection: /v1/envai/test
+  if (pathStr === 'v1/envai/test') {
+    const user = await getAuthUser(req);
+    if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+
+    const settings = await AiProviderSettings.findOne({ userId: user._id }).select('+encryptedApiKey +iv +tag');
+    if (!settings || !settings.encryptedApiKey) {
+      return NextResponse.json(
+        {
+          error: 'envAi is not configured. Please add your Gemini API key first.',
+          code: 'NOT_CONFIGURED',
+        },
+        { status: 400 }
+      );
+    }
+
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-envbook-secret-key-32bytes-min';
+    let apiKey: string;
+    try {
+      apiKey = decryptProviderKey(
+        {
+          ciphertext: settings.encryptedApiKey,
+          iv: settings.iv,
+          tag: settings.tag,
+        },
+        jwtSecret
+      );
+    } catch {
+      return NextResponse.json(
+        {
+          error: 'Failed to decrypt stored provider key. Please reconfigure your key.',
+          code: 'DECRYPTION_FAILED',
+        },
+        { status: 500 }
+      );
+    }
+
+    const testResult = await testGeminiApiKey(apiKey, settings.model || DEFAULT_GEMINI_MODEL);
+
+    settings.lastTestedAt = new Date();
+    settings.lastTestStatus = testResult.success ? 'success' : 'failed';
+    settings.lastTestMessage = testResult.message;
+    await settings.save();
+
+    return NextResponse.json(testResult);
+  }
+
+  // 15. envAi Generate Content: /v1/envai/generate
+  if (pathStr === 'v1/envai/generate') {
+    const user = await getAuthUser(req);
+    if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
+    const parseResult = EnvAiGenerateSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid request payload',
+          details: parseResult.error.format(),
+          code: 'VALIDATION_ERROR',
+        },
+        { status: 400 }
+      );
+    }
+
+    const input = parseResult.data;
+
+    // Enforce resource type security restrictions
+    if (!isResourceAllowed(body.currentNoteType)) {
+      return NextResponse.json(
+        {
+          error: 'envAi cannot be used with environment variables or credential records for zero-knowledge privacy.',
+          code: 'RESOURCE_DISALLOWED',
+        },
+        { status: 403 }
+      );
+    }
+
+    const settings = await AiProviderSettings.findOne({ userId: user._id }).select('+encryptedApiKey +iv +tag');
+    if (!settings || !settings.encryptedApiKey) {
+      return NextResponse.json(
+        {
+          error: 'envAi is not configured. Please configure your Google Gemini API key in Settings → envAi.',
+          code: 'NOT_CONFIGURED',
+        },
+        { status: 400 }
+      );
+    }
+
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-envbook-secret-key-32bytes-min';
+    let apiKey: string;
+    try {
+      apiKey = decryptProviderKey(
+        {
+          ciphertext: settings.encryptedApiKey,
+          iv: settings.iv,
+          tag: settings.tag,
+        },
+        jwtSecret
+      );
+    } catch {
+      return NextResponse.json(
+        {
+          error: 'Failed to decrypt provider key. Please reconfigure your key.',
+          code: 'DECRYPTION_FAILED',
+        },
+        { status: 500 }
+      );
+    }
+
+    // Workspace Retrieval if scope is "my_notes"
+    const citations: Array<{ source: 'note' | 'file'; title: string; id?: string }> = [];
+    const contextualNotes = input.contextText || '';
+
+    if (input.scope === 'my_notes') {
+      const eligibleEntries = await Entry.find({
+        owner: user._id,
+        type: { $in: ['notes_page', 'page', 'snippet', 'idea'] },
+        isDeleted: false,
+        isArchived: false,
+      })
+        .sort({ updatedAt: -1 })
+        .limit(10);
+
+      for (const entry of eligibleEntries) {
+        citations.push({
+          source: 'note',
+          title: 'Note ' + entry.entryId.slice(0, 8),
+          id: entry.entryId,
+        });
+      }
+    }
+
+    try {
+      const result = await callGeminiApi({
+        apiKey,
+        model: settings.model || DEFAULT_GEMINI_MODEL,
+        action: input.action,
+        prompt: input.prompt,
+        contextText: contextualNotes,
+        tone: input.tone,
+        citations,
+        files: input.files,
+        conversationHistory: input.conversationHistory,
+      });
+
+      return NextResponse.json({
+        success: true,
+        text: result.text,
+        citations: result.citations,
+        redactedCount: result.redactedCount,
+      });
+    } catch (err: any) {
+      console.error('[envAi Next.js route] Generation error:', err.message);
+      return NextResponse.json(
+        {
+          error: err.message || 'Failed to generate response from envAi',
+          code: 'GENERATION_ERROR',
+        },
+        { status: 500 }
+      );
+    }
+  }
+
   return NextResponse.json({ error: 'Endpoint not found', path: pathStr }, { status: 404 });
 }
 
@@ -595,12 +796,90 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ path
     }
   }
 
+  // envAi Config: /v1/envai/config
+  const pathStr = path.join('/');
+  if (pathStr === 'v1/envai/config') {
+    const user = await getAuthUser(req);
+    if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+    }
+
+    const parseResult = EnvAiConfigSchema.safeParse(body);
+    if (!parseResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid configuration payload',
+          details: parseResult.error.format(),
+          code: 'VALIDATION_ERROR',
+        },
+        { status: 400 }
+      );
+    }
+
+    const { apiKey, model = DEFAULT_GEMINI_MODEL } = parseResult.data;
+    const jwtSecret = process.env.JWT_SECRET || 'fallback-envbook-secret-key-32bytes-min';
+
+    const testResult = await testGeminiApiKey(apiKey, model);
+    const { ciphertext, iv, tag, keyVersion } = encryptProviderKey(apiKey, jwtSecret);
+
+    await AiProviderSettings.findOneAndUpdate(
+      { userId: user._id },
+      {
+        userId: user._id,
+        encryptedApiKey: ciphertext,
+        iv,
+        tag,
+        keyVersion,
+        model,
+        lastTestedAt: new Date(),
+        lastTestStatus: testResult.success ? 'success' : 'failed',
+        lastTestMessage: testResult.message,
+      },
+      { upsert: true, new: true }
+    );
+
+    await logSecurityEvent('ENVAI_KEY_CONFIGURED', {
+      userId: user._id,
+      metadata: { model, testSuccess: testResult.success },
+    });
+
+    return NextResponse.json({
+      success: true,
+      isConfigured: true,
+      testResult,
+    });
+  }
+
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
   await connectDB();
+
+  const pathStr = path.join('/');
+
+  // envAi Config Delete: /v1/envai/config
+  if (pathStr === 'v1/envai/config') {
+    const user = await getAuthUser(req);
+    if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+
+    await AiProviderSettings.findOneAndDelete({ userId: user._id });
+
+    await logSecurityEvent('ENVAI_KEY_REMOVED', {
+      userId: user._id,
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'envAi provider configuration removed successfully.',
+    });
+  }
 
   // Delete Entry: /v1/entries/:id
   if (path.length === 3 && path[0] === 'v1' && path[1] === 'entries') {

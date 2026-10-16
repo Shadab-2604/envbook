@@ -302,6 +302,17 @@ export interface SlashCommandItem {
 }
 
 export const SLASH_COMMANDS: SlashCommandItem[] = [
+  // --- AI Assistant ---
+  {
+    id: 'envai',
+    command: '/envai',
+    aliases: ['/envai', '/ai', '/assistant', '/ask', '/gemini'],
+    label: 'Ask envAi',
+    description: 'Brainstorm, summarize, turn to PRD, or analyze code with Gemini',
+    category: 'Developer',
+    icon: 'sparkles',
+    shortcut: 'Ctrl+J',
+  },
   // --- Text and Markdown ---
   {
     id: 'text',
@@ -947,3 +958,106 @@ export type DecryptedSnippetPayload = {
   tags?: string[];
   updatedAt?: string;
 };
+
+// ==========================================
+// 8. ENVAI TYPES, SCHEMAS & INTERFACES
+// ==========================================
+export const ENVAI_ACTIONS = [
+  'brainstorm',
+  'title',
+  'expand',
+  'improve',
+  'continue',
+  'summarize',
+  'outline',
+  'prd',
+  'tone',
+  'shorten',
+  'expand_length',
+  'explain_code',
+  'cybersecurity',
+  'custom',
+  'chat',
+] as const;
+
+export type EnvAiAction = (typeof ENVAI_ACTIONS)[number];
+
+export type EnvAiContextScope = 'current_note' | 'selected' | 'my_notes';
+
+export interface EnvAiCitation {
+  source: 'note' | 'file';
+  title: string;
+  id?: string;
+  path?: string;
+  snippet?: string;
+  pageOrLine?: string;
+}
+
+export interface EnvAiFileMeta {
+  name: string;
+  type: string;
+  size: number;
+  parsed?: boolean;
+  error?: string;
+}
+
+export interface EnvAiMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  citations?: EnvAiCitation[];
+  timestamp: string;
+  files?: EnvAiFileMeta[];
+  mode?: string;
+}
+
+export interface EnvAiConfigStatus {
+  isConfigured: boolean;
+  model: string;
+  lastTestedAt?: string;
+  lastTestStatus?: 'success' | 'failed' | 'untested';
+  message?: string;
+}
+
+export const EnvAiConfigSchema = z.object({
+  apiKey: z.string().min(10, 'Gemini API key must be at least 10 characters').max(200),
+  model: z.string().default('gemini-flash-latest').optional(),
+});
+
+export type EnvAiConfigInput = z.infer<typeof EnvAiConfigSchema>;
+
+export const EnvAiGenerateSchema = z.object({
+  action: z.enum(ENVAI_ACTIONS).default('custom'),
+  prompt: z.string().trim().max(12000, 'Prompt too long'),
+  contextText: z.string().max(40000).optional(),
+  scope: z.enum(['current_note', 'selection', 'selected', 'my_notes']).default('current_note').optional(),
+  currentNoteId: z.string().optional(),
+  currentNoteTitle: z.string().optional(),
+  tone: z.enum(['concise', 'professional', 'technical', 'friendly']).optional(),
+  files: z
+    .array(
+      z.object({
+        name: z.string().max(255),
+        type: z.string().max(100),
+        content: z.string().max(300000), // base64 or raw text
+        isBase64: z.boolean().optional(),
+      })
+    )
+    .max(10)
+    .optional(),
+  conversationHistory: z
+    .array(
+      z.object({
+        role: z.enum(['user', 'assistant']),
+        content: z.string(),
+      })
+    )
+    .max(20)
+    .optional(),
+});
+
+export type EnvAiGenerateInput = z.infer<typeof EnvAiGenerateSchema>;
+export type EnvAiScope = 'current_note' | 'selection' | 'selected' | 'my_notes';
+export type EnvAiTone = 'concise' | 'professional' | 'technical' | 'friendly';
+
+

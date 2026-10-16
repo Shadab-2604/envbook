@@ -9,6 +9,9 @@ import {
   UpdateEntryInput,
   EntryRecord,
   EntryVersionSnapshot,
+  EnvAiConfigInput,
+  EnvAiGenerateInput,
+  EnvAiConfigStatus,
 } from '@envbook/shared';
 
 export class ApiError extends Error {
@@ -218,3 +221,43 @@ export async function apiRestoreBackup(backup: any): Promise<{ message: string; 
     body: JSON.stringify({ backup }),
   });
 }
+
+// ==========================================
+// ENVAI API
+// ==========================================
+export async function apiGetEnvAiStatus(): Promise<EnvAiConfigStatus> {
+  return request('/api/v1/envai/status', {
+    method: 'GET',
+  });
+}
+
+export async function apiSaveEnvAiConfig(
+  input: EnvAiConfigInput
+): Promise<{ success: boolean; isConfigured: boolean; testResult?: any }> {
+  return request('/api/v1/envai/config', {
+    method: 'PUT',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function apiTestEnvAi(): Promise<{ success: boolean; message: string; model?: string }> {
+  return request('/api/v1/envai/test', {
+    method: 'POST',
+  });
+}
+
+export async function apiDeleteEnvAiConfig(): Promise<{ success: boolean; message: string }> {
+  return request('/api/v1/envai/config', {
+    method: 'DELETE',
+  });
+}
+
+export async function apiGenerateEnvAi(
+  input: EnvAiGenerateInput & { currentNoteType?: string }
+): Promise<{ success: boolean; text: string; citations?: any[]; redactedCount?: number }> {
+  return request('/api/v1/envai/generate', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+

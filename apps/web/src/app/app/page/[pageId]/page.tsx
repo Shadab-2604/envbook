@@ -25,10 +25,12 @@ import {
   FileDown,
   Globe,
   ChevronDown,
+  Sparkles,
 } from 'lucide-react';
 import { useVault } from '@/contexts/VaultContext';
 import {
   apiGetEntryById,
+  apiCreateEntry,
   apiUpdateEntry,
   apiDeleteEntry,
   apiArchiveEntry,
@@ -38,6 +40,7 @@ import {
 import { exportToMarkdown, exportToHtml, exportToPdf } from '@/lib/exportUtils';
 import { BlockEditor } from '@/components/editor/BlockEditor';
 import { CreateItemModal } from '@/components/layout/CreateItemModal';
+import { EnvAiPanel } from '@/components/ai/EnvAiPanel';
 import { EntryRecord, DecryptedNotePayload, EntryVersionSnapshot, WorkspaceItemType } from '@envbook/shared';
 
 export default function NotePage() {
@@ -66,6 +69,10 @@ export default function NotePage() {
   // Modal triggered by slash command /page, /section, etc.
   const [editorCreateModalOpen, setEditorCreateModalOpen] = useState(false);
   const [editorCreateModalType, setEditorCreateModalType] = useState<WorkspaceItemType>('notes_page');
+
+  // envAi Assistant state
+  const [showEnvAi, setShowEnvAi] = useState(false);
+  const [selectedEditorText, setSelectedEditorText] = useState('');
 
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isDirtyRef = useRef(false);
@@ -175,6 +182,56 @@ export default function NotePage() {
     const updated = tags.filter((t) => t !== tagToRemove);
     setTags(updated);
     queueSave(title, content, updated);
+  };
+
+  const handleApplyEnvAi = async (
+    action: 'insert' | 'append' | 'replace_selected' | 'replace_note' | 'create_new_note',
+    aiText: string
+  ) => {
+    if (action === 'create_new_note') {
+      if (!vault.isUnlocked) return;
+      try {
+        const newId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'note-' + Date.now();
+        const newPayload: DecryptedNotePayload = {
+          title: 'AI Draft: ' + (title || 'New Note'),
+          content: aiText,
+          tags: ['ai-generated', ...tags],
+        };
+        const { ciphertext, nonce } = await vault.encrypt(newPayload, newId);
+        await apiCreateEntry({
+          entryId: newId,
+          parentId: entry?.parentId || null,
+          type: 'notes_page',
+          encryptedPayload: ciphertext,
+          nonce,
+          sortOrder: 0,
+        });
+        router.push(`/app/page/${newId}`);
+      } catch (err: any) {
+        alert('Failed to create new note: ' + err.message);
+      }
+      return;
+    }
+
+    if (action === 'replace_note') {
+      setContent(aiText);
+      queueSave(title, aiText, tags);
+      return;
+    }
+
+    if (action === 'append') {
+      const updated = content ? `${content}\n\n${aiText}` : aiText;
+      setContent(updated);
+      queueSave(title, updated, tags);
+      return;
+    }
+
+    if (action === 'insert' || action === 'replace_selected') {
+      const updated = content ? `${content}\n\n${aiText}` : aiText;
+      setContent(updated);
+      queueSave(title, updated, tags);
+      return;
+    }
   };
 
   const handleToggleFavorite = async () => {
@@ -494,6 +551,20 @@ export default function NotePage() {
             )}
           </div>
 
+          {/* envAi Assistant Toggle */}
+          <button
+            onClick={() => setShowEnvAi(!showEnvAi)}
+            className={`px-2.5 py-1.5 rounded border text-xs font-semibold flex items-center gap-1.5 transition-all ${
+              showEnvAi
+                ? 'bg-primary text-black border-primary shadow-sm'
+                : 'bg-surface-panel hover:bg-surface-raised border-border-subtle text-text-primary'
+            }`}
+            title="Toggle envAi Assistant (/envai)"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span className="hidden sm:inline">envAi</span>
+          </button>
+
           {/* Archive */}
           <button
             onClick={handleArchive}
@@ -577,6 +648,10 @@ export default function NotePage() {
                   setEditorCreateModalType(type);
                   setEditorCreateModalOpen(true);
                 }}
+                onOpenEnvAi={(sel) => {
+                  setSelectedEditorText(sel || '');
+                  setShowEnvAi(true);
+                }}
               />
             </div>
 
@@ -589,6 +664,18 @@ export default function NotePage() {
             />
           </div>
         </main>
+
+        {/* envAi Slide-Over Assistant Panel */}
+        <EnvAiPanel
+          isOpen={showEnvAi}
+          onClose={() => setShowEnvAi(false)}
+          currentNoteId={pageId}
+          currentNoteTitle={title}
+          currentNoteContent={content}
+          currentNoteType={entry?.type || 'notes_page'}
+          selectedText={selectedEditorText}
+          onApplyToNote={handleApplyEnvAi}
+        />
 
         {/* Table of Contents Drawer */}
         {showToc && (

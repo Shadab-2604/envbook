@@ -44,6 +44,7 @@ interface BlockEditorProps {
   isRawMarkdown?: boolean;
   onHeadingsChange?: (headings: Array<{ level: number; text: string; id: string }>) => void;
   onRequestCreateItem?: (type: WorkspaceItemType) => void;
+  onOpenEnvAi?: (selectedText?: string) => void;
 }
 
 /**
@@ -138,6 +139,7 @@ export function BlockEditor({
   isRawMarkdown = false,
   onHeadingsChange,
   onRequestCreateItem,
+  onOpenEnvAi,
 }: BlockEditorProps) {
   const [slashMenuOpen, setSlashMenuOpen] = useState(false);
   const [slashFilter, setSlashFilter] = useState('');
@@ -386,13 +388,23 @@ export function BlockEditor({
         case 'inline-code':
           chain.toggleCode().run();
           break;
+        case 'envai':
+          if (onOpenEnvAi) {
+            const selText = editor.state.doc.textBetween(
+              editor.state.selection.from,
+              editor.state.selection.to,
+              ' '
+            );
+            onOpenEnvAi(selText);
+          }
+          break;
         case 'text':
         default:
           chain.setParagraph().run();
           break;
       }
     },
-    [editor, onRequestCreateItem]
+    [editor, onRequestCreateItem, onOpenEnvAi]
   );
 
   executeCommandRef.current = executeCommand;
