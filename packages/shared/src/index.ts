@@ -1043,6 +1043,13 @@ export const AVAILABLE_GEMINI_MODELS: GeminiModelInfo[] = [
     isRecommended: true,
   },
   {
+    id: 'openai/gpt-latest',
+    name: 'Eden AI — OpenAI GPT Latest (gpt-6-astra)',
+    description: 'OpenAI flagship multi-modal reasoning model via Eden AI Unified Gateway with 1M context window',
+    contextWindow: '1,050,000 tokens (~1M)',
+    outputLimit: '4,096 tokens',
+  },
+  {
     id: 'edenai',
     name: 'Eden AI (Unified Multi-Model Gateway)',
     description: 'Unified AI engine aggregating top LLMs with automated provider routing, fallbacks, and multi-model access via Eden AI API key',
@@ -1124,6 +1131,9 @@ export function normalizeGeminiModel(rawModel?: string): string {
   let model = rawModel.trim();
   if (model.startsWith('models/')) {
     model = model.slice(7);
+  }
+  if (model === 'openai/gpt-latest' || model.startsWith('openai/')) {
+    return model;
   }
   if (model.toLowerCase().includes('edenai') || model.toLowerCase().includes('eden-ai')) {
     return 'edenai';

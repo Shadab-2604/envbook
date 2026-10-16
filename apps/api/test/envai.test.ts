@@ -63,7 +63,7 @@ describe('Express Backend envAi Cryptographic & Security Layer', () => {
     expect(DEFAULT_GEMINI_MODEL).toBe('gemini-3.8-flash');
   });
 
-  it('normalizes model strings and auto-migrates deprecated models while preserving edenai', () => {
+  it('normalizes model strings and auto-migrates deprecated models while preserving edenai and openai/gpt-latest', () => {
     expect(normalizeGeminiModel('models/gemini-3.8-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('gemini-3.8-flash')).toBe('gemini-3.8-flash');
     // Deprecated models auto-migrate to DEFAULT_GEMINI_MODEL
@@ -71,15 +71,18 @@ describe('Express Backend envAi Cryptographic & Security Layer', () => {
     expect(normalizeGeminiModel('models/gemini-2.0-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel('gemini-1.5-flash')).toBe('gemini-3.8-flash');
     expect(normalizeGeminiModel(undefined)).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('openai/gpt-latest')).toBe('openai/gpt-latest');
     expect(normalizeGeminiModel('edenai')).toBe('edenai');
     expect(normalizeGeminiModel('eden-ai')).toBe('edenai');
   });
 
-  it('positions Eden AI directly below recommended model and detects keys', () => {
+  it('positions Eden AI models directly below recommended model and detects keys', () => {
     const recommendedIndex = AVAILABLE_GEMINI_MODELS.findIndex((m) => m.id === 'gemini-3.8-flash');
-    expect(AVAILABLE_GEMINI_MODELS[recommendedIndex + 1].id).toBe('edenai');
+    expect(AVAILABLE_GEMINI_MODELS[recommendedIndex + 1].id).toBe('openai/gpt-latest');
+    expect(AVAILABLE_GEMINI_MODELS[recommendedIndex + 2].id).toBe('edenai');
     expect(isEdenAi('sk-eden-live-key123')).toBe(true);
     expect(isEdenAi(undefined, 'edenai')).toBe(true);
+    expect(isEdenAi(undefined, 'openai/gpt-latest')).toBe(true);
     expect(isEdenAi('AIzaSyKey', 'gemini-3.8-flash')).toBe(false);
   });
 

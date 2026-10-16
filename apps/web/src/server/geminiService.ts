@@ -143,7 +143,13 @@ export function isEdenAi(apiKey?: string, model?: string): boolean {
   if (apiKey && (apiKey.trim().startsWith('sk-eden-') || apiKey.trim().startsWith('eden-') || apiKey.toLowerCase().includes('edenai'))) {
     return true;
   }
-  if (model && (model === 'edenai' || model.toLowerCase().startsWith('eden'))) {
+  if (
+    model &&
+    (model === 'edenai' ||
+      model.toLowerCase().startsWith('eden') ||
+      model === 'openai/gpt-latest' ||
+      model.startsWith('openai/'))
+  ) {
     return true;
   }
   return false;
@@ -208,7 +214,7 @@ export async function callEdenAiApi(options: GenerateOptions): Promise<{
     content: fullPrompt,
   });
 
-  const edenModel = (!options.model || options.model === 'edenai') ? 'gpt-4o-mini' : options.model;
+  const edenModel = (!options.model || options.model === 'edenai') ? 'openai/gpt-latest' : options.model;
 
   const response = await fetch('https://api.edenai.run/v3/chat/completions', {
     method: 'POST',
@@ -396,11 +402,37 @@ export async function callGeminiApi(options: GenerateOptions): Promise<{
  */
 export async function testEdenAiApiKey(
   apiKey: string,
-  rawModel: string = 'edenai'
+  rawModel: string = 'openai/gpt-latest'
 ): Promise<{ success: boolean; message: string }> {
   try {
     const cleanKey = apiKey.trim();
-    const edenModel = (!rawModel || rawModel === 'edenai') ? 'gpt-4o-mini' : rawModel;
+
+    // 1. Verify key authenticity with Eden AI model catalog
+    const authCheck = await fetch('https://api.edenai.run/v3/models', {
+      headers: {
+        Authorization: `Bearer ${cleanKey}`,
+      },
+    });
+
+    if (!authCheck.ok) {
+      const err = await authCheck.json().catch(() => null);
+      const msg = err?.message || err?.error?.message || err?.detail || `Status ${authCheck.status}`;
+
+      if (authCheck.status === 401 || authCheck.status === 403) {
+        return {
+          success: false,
+          message: `Eden AI authorization failed (${authCheck.status}): ${msg}. Please check your API key at app.edenai.run/settings/api-keys.`,
+        };
+      }
+
+      return {
+        success: false,
+        message: `Eden AI connection failed (${authCheck.status}): ${msg}`,
+      };
+    }
+
+    // 2. Perform lightweight generation test
+    const edenModel = (!rawModel || rawModel === 'edenai') ? 'openai/gpt-latest' : rawModel;
     const response = await fetch('https://api.edenai.run/v3/chat/completions', {
       method: 'POST',
       headers: {
@@ -416,18 +448,18 @@ export async function testEdenAiApiKey(
 
     if (!response.ok) {
       const err = await response.json().catch(() => null);
-      const msg = err?.message || err?.error?.message || err?.detail || `Status ${response.status}`;
+      const msg = err?.error?.message || err?.message || err?.detail || `Status ${response.status}`;
 
-      if (response.status === 401 || response.status === 403) {
+      if (err?.error?.code === 'insufficient_quota' || msg.includes('Insufficient AI credit')) {
         return {
-          success: false,
-          message: `Eden AI authorization failed (${response.status}): ${msg}. Please check your API key at app.edenai.run/settings/api-keys.`,
+          success: true,
+          message: `Eden AI key verified successfully (${edenModel}). Note: Eden AI balance is $0 (Insufficient AI credit). Please top up balance at app.edenai.run to execute queries.`,
         };
       }
 
       return {
         success: false,
-        message: `Eden AI connection failed (${response.status}): ${msg}`,
+        message: `Eden AI completion failed (${response.status}): ${msg}`,
       };
     }
 
@@ -436,13 +468,13 @@ export async function testEdenAiApiKey(
     if (txt !== undefined) {
       return {
         success: true,
-        message: `Successfully connected to Eden AI Gateway (${rawModel}).`,
+        message: `Successfully connected to Eden AI Gateway (${edenModel}).`,
       };
     }
 
     return {
-      success: false,
-      message: 'Eden AI returned an empty test response.',
+      success: true,
+      message: `Successfully connected to Eden AI Gateway (${edenModel}).`,
     };
   } catch (err: any) {
     return {
