@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnvBook - Vault Security Access</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Inter & JetBrains Mono Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration Verbatim -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#353940",
+            "error": "#ffb4ab",
+            "tertiary-container": "#fc7c78",
+            "outline": "#86948a",
+            "accent-emerald": "#10b981",
+            "error-container": "#93000a",
+            "primary-fixed": "#6ffbbe",
+            "text-muted": "#8b949e",
+            "surface-variant": "#31353c",
+            "surface": "#10141a",
+            "surface-container-high": "#262a31",
+            "on-tertiary-fixed-variant": "#842225",
+            "text-primary": "#f0f6fc",
+            "background": "#10141a",
+            "on-secondary": "#29313a",
+            "on-primary-container": "#00422b",
+            "on-surface": "#dfe2eb",
+            "primary-container": "#10b981",
+            "on-secondary-fixed-variant": "#3f4850",
+            "border-muted": "#30363d",
+            "status-danger": "#f85149",
+            "border-subtle": "#21262d",
+            "accent-emerald-bright": "#34d399",
+            "surface-subtle": "#12151a",
+            "inverse-primary": "#006c49",
+            "tertiary": "#ffb3af",
+            "primary": "#4edea3",
+            "surface-tint": "#4edea3",
+            "surface-panel": "#161b22",
+            "tertiary-fixed-dim": "#ffb3af",
+            "mask-glyph": "#484f58",
+            "surface-container": "#1c2026",
+            "on-primary-fixed-variant": "#005236",
+            "surface-canvas": "#0d1117",
+            "accent-emerald-glow": "rgba(16, 185, 129, 0.15)",
+            "surface-container-low": "#181c22",
+            "on-error": "#690005",
+            "on-tertiary": "#650911",
+            "secondary": "#bec7d2",
+            "text-secondary": "#c9d1d9",
+            "status-warning": "#d29922",
+            "on-primary": "#003824",
+            "secondary-fixed-dim": "#bec7d2",
+            "on-tertiary-container": "#711419",
+            "outline-variant": "#3c4a42",
+            "secondary-container": "#414a53",
+            "surface-dim": "#10141a",
+            "tertiary-fixed": "#ffdad7",
+            "on-tertiary-fixed": "#410005",
+            "inverse-surface": "#dfe2eb",
+            "on-error-container": "#ffdad6",
+            "border-accent": "#10b981",
+            "on-primary-fixed": "#002113",
+            "secondary-fixed": "#dae3ee",
+            "surface-container-lowest": "#0a0e14",
+            "surface-raised": "#21262d",
+            "surface-container-highest": "#31353c",
+            "on-background": "#dfe2eb",
+            "on-secondary-container": "#b0b9c4",
+            "inverse-on-surface": "#2d3137",
+            "on-surface-variant": "#bbcabf",
+            "primary-fixed-dim": "#4edea3",
+            "on-secondary-fixed": "#141c24"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "margin": "1rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.25rem",
+            "gutter-desktop": "1.5rem",
+            "margin-desktop": "2rem",
+            "space-md": "0.75rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": [
+              "Inter"
+            ],
+            "headline-lg": [
+              "Inter"
+            ],
+            "body-lg": [
+              "Inter"
+            ],
+            "secret-mask": [
+              "JetBrains Mono"
+            ],
+            "label-mono": [
+              "JetBrains Mono"
+            ],
+            "label-ui": [
+              "Inter"
+            ],
+            "display": [
+              "Inter"
+            ],
+            "code-block": [
+              "JetBrains Mono"
+            ],
+            "headline-md": [
+              "Inter"
+            ],
+            "code-inline": [
+              "JetBrains Mono"
+            ],
+            "headline-sm": [
+              "Inter"
+            ],
+            "body-sm": [
+              "Inter"
+            ],
+            "body-md": [
+              "Inter"
+            ]
+          },
+          "fontSize": {
+            "headline-lg-mobile": [
+              "24px",
+              {
+                "lineHeight": "32px",
+                "letterSpacing": "-0.02em",
+                "fontWeight": "600"
+              }
+            ],
+            "headline-lg": [
+              "30px",
+              {
+                "lineHeight": "38px",
+                "letterSpacing": "-0.025em",
+                "fontWeight": "600"
+              }
+            ],
+            "body-lg": [
+              "16px",
+              {
+                "lineHeight": "26px",
+                "letterSpacing": "-0.01em",
+                "fontWeight": "400"
+              }
+            ],
+            "secret-mask": [
+              "14px",
+              {
+                "lineHeight": "18px",
+                "letterSpacing": "0.18em",
+                "fontWeight": "700"
+              }
+            ],
+            "label-mono": [
+              "11px",
+              {
+                "lineHeight": "14px",
+                "letterSpacing": "0.06em",
+                "fontWeight": "500"
+              }
+            ],
+            "label-ui": [
+              "12px",
+              {
+                "lineHeight": "16px",
+                "letterSpacing": "0.01em",
+                "fontWeight": "500"
+              }
+            ],
+            "display": [
+              "40px",
+              {
+                "lineHeight": "48px",
+                "letterSpacing": "-0.03em",
+                "fontWeight": "700"
+              }
+            ],
+            "code-block": [
+              "13px",
+              {
+                "lineHeight": "20px",
+                "letterSpacing": "0em",
+                "fontWeight": "400"
+              }
+            ],
+            "headline-md": [
+              "22px",
+              {
+                "lineHeight": "28px",
+                "letterSpacing": "-0.02em",
+                "fontWeight": "600"
+              }
+            ],
+            "code-inline": [
+              "13px",
+              {
+                "lineHeight": "18px",
+                "letterSpacing": "-0.01em",
+                "fontWeight": "400"
+              }
+            ],
+            "headline-sm": [
+              "18px",
+              {
+                "lineHeight": "24px",
+                "letterSpacing": "-0.015em",
+                "fontWeight": "600"
+              }
+            ],
+            "body-sm": [
+              "13px",
+              {
+                "lineHeight": "18px",
+                "letterSpacing": "0em",
+                "fontWeight": "400"
+              }
+            ],
+            "body-md": [
+              "14px",
+              {
+                "lineHeight": "22px",
+                "letterSpacing": "-0.005em",
+                "fontWeight": "400"
+              }
+            ]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    /* Architectural micro-dot pattern specified in Design System */
+    .bg-dot-matrix {
+      background-color: #0a0e14;
+      background-image: radial-gradient(#21262d 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    
+    .glow-emerald-focus:focus-within {
+      border-color: #10b981;
+      box-shadow: 0 0 0 1px #10b981, 0 0 12px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-security-glow:hover {
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-surface-canvas text-text-primary min-h-screen flex flex-col justify-between items-center bg-dot-matrix selection:bg-accent-emerald selection:text-surface-canvas">
+<!-- Top Minimalist System Telemetry Bar -->
+<header class="w-full flex justify-between items-center px-space-lg py-space-md border-b border-border-subtle bg-surface-subtle/80 backdrop-blur-md">
+<div class="flex items-center space-x-space-md">
+<div class="flex items-center space-x-space-xs">
+<span class="w-2 h-2 rounded-full bg-accent-emerald animate-pulse"></span>
+<span class="font-label-mono text-label-mono text-text-muted">HOST: 127.0.0.1</span>
+</div>
+<span class="text-border-muted">|</span>
+<span class="font-label-mono text-label-mono text-text-muted">PORT: 54322 [RPC]</span>
+</div>
+<!-- Security Pill Status -->
+<div class="flex items-center space-x-space-sm bg-surface-panel px-space-sm py-space-xs rounded border border-border-subtle">
+<span class="material-symbols-outlined text-accent-emerald text-sm leading-none" data-icon="verified_user">verified_user</span>
+<span class="font-label-mono text-label-mono text-accent-emerald tracking-wide">Local-Only Vault (127.0.0.1)</span>
+</div>
+<div class="flex items-center space-x-space-sm text-text-muted font-label-mono text-label-mono">
+<span>DAEMON: ACTIVE</span>
+<span class="text-border-muted">/</span>
+<span class="text-accent-emerald">v2.4.19-SEC</span>
+</div>
+</header>
+<!-- Central Authentication Canvas -->
+<main class="w-full max-w-md px-space-md py-space-xl my-auto">
+<!-- Security Container Card -->
+<div class="bg-surface-subtle border border-border-subtle rounded-xl p-space-xl shadow-2xl relative overflow-hidden backdrop-blur-sm">
+<!-- Top Decorative Perimeter Accent -->
+<div class="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent-emerald to-transparent opacity-80"></div>
+<!-- EnvBook Brand Header -->
+<div class="flex flex-col items-center text-center mb-space-lg">
+<div class="w-12 h-12 rounded bg-surface-panel border border-border-muted flex items-center justify-center mb-space-sm shadow-inner group">
+<span class="material-symbols-outlined text-accent-emerald text-2xl transition-transform group-hover:scale-110" data-icon="lock">lock</span>
+</div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-text-primary tracking-tight">EnvBook</h1>
+<p class="font-label-mono text-label-mono text-text-muted mt-space-xs">Encrypted Vault &amp; Zero-Trust Runtime</p>
+</div>
+<!-- Segmented Mode Tabs -->
+<div class="flex bg-surface-panel p-space-xs rounded border border-border-subtle mb-space-lg">
+<button class="flex-1 py-space-xs text-center font-label-ui text-label-ui rounded font-medium bg-surface-raised text-text-primary border border-border-muted shadow-sm transition-all duration-150 flex items-center justify-center space-x-1.5" id="tab-unlock" onclick="switchTab('unlock')">
+<span class="material-symbols-outlined text-base" data-icon="key">key</span>
+<span>Unlock Vault</span>
+</button>
+<button class="flex-1 py-space-xs text-center font-label-ui text-label-ui rounded font-medium text-text-muted hover:text-text-primary transition-all duration-150 flex items-center justify-center space-x-1.5" id="tab-init" onclick="switchTab('init')">
+<span class="material-symbols-outlined text-base" data-icon="add_moderator">add_moderator</span>
+<span>Initialize New Vault</span>
+</button>
+</div>
+<!-- TAB 1: UNLOCK VAULT -->
+<div class="space-y-space-md" id="panel-unlock">
+<div>
+<div class="flex justify-between items-center mb-space-xs">
+<label class="font-label-ui text-label-ui text-text-secondary font-medium" for="unlock-passphrase">Master Passphrase</label>
+<div class="flex items-center space-x-1">
+<span class="font-label-mono text-label-mono text-text-muted">TIMEOUT:</span>
+<span class="font-label-mono text-label-mono text-accent-emerald">15m IDLE</span>
+</div>
+</div>
+<div class="relative glow-emerald-focus rounded border border-border-muted bg-surface-panel transition-all duration-150">
+<div class="absolute inset-y-0 left-0 pl-space-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-muted text-lg" data-icon="password">password</span>
+</div>
+<input class="w-full pl-10 pr-10 py-space-sm bg-transparent font-code-block text-code-block text-text-primary placeholder:text-mask-glyph border-0 focus:ring-0 focus:outline-none" id="unlock-passphrase" placeholder="••••••••••••••••••••••••" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-space-md flex items-center text-text-muted hover:text-text-primary" onclick="togglePassVisibility('unlock-passphrase', this)" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Cryptographic Badges Cluster -->
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs">
+<div class="bg-surface-panel p-space-xs rounded border border-border-subtle flex items-center space-x-space-xs">
+<span class="material-symbols-outlined text-accent-emerald text-sm" data-icon="memory">memory</span>
+<div class="overflow-hidden">
+<div class="font-label-mono text-label-mono text-text-muted leading-tight">DERIVATION</div>
+<div class="font-label-mono text-label-mono text-text-primary truncate font-semibold">Argon2id · 64MB</div>
+</div>
+</div>
+<div class="bg-surface-panel p-space-xs rounded border border-border-subtle flex items-center space-x-space-xs">
+<span class="material-symbols-outlined text-accent-emerald text-sm" data-icon="security">security</span>
+<div class="overflow-hidden">
+<div class="font-label-mono text-label-mono text-text-muted leading-tight">CIPHER</div>
+<div class="font-label-mono text-label-mono text-text-primary truncate font-semibold">AES-256-GCM</div>
+</div>
+</div>
+</div>
+<!-- Primary Action Button -->
+<button class="w-full bg-accent-emerald text-surface-canvas font-label-ui text-label-ui font-semibold py-space-sm px-space-md rounded flex items-center justify-center space-x-space-xs btn-security-glow hover:bg-accent-emerald-bright transition-all duration-150 cursor-pointer select-none">
+<span class="material-symbols-outlined text-base font-bold" data-icon="lock_open">lock_open</span>
+<span>Unlock Vault</span>
+</button>
+<!-- Biometric / Hardware Key Trigger -->
+<div class="relative flex py-space-xs items-center">
+<div class="flex-grow border-t border-border-subtle"></div>
+<span class="flex-shrink mx-space-sm font-label-mono text-label-mono text-text-muted">OR QUICK ACCESS</span>
+<div class="flex-grow border-t border-border-subtle"></div>
+</div>
+<button class="w-full bg-surface-panel border border-border-muted text-text-secondary hover:text-text-primary hover:bg-surface-raised py-space-xs px-space-md rounded font-label-ui text-label-ui flex items-center justify-center space-x-space-sm transition-all duration-150 cursor-pointer">
+<span class="material-symbols-outlined text-lg text-text-muted" data-icon="fingerprint">fingerprint</span>
+<span>Touch ID / FIDO2 Passkey</span>
+<span class="bg-surface-raised text-text-muted text-[10px] font-label-mono px-1.5 py-0.5 rounded border border-border-muted ml-auto">⌘K</span>
+</button>
+</div>
+<!-- TAB 2: INITIALIZE NEW VAULT (Initially Hidden) -->
+<div class="space-y-space-md hidden" id="panel-init">
+<div>
+<label class="block font-label-ui text-label-ui text-text-secondary font-medium mb-space-xs" for="create-passphrase">Create Master Passphrase</label>
+<div class="relative glow-emerald-focus rounded border border-border-muted bg-surface-panel transition-all duration-150">
+<div class="absolute inset-y-0 left-0 pl-space-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-muted text-lg" data-icon="key">key</span>
+</div>
+<input class="w-full pl-10 pr-10 py-space-sm bg-transparent font-code-block text-code-block text-text-primary placeholder:text-text-muted/60 border-0 focus:ring-0 focus:outline-none" id="create-passphrase" oninput="calculateEntropy(this.value)" placeholder="Minimum 16 characters or 4 words" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-space-md flex items-center text-text-muted hover:text-text-primary" onclick="togglePassVisibility('create-passphrase', this)" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Password Entropy Meter -->
+<div class="bg-surface-panel p-space-sm rounded border border-border-subtle">
+<div class="flex justify-between items-center mb-1.5">
+<span class="font-label-mono text-label-mono text-text-muted">ENTROPY STRENGTH</span>
+<span class="font-label-mono text-label-mono text-status-warning font-semibold" id="entropy-label">FAIR (62 BITS)</span>
+</div>
+<div class="w-full bg-surface-raised h-1 rounded-full overflow-hidden flex gap-1">
+<div class="h-full w-1/4 bg-accent-emerald transition-all duration-300" id="entropy-bar-1"></div>
+<div class="h-full w-1/4 bg-accent-emerald transition-all duration-300" id="entropy-bar-2"></div>
+<div class="h-full w-1/4 bg-status-warning transition-all duration-300" id="entropy-bar-3"></div>
+<div class="h-full w-1/4 bg-surface-bright transition-all duration-300" id="entropy-bar-4"></div>
+</div>
+</div>
+<div>
+<label class="block font-label-ui text-label-ui text-text-secondary font-medium mb-space-xs" for="confirm-passphrase">Confirm Passphrase</label>
+<div class="relative glow-emerald-focus rounded border border-border-muted bg-surface-panel transition-all duration-150">
+<div class="absolute inset-y-0 left-0 pl-space-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-muted text-lg" data-icon="shield">shield</span>
+</div>
+<input class="w-full pl-10 pr-10 py-space-sm bg-transparent font-code-block text-code-block text-text-primary placeholder:text-text-muted/60 border-0 focus:ring-0 focus:outline-none" id="confirm-passphrase" placeholder="Re-enter passphrase" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-space-md flex items-center text-text-muted hover:text-text-primary" onclick="togglePassVisibility('confirm-passphrase', this)" type="button">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Zero-Knowledge Critical Notice -->
+<div class="p-space-sm rounded bg-surface-panel border-l-2 border-status-warning bg-opacity-70 flex items-start space-x-space-sm">
+<span class="material-symbols-outlined text-status-warning text-base flex-shrink-0 mt-0.5" data-icon="warning">warning</span>
+<p class="font-body-sm text-body-sm text-text-secondary leading-snug">
+<strong class="text-text-primary">Zero-knowledge architecture:</strong> If you lose this passphrase, your local vault cannot be recovered by anyone. There is no reset email.
+          </p>
+</div>
+<!-- Create Button -->
+<button class="w-full bg-accent-emerald text-surface-canvas font-label-ui text-label-ui font-semibold py-space-sm px-space-md rounded flex items-center justify-center space-x-space-xs btn-security-glow hover:bg-accent-emerald-bright transition-all duration-150 cursor-pointer select-none">
+<span class="material-symbols-outlined text-base font-bold" data-icon="enhanced_encryption">enhanced_encryption</span>
+<span>Create Encrypted Vault</span>
+</button>
+</div>
+</div>
+<!-- Storage Path Diagnostics Footer -->
+<div class="mt-space-md text-center">
+<div class="inline-flex items-center space-x-space-xs font-label-mono text-label-mono text-text-muted">
+<span class="material-symbols-outlined text-xs" data-icon="folder_managed">folder_managed</span>
+<span>PATH:</span>
+<code class="text-text-secondary font-code-inline text-code-inline bg-surface-panel px-1.5 py-0.5 rounded border border-border-subtle">~/.envbook/vault.sqlite.enc</code>
+</div>
+</div>
+</main>
+<!-- Bottom Security Guarantees Bento Ribbon -->
+<footer class="w-full max-w-4xl px-space-lg pb-space-lg">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Guarantee 1 -->
+<div class="bg-surface-subtle border border-border-subtle rounded p-space-md flex items-center space-x-space-sm">
+<div class="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-accent-emerald text-lg" data-icon="cloud_off">cloud_off</span>
+</div>
+<div>
+<div class="font-label-ui text-label-ui font-semibold text-text-primary">Zero Cloud Exposure</div>
+<div class="font-body-sm text-body-sm text-text-muted">Runs 100% air-gapped on localhost</div>
+</div>
+</div>
+<!-- Guarantee 2 -->
+<div class="bg-surface-subtle border border-border-subtle rounded p-space-md flex items-center space-x-space-sm">
+<div class="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-accent-emerald text-lg" data-icon="visibility_off">visibility_off</span>
+</div>
+<div>
+<div class="font-label-ui text-label-ui font-semibold text-text-primary">Zero Telemetry</div>
+<div class="font-body-sm text-body-sm text-text-muted">No analytics or remote pings emitted</div>
+</div>
+</div>
+<!-- Guarantee 3 -->
+<div class="bg-surface-subtle border border-border-subtle rounded p-space-md flex items-center space-x-space-sm">
+<div class="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-accent-emerald text-lg" data-icon="database">database</span>
+</div>
+<div>
+<div class="font-label-ui text-label-ui font-semibold text-text-primary">Local SQLite at Rest</div>
+<div class="font-body-sm text-body-sm text-text-muted">AES-256-GCM page-level encryption</div>
+</div>
+</div>
+</div>
+<!-- Security Verification Checksum -->
+<div class="flex justify-between items-center mt-space-md px-1 text-text-muted font-label-mono text-label-mono border-t border-border-subtle pt-space-sm">
+<div class="flex items-center space-x-1">
+<span class="material-symbols-outlined text-xs text-accent-emerald" data-icon="terminal">terminal</span>
+<span>SHA-256 BINARY AUDIT:</span>
+<span class="text-text-secondary">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+</div>
+<div>ENCRYPTED REPOSITORY</div>
+</div>
+</footer>
+<!-- Inline Interaction Logic -->
+<script>
+    function switchTab(mode) {
+      const panelUnlock = document.getElementById('panel-unlock');
+      const panelInit = document.getElementById('panel-init');
+      const tabUnlock = document.getElementById('tab-unlock');
+      const tabInit = document.getElementById('tab-init');
+
+      if (mode === 'unlock') {
+        panelUnlock.classList.remove('hidden');
+        panelInit.classList.add('hidden');
+        
+        tabUnlock.className = "flex-1 py-space-xs text-center font-label-ui text-label-ui rounded font-medium bg-surface-raised text-text-primary border border-border-muted shadow-sm transition-all duration-150 flex items-center justify-center space-x-1.5";
+        tabInit.className = "flex-1 py-space-xs text-center font-label-ui text-label-ui rounded font-medium text-text-muted hover:text-text-primary transition-all duration-150 flex items-center justify-center space-x-1.5";
+      } else {
+        panelInit.classList.remove('hidden');
+        panelUnlock.classList.add('hidden');
+
+        tabInit.className = "flex-1 py-space-xs text-center font-label-ui text-label-ui rounded font-medium bg-surface-raised text-text-primary border border-border-muted shadow-sm transition-all duration-150 flex items-center justify-center space-x-1.5";
+        tabUnlock.className = "flex-1 py-space-xs text-center font-label-ui text-label-ui rounded font-medium text-text-muted hover:text-text-primary transition-all duration-150 flex items-center justify-center space-x-1.5";
+      }
+    }
+
+    function togglePassVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.innerText = 'visibility_off';
+      } else {
+        input.type = 'password';
+        icon.innerText = 'visibility';
+      }
+    }
+
+    function calculateEntropy(val) {
+      const label = document.getElementById('entropy-label');
+      const b1 = document.getElementById('entropy-bar-1');
+      const b2 = document.getElementById('entropy-bar-2');
+      const b3 = document.getElementById('entropy-bar-3');
+      const b4 = document.getElementById('entropy-bar-4');
+
+      const len = val.length;
+      if (len === 0) {
+        label.innerText = 'ENTER PASSPHRASE';
+        label.className = 'font-label-mono text-label-mono text-text-muted font-semibold';
+        b1.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+        b2.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+        b3.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+        b4.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+      } else if (len < 8) {
+        label.innerText = 'WEAK (<36 BITS)';
+        label.className = 'font-label-mono text-label-mono text-status-danger font-semibold';
+        b1.className = 'h-full w-1/4 bg-status-danger transition-all duration-300';
+        b2.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+        b3.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+        b4.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+      } else if (len < 16) {
+        label.innerText = 'MODERATE (64 BITS)';
+        label.className = 'font-label-mono text-label-mono text-status-warning font-semibold';
+        b1.className = 'h-full w-1/4 bg-status-warning transition-all duration-300';
+        b2.className = 'h-full w-1/4 bg-status-warning transition-all duration-300';
+        b3.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+        b4.className = 'h-full w-1/4 bg-surface-bright transition-all duration-300';
+      } else {
+        label.innerText = 'EXCELLENT (128+ BITS)';
+        label.className = 'font-label-mono text-label-mono text-accent-emerald font-semibold';
+        b1.className = 'h-full w-1/4 bg-accent-emerald transition-all duration-300';
+        b2.className = 'h-full w-1/4 bg-accent-emerald transition-all duration-300';
+        b3.className = 'h-full w-1/4 bg-accent-emerald transition-all duration-300';
+        b4.className = 'h-full w-1/4 bg-accent-emerald transition-all duration-300';
+      }
+    }
+  </script>
+</body></html>

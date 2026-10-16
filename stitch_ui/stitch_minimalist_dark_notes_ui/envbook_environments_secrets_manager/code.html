@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnvBook — Environments &amp; Secrets Management</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#00422b",
+            "tertiary-fixed-dim": "#ffb3af",
+            "secondary": "#bec7d2",
+            "primary-fixed-dim": "#4edea3",
+            "on-primary-fixed-variant": "#005236",
+            "surface": "#10141a",
+            "outline": "#86948a",
+            "on-surface": "#dfe2eb",
+            "surface-container-low": "#181c22",
+            "border-subtle": "#21262d",
+            "on-tertiary-container": "#711419",
+            "inverse-primary": "#006c49",
+            "primary-container": "#10b981",
+            "surface-bright": "#353940",
+            "text-secondary": "#c9d1d9",
+            "inverse-on-surface": "#2d3137",
+            "secondary-fixed": "#dae3ee",
+            "text-muted": "#8b949e",
+            "surface-subtle": "#12151a",
+            "on-surface-variant": "#bbcabf",
+            "surface-raised": "#21262d",
+            "tertiary": "#ffb3af",
+            "on-background": "#dfe2eb",
+            "surface-variant": "#31353c",
+            "on-primary-fixed": "#002113",
+            "surface-dim": "#10141a",
+            "on-secondary-fixed-variant": "#3f4850",
+            "accent-emerald-glow": "rgba(16, 185, 129, 0.15)",
+            "tertiary-container": "#fc7c78",
+            "on-error": "#690005",
+            "tertiary-fixed": "#ffdad7",
+            "background": "#10141a",
+            "outline-variant": "#3c4a42",
+            "on-tertiary-fixed": "#410005",
+            "surface-canvas": "#0d1117",
+            "surface-container-highest": "#31353c",
+            "status-warning": "#d29922",
+            "surface-container-high": "#262a31",
+            "surface-container-lowest": "#0a0e14",
+            "on-primary": "#003824",
+            "border-muted": "#30363d",
+            "inverse-surface": "#dfe2eb",
+            "border-accent": "#10b981",
+            "on-error-container": "#ffdad6",
+            "accent-emerald-bright": "#34d399",
+            "surface-panel": "#161b22",
+            "secondary-container": "#414a53",
+            "surface-container": "#1c2026",
+            "surface-tint": "#4edea3",
+            "status-danger": "#f85149",
+            "on-secondary-container": "#b0b9c4",
+            "accent-emerald": "#10b981",
+            "on-secondary-fixed": "#141c24",
+            "error": "#ffb4ab",
+            "text-primary": "#f0f6fc",
+            "mask-glyph": "#484f58",
+            "on-secondary": "#29313a",
+            "primary-fixed": "#6ffbbe",
+            "error-container": "#93000a",
+            "on-tertiary": "#650911",
+            "primary": "#4edea3",
+            "secondary-fixed-dim": "#bec7d2",
+            "on-tertiary-fixed-variant": "#842225"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-lg": "1.25rem",
+            "margin-desktop": "2rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "gutter-desktop": "1.5rem",
+            "margin": "1rem",
+            "space-md": "0.75rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "secret-mask": ["JetBrains Mono"],
+            "headline-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-mono": ["JetBrains Mono"],
+            "display": ["Inter"],
+            "code-block": ["JetBrains Mono"],
+            "code-inline": ["JetBrains Mono"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "label-ui": ["Inter"],
+            "headline-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "secret-mask": ["14px", { "lineHeight": "18px", "letterSpacing": "0.18em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "label-mono": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500" }],
+            "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "code-block": ["13px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "code-inline": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-ui": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .micro-dot-grid {
+      background-image: radial-gradient(#21262d 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d1117;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #21262d;
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #30363d;
+    }
+  </style>
+</head>
+<body class="bg-surface-canvas text-text-primary antialiased font-body-md text-body-md h-screen w-screen overflow-hidden flex">
+<!-- LEFT SIDEBAR: Shared Component SideNavBar (Docked w-60 h-screen) -->
+<aside class="w-60 flex flex-col justify-between h-screen p-space-sm bg-surface-subtle border-r border-border-subtle shrink-0 select-none z-20">
+<!-- Header Block -->
+<div>
+<div class="flex items-center gap-space-sm px-space-sm py-space-sm mb-space-md border-b border-border-subtle pb-space-md">
+<div class="w-8 h-8 rounded bg-surface-panel border border-border-subtle flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
+</div>
+<div class="overflow-hidden">
+<div class="text-headline-sm font-headline-sm font-bold text-text-primary tracking-tight leading-none">EnvBook</div>
+<div class="text-label-mono font-label-mono text-text-muted text-[10px] uppercase tracking-wider mt-0.5">Encrypted Vault</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-0.5">
+<!-- Home -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">home</span>
+<span>Home</span>
+</a>
+<!-- All Entries -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">article</span>
+<span>All Entries</span>
+</a>
+<!-- Projects -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">folder</span>
+<span>Projects</span>
+</a>
+<!-- Credentials Vault -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">key</span>
+<span>Credentials Vault</span>
+</a>
+<!-- Environments [ACTIVE TAB] -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-primary bg-surface-raised border-l-2 border-primary font-medium transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
+<span>Environments</span>
+<span class="ml-auto text-label-mono font-label-mono text-[10px] text-primary bg-primary/10 px-1 py-0.5 rounded border border-primary/20">LIVE</span>
+</a>
+<!-- Ideas Inbox -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">lightbulb</span>
+<span>Ideas Inbox</span>
+</a>
+<!-- Code Library -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">code</span>
+<span>Code Library</span>
+</a>
+</nav>
+</div>
+<!-- Footer Segment -->
+<div class="pt-space-md border-t border-border-subtle space-y-1">
+<div class="px-space-sm py-1 text-label-mono font-label-mono text-text-muted text-[10px] uppercase">Storage</div>
+<!-- Favorites -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">star</span>
+<span>Favorites</span>
+</a>
+<!-- Trash -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+<span>Trash</span>
+</a>
+<!-- CTA: Lock Vault Button -->
+<div class="pt-space-sm">
+<button class="w-full flex items-center justify-center gap-2 px-space-sm py-2 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle hover:border-status-danger/40 text-text-secondary hover:text-status-danger text-label-ui font-label-ui transition-all duration-150 group">
+<span class="material-symbols-outlined text-[16px] text-text-muted group-hover:text-status-danger">lock</span>
+<span>Lock Vault</span>
+<kbd class="ml-auto bg-surface-canvas text-text-muted text-[10px] font-label-mono px-1 py-0.2 border border-border-subtle rounded">⌥L</kbd>
+</button>
+</div>
+</div>
+</aside>
+<!-- MAIN CANVAS CONTAINER -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden bg-surface-canvas micro-dot-grid relative">
+<!-- TOP NAVIGATION BAR (PRD Breadcrumbs & Environment Selector) -->
+<header class="h-12 border-b border-border-subtle bg-surface/90 backdrop-blur px-space-md flex items-center justify-between shrink-0 z-10">
+<!-- Left: Breadcrumbs -->
+<div class="flex items-center gap-2">
+<span class="text-text-muted font-label-mono text-body-sm">EnvBook</span>
+<span class="text-mask-glyph font-label-mono text-body-sm">/</span>
+<span class="text-text-secondary font-label-mono text-body-sm">Environments</span>
+<span class="text-mask-glyph font-label-mono text-body-sm">/</span>
+<div class="flex items-center gap-1.5 bg-surface-panel px-2 py-0.5 rounded border border-border-subtle">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+<span class="text-text-primary font-label-mono text-body-sm font-medium">Production (.env.production)</span>
+</div>
+</div>
+<!-- Center: Environment Switcher Tabs -->
+<div class="flex items-center bg-surface-panel p-0.5 rounded border border-border-subtle">
+<button class="px-3 py-1 rounded bg-surface-raised text-text-primary font-label-ui text-label-ui font-medium border border-border-muted shadow-sm flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+<span>Production</span>
+</button>
+<button class="px-3 py-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised/50 font-label-ui text-label-ui transition-colors">
+          Staging
+        </button>
+<button class="px-3 py-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised/50 font-label-ui text-label-ui transition-colors">
+          Local Dev
+        </button>
+<button class="px-3 py-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised/50 font-label-ui text-label-ui transition-colors">
+          Testing
+        </button>
+</div>
+<!-- Right: Action Buttons -->
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary hover:text-text-primary font-label-ui text-label-ui transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">file_upload</span>
+<span>Import .env</span>
+</button>
+<button class="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary hover:text-text-primary font-label-ui text-label-ui transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">shield</span>
+<span>Export Safe .env</span>
+</button>
+<button class="px-3 py-1.5 rounded bg-primary-container text-on-primary-container hover:bg-accent-emerald-bright font-label-ui text-label-ui font-semibold transition-all shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Add Variable</span>
+<kbd class="bg-black/20 text-on-primary-container text-[10px] font-label-mono px-1 py-0.2 rounded">N</kbd>
+</button>
+</div>
+</header>
+<!-- WORKSPACE CANVAS (Scrollable) -->
+<main class="flex-1 overflow-y-auto px-space-xl py-space-lg flex flex-col gap-space-lg pb-24">
+<!-- 1. ENVIRONMENT HEADER & CRYPTO POSTURE -->
+<section class="bg-surface-subtle/80 backdrop-blur border border-border-subtle rounded p-space-md flex items-center justify-between">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted uppercase">Scope</span>
+<span class="text-text-primary font-headline-sm text-headline-sm font-semibold">Project: Microservice Auth v2</span>
+<span class="bg-surface-panel text-text-muted border border-border-subtle px-1.5 py-0.5 rounded text-label-mono font-label-mono text-[10px]">main branch</span>
+</div>
+<div class="flex items-center gap-3 text-body-sm text-text-muted">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>Last modified 3m ago by <span class="text-text-secondary font-mono">0x4b...9a</span></span>
+</span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">history</span>
+<span>Revision #42</span>
+</span>
+</div>
+</div>
+<!-- Safe Cryptographic Posture Badge -->
+<div class="bg-surface-panel/90 border border-primary/30 rounded p-2 px-3 flex items-center gap-3 shadow-[0_0_12px_rgba(16,185,129,0.08)]">
+<div class="w-2 h-2 rounded-full bg-accent-emerald animate-ping"></div>
+<div class="text-right">
+<div class="text-label-mono font-label-mono text-[11px] text-accent-emerald font-semibold flex items-center gap-1 justify-end">
+<span class="material-symbols-outlined text-[14px]">verified_user</span>
+<span>AES-256-GCM Encrypted at rest</span>
+</div>
+<div class="text-[11px] text-text-muted font-body-sm">Unmasked values wiped automatically on lock</div>
+</div>
+</div>
+</section>
+<!-- 2. ENVIRONMENT METRICS / SUMMARY BAR -->
+<section class="grid grid-cols-5 gap-space-md">
+<!-- Total -->
+<div class="bg-surface-subtle border border-border-subtle rounded p-space-sm flex items-center justify-between">
+<div>
+<div class="text-label-mono font-label-mono text-text-muted text-[11px] uppercase">Total Keys</div>
+<div class="text-headline-md font-headline-md text-text-primary font-bold">14</div>
+</div>
+<span class="material-symbols-outlined text-text-muted text-[24px]">dataset</span>
+</div>
+<!-- Secrets Masked -->
+<div class="bg-surface-subtle border border-border-subtle rounded p-space-sm flex items-center justify-between">
+<div>
+<div class="text-label-mono font-label-mono text-accent-emerald text-[11px] uppercase">Secrets (Masked)</div>
+<div class="text-headline-md font-headline-md text-text-primary font-bold">9</div>
+</div>
+<span class="material-symbols-outlined text-accent-emerald text-[24px]">key</span>
+</div>
+<!-- Public Configs -->
+<div class="bg-surface-subtle border border-border-subtle rounded p-space-sm flex items-center justify-between">
+<div>
+<div class="text-label-mono font-label-mono text-text-muted text-[11px] uppercase">Plain Configs</div>
+<div class="text-headline-md font-headline-md text-text-primary font-bold">5</div>
+</div>
+<span class="material-symbols-outlined text-text-muted text-[24px]">settings</span>
+</div>
+<!-- Expired Tokens -->
+<div class="bg-surface-subtle border border-border-subtle rounded p-space-sm flex items-center justify-between">
+<div>
+<div class="text-label-mono font-label-mono text-text-muted text-[11px] uppercase">Expired</div>
+<div class="text-headline-md font-headline-md text-text-primary font-bold">0</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[24px]">check_circle</span>
+</div>
+<!-- Overdue Rotation Alert -->
+<div class="bg-surface-subtle border border-status-warning/40 rounded p-space-sm flex items-center justify-between relative overflow-hidden">
+<div class="absolute top-0 right-0 w-8 h-8 bg-status-warning/10 rounded-bl-full pointer-events-none"></div>
+<div>
+<div class="text-label-mono font-label-mono text-status-warning text-[11px] uppercase">Overdue Rotation</div>
+<div class="text-headline-md font-headline-md text-status-warning font-bold">2</div>
+</div>
+<span class="material-symbols-outlined text-status-warning text-[24px]">sync_problem</span>
+</div>
+</section>
+<!-- 3. SECRET & VARIABLE KEY-VALUE TABLE -->
+<section class="bg-surface-subtle border border-border-subtle rounded flex flex-col overflow-hidden">
+<!-- Filter Toolbar -->
+<div class="p-space-sm bg-surface-panel/40 border-b border-border-subtle flex items-center justify-between gap-4">
+<!-- Search Key -->
+<div class="flex-1 max-w-md relative">
+<span class="material-symbols-outlined text-text-muted absolute left-2.5 top-1/2 -translate-y-1/2 text-[18px]">search</span>
+<input class="w-full bg-surface-canvas border border-border-subtle focus:border-accent-emerald focus:ring-0 text-text-primary placeholder:text-text-muted pl-8 pr-12 py-1.5 text-body-sm font-label-mono rounded transition-colors" placeholder="Search key, variable, or tag..." type="text"/>
+<kbd class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-label-mono bg-surface-panel text-text-muted px-1.5 py-0.5 border border-border-subtle rounded">Cmd+K</kbd>
+</div>
+<!-- Type Filter Tabs & Bulk Actions -->
+<div class="flex items-center gap-3">
+<div class="flex items-center bg-surface-canvas p-0.5 rounded border border-border-subtle text-label-ui">
+<button class="px-2.5 py-1 rounded bg-surface-raised text-text-primary font-medium">All (14)</button>
+<button class="px-2.5 py-1 text-text-muted hover:text-text-primary transition-colors">Secrets Only (9)</button>
+<button class="px-2.5 py-1 text-text-muted hover:text-text-primary transition-colors">Public Configs (5)</button>
+</div>
+<div class="h-4 w-[1px] bg-border-subtle"></div>
+<button class="px-2.5 py-1 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary text-label-ui flex items-center gap-1.5 transition-colors" id="toggle-all-btn">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Reveal All (15s)</span>
+</button>
+</div>
+</div>
+<!-- Table Grid -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-border-subtle bg-surface-panel/30 text-label-mono font-label-mono text-text-muted text-[11px] uppercase">
+<th class="py-2.5 px-4 font-medium w-10 text-center">
+<input class="rounded-sm bg-surface-canvas border-border-subtle text-primary focus:ring-0" type="checkbox"/>
+</th>
+<th class="py-2.5 px-4 font-medium">Key</th>
+<th class="py-2.5 px-4 font-medium">Value</th>
+<th class="py-2.5 px-4 font-medium w-28">Type</th>
+<th class="py-2.5 px-4 font-medium w-32">Scope</th>
+<th class="py-2.5 px-4 font-medium text-right w-28">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle font-code-block text-code-block">
+<!-- Row 1: DATABASE_URL (Secret) -->
+<tr class="hover:bg-surface-panel/40 transition-colors group">
+<td class="py-3 px-4 text-center">
+<input class="rounded-sm bg-surface-canvas border-border-subtle text-primary focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-semibold text-text-primary">
+<div class="flex items-center gap-2">
+<span>DATABASE_URL</span>
+<span class="material-symbols-outlined text-[14px] text-accent-emerald" title="Encrypted Secret">lock</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2 max-w-md">
+<span class="secret-field font-secret-mask tracking-widest text-mask-glyph bg-surface-canvas px-2.5 py-1 rounded border border-border-subtle select-none" data-secret="postgresql://app_usr:x4920f@db.prod.internal:5432/core_auth">••••••••••••••••••••••••••••</span>
+<button class="reveal-btn text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Toggle Reveal">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+<button class="copy-btn text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Copy Secret">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-label-mono uppercase tracking-wider text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/30">
+                    SECRET
+                  </span>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-mono text-[11px] text-text-secondary">Production</span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Duplicate"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Edit"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 text-text-muted hover:text-status-danger hover:bg-surface-raised rounded" title="Delete"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 2: STRIPE_SECRET_KEY (Secret - Overdue Rotation) -->
+<tr class="hover:bg-surface-panel/40 transition-colors group">
+<td class="py-3 px-4 text-center">
+<input class="rounded-sm bg-surface-canvas border-border-subtle text-primary focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-semibold text-text-primary">
+<div class="flex items-center gap-2">
+<span>STRIPE_SECRET_KEY</span>
+<span class="material-symbols-outlined text-[14px] text-status-warning" title="Rotation Overdue (&gt;90 days)">warning</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2 max-w-md">
+<span class="secret-field font-secret-mask tracking-widest text-mask-glyph bg-surface-canvas px-2.5 py-1 rounded border border-border-subtle select-none" data-secret="mock_stripe_secret_key_demo_only">••••••••••••••••••••</span>
+<button class="reveal-btn text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Toggle Reveal">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+<button class="copy-btn text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Copy Secret">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+<span class="text-status-warning font-label-mono text-[10px] bg-status-warning/10 px-1.5 py-0.5 rounded border border-status-warning/20">Rotate</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-label-mono uppercase tracking-wider text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/30">
+                    SECRET
+                  </span>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-mono text-[11px] text-text-secondary">Production</span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Duplicate"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Edit"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 text-text-muted hover:text-status-danger hover:bg-surface-raised rounded" title="Delete"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 3: REDIS_AUTH_TOKEN (Secret) -->
+<tr class="hover:bg-surface-panel/40 transition-colors group">
+<td class="py-3 px-4 text-center">
+<input class="rounded-sm bg-surface-canvas border-border-subtle text-primary focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-semibold text-text-primary">
+<div class="flex items-center gap-2">
+<span>REDIS_AUTH_TOKEN</span>
+<span class="material-symbols-outlined text-[14px] text-accent-emerald" title="Encrypted Secret">lock</span>
+</div>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2 max-w-md">
+<span class="secret-field font-secret-mask tracking-widest text-mask-glyph bg-surface-canvas px-2.5 py-1 rounded border border-border-subtle select-none" data-secret="c89f0291e08ba74112e6c7014">••••••••••••••••••••••••••</span>
+<button class="reveal-btn text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Toggle Reveal">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+</button>
+<button class="copy-btn text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Copy Secret">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-label-mono uppercase tracking-wider text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/30">
+                    SECRET
+                  </span>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-mono text-[11px] text-text-secondary">Production</span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Duplicate"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Edit"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 text-text-muted hover:text-status-danger hover:bg-surface-raised rounded" title="Delete"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 4: PORT (Plain Config) -->
+<tr class="hover:bg-surface-panel/40 transition-colors group">
+<td class="py-3 px-4 text-center">
+<input class="rounded-sm bg-surface-canvas border-border-subtle text-primary focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-semibold text-text-secondary">
+<span>PORT</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2 max-w-md">
+<span class="font-mono text-text-primary bg-surface-canvas px-2.5 py-1 rounded border border-border-subtle">8080</span>
+<button class="copy-btn text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Copy Value">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-label-mono uppercase tracking-wider text-text-muted bg-surface-canvas border border-border-subtle">
+                    CONFIG
+                  </span>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-mono text-[11px] text-text-secondary">Production</span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Duplicate"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Edit"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 text-text-muted hover:text-status-danger hover:bg-surface-raised rounded" title="Delete"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 5: NEXT_PUBLIC_API_URL (Plain Config) -->
+<tr class="hover:bg-surface-panel/40 transition-colors group">
+<td class="py-3 px-4 text-center">
+<input class="rounded-sm bg-surface-canvas border-border-subtle text-primary focus:ring-0" type="checkbox"/>
+</td>
+<td class="py-3 px-4 font-semibold text-text-secondary">
+<span>NEXT_PUBLIC_API_URL</span>
+</td>
+<td class="py-3 px-4">
+<div class="flex items-center gap-2 max-w-md">
+<span class="font-mono text-text-primary bg-surface-canvas px-2.5 py-1 rounded border border-border-subtle truncate">https://api.domain.internal</span>
+<button class="copy-btn text-text-muted hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Copy Value">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-label-mono uppercase tracking-wider text-text-muted bg-surface-canvas border border-border-subtle">
+                    CONFIG
+                  </span>
+</td>
+<td class="py-3 px-4">
+<span class="font-label-mono text-[11px] text-text-secondary">Production</span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Duplicate"><span class="material-symbols-outlined text-[16px]">content_copy</span></button>
+<button class="p-1 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded" title="Edit"><span class="material-symbols-outlined text-[16px]">edit</span></button>
+<button class="p-1 text-text-muted hover:text-status-danger hover:bg-surface-raised rounded" title="Delete"><span class="material-symbols-outlined text-[16px]">delete</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer / Add Row trigger -->
+<div class="p-space-sm bg-surface-panel/20 border-t border-border-subtle flex items-center justify-between text-body-sm text-text-muted">
+<button class="flex items-center gap-1.5 text-text-secondary hover:text-primary transition-colors text-label-ui">
+<span class="material-symbols-outlined text-[16px]">add_circle</span>
+<span>Add new key-value row</span>
+</button>
+<div class="font-label-mono text-[11px]">Showing 5 of 14 entries</div>
+</div>
+</section>
+<!-- 4. BOTTOM DRAWER / BATCH ACTIONS & SAFE IMPORT ZONE -->
+<section class="grid grid-cols-1 lg:grid-cols-3 gap-space-md">
+<!-- Diff & Compare Action -->
+<div class="bg-surface-subtle border border-border-subtle rounded p-space-md flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted uppercase">Cross-Env Sync</span>
+<span class="material-symbols-outlined text-primary text-[18px]">compare_arrows</span>
+</div>
+<h4 class="text-text-primary font-headline-sm text-[16px] font-semibold mb-1">Compare with Staging</h4>
+<p class="text-text-muted text-body-sm">Detect drift, missing secrets, or differing configs across target environments.</p>
+</div>
+<div class="mt-4 flex gap-2">
+<button class="flex-1 py-1.5 px-3 bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-primary rounded text-label-ui font-medium transition-colors flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[16px]">difference</span>
+<span>View Diff (3 Changes)</span>
+</button>
+<button class="py-1.5 px-3 bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary rounded text-label-ui font-medium transition-colors" title="Export Diff">
+<span class="material-symbols-outlined text-[16px]">download</span>
+</button>
+</div>
+</div>
+<!-- Safe Drop Zone -->
+<div class="lg:col-span-2 bg-surface-subtle border border-dashed border-border-muted hover:border-primary/50 transition-colors rounded p-space-md flex flex-col justify-center items-center text-center group cursor-pointer">
+<div class="w-10 h-10 rounded-full bg-surface-panel border border-border-subtle flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-primary text-[20px]">file_download</span>
+</div>
+<div class="text-text-primary text-body-sm font-medium">Safe Drag &amp; Drop .env File</div>
+<div class="text-text-muted text-[12px] mt-0.5">Automated parsing with client-side AES-256 zero-knowledge encryption before write</div>
+<div class="mt-2 flex gap-1.5 text-label-mono text-[10px] text-text-muted">
+<span class="bg-surface-panel px-1.5 py-0.5 rounded border border-border-subtle">.env</span>
+<span class="bg-surface-panel px-1.5 py-0.5 rounded border border-border-subtle">.env.local</span>
+<span class="bg-surface-panel px-1.5 py-0.5 rounded border border-border-subtle">.env.production</span>
+</div>
+</div>
+</section>
+</main>
+<!-- FOOTER CRYPTOGRAPHIC STATUS BAR -->
+<footer class="h-8 border-t border-border-subtle bg-surface-panel/90 px-space-md flex items-center justify-between text-label-mono text-[11px] text-text-muted shrink-0 z-10 select-none">
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1.5 text-text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+<span>127.0.0.1:54322</span>
+</span>
+<span class="text-mask-glyph">•</span>
+<span class="text-accent-emerald flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">lock</span>
+<span>AES-256 Verified</span>
+</span>
+<span class="text-mask-glyph">•</span>
+<span class="text-text-secondary">Zero-Knowledge Sandbox Active</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-primary">cloud_off</span>
+<span>No cloud leakage detected</span>
+</span>
+<span class="text-mask-glyph">•</span>
+<span class="text-text-muted">Session: <span class="text-text-secondary font-mono">auth-v2-prod-session</span></span>
+</div>
+</footer>
+</div>
+<!-- INTERACTIVITY SCRIPT -->
+<script>
+    // Micro-interactions for Reveal / Mask
+    document.querySelectorAll('.reveal-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const row = button.closest('tr');
+        const secretSpan = row.querySelector('.secret-field');
+        if (!secretSpan) return;
+
+        const isMasked = secretSpan.classList.contains('font-secret-mask');
+        const icon = button.querySelector('.material-symbols-outlined');
+
+        if (isMasked) {
+          // Reveal value
+          secretSpan.textContent = secretSpan.getAttribute('data-secret');
+          secretSpan.classList.remove('font-secret-mask', 'tracking-widest', 'text-mask-glyph');
+          secretSpan.classList.add('font-mono', 'text-accent-emerald-bright');
+          icon.textContent = 'visibility_off';
+
+          // Auto-remask after 15 seconds
+          setTimeout(() => {
+            if (!secretSpan.classList.contains('font-secret-mask')) {
+              secretSpan.textContent = '••••••••••••••••••••';
+              secretSpan.classList.add('font-secret-mask', 'tracking-widest', 'text-mask-glyph');
+              secretSpan.classList.remove('font-mono', 'text-accent-emerald-bright');
+              icon.textContent = 'visibility';
+            }
+          }, 15000);
+        } else {
+          // Mask value
+          secretSpan.textContent = '••••••••••••••••••••';
+          secretSpan.classList.add('font-secret-mask', 'tracking-widest', 'text-mask-glyph');
+          secretSpan.classList.remove('font-mono', 'text-accent-emerald-bright');
+          icon.textContent = 'visibility';
+        }
+      });
+    });
+
+    // Copy to clipboard mock toast
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const icon = btn.querySelector('.material-symbols-outlined');
+        const originalIcon = icon.textContent;
+        icon.textContent = 'done';
+        icon.classList.add('text-accent-emerald');
+        setTimeout(() => {
+          icon.textContent = originalIcon;
+          icon.classList.remove('text-accent-emerald');
+        }, 1200);
+      });
+    });
+
+    // Bulk Reveal Button
+    const toggleAllBtn = document.getElementById('toggle-all-btn');
+    if (toggleAllBtn) {
+      toggleAllBtn.addEventListener('click', () => {
+        document.querySelectorAll('.reveal-btn').forEach(btn => btn.click());
+      });
+    }
+  </script>
+</body></html>

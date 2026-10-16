@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnvBook — Microservice Auth &amp; Session Architecture</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#353940",
+            "error": "#ffb4ab",
+            "tertiary-container": "#fc7c78",
+            "outline": "#86948a",
+            "accent-emerald": "#10b981",
+            "error-container": "#93000a",
+            "primary-fixed": "#6ffbbe",
+            "text-muted": "#8b949e",
+            "surface-variant": "#31353c",
+            "surface": "#10141a",
+            "surface-container-high": "#262a31",
+            "on-tertiary-fixed-variant": "#842225",
+            "text-primary": "#f0f6fc",
+            "background": "#10141a",
+            "on-secondary": "#29313a",
+            "on-primary-container": "#00422b",
+            "on-surface": "#dfe2eb",
+            "primary-container": "#10b981",
+            "on-secondary-fixed-variant": "#3f4850",
+            "border-muted": "#30363d",
+            "status-danger": "#f85149",
+            "border-subtle": "#21262d",
+            "accent-emerald-bright": "#34d399",
+            "surface-subtle": "#12151a",
+            "inverse-primary": "#006c49",
+            "tertiary": "#ffb3af",
+            "primary": "#4edea3",
+            "surface-tint": "#4edea3",
+            "surface-panel": "#161b22",
+            "tertiary-fixed-dim": "#ffb3af",
+            "mask-glyph": "#484f58",
+            "surface-container": "#1c2026",
+            "on-primary-fixed-variant": "#005236",
+            "surface-canvas": "#0d1117",
+            "accent-emerald-glow": "rgba(16, 185, 129, 0.15)",
+            "surface-container-low": "#181c22",
+            "on-error": "#690005",
+            "on-tertiary": "#650911",
+            "secondary": "#bec7d2",
+            "text-secondary": "#c9d1d9",
+            "status-warning": "#d29922",
+            "on-primary": "#003824",
+            "secondary-fixed-dim": "#bec7d2",
+            "on-tertiary-container": "#711419",
+            "outline-variant": "#3c4a42",
+            "secondary-container": "#414a53",
+            "surface-dim": "#10141a",
+            "tertiary-fixed": "#ffdad7",
+            "on-tertiary-fixed": "#410005",
+            "inverse-surface": "#dfe2eb",
+            "on-error-container": "#ffdad6",
+            "border-accent": "#10b981",
+            "on-primary-fixed": "#002113",
+            "secondary-fixed": "#dae3ee",
+            "surface-container-lowest": "#0a0e14",
+            "surface-raised": "#21262d",
+            "surface-container-highest": "#31353c",
+            "on-background": "#dfe2eb",
+            "on-secondary-container": "#b0b9c4",
+            "inverse-on-surface": "#2d3137",
+            "on-surface-variant": "#bbcabf",
+            "primary-fixed-dim": "#4edea3",
+            "on-secondary-fixed": "#141c24"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "margin": "1rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.25rem",
+            "gutter-desktop": "1.5rem",
+            "margin-desktop": "2rem",
+            "space-md": "0.75rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "secret-mask": ["JetBrains Mono"],
+            "label-mono": ["JetBrains Mono"],
+            "label-ui": ["Inter"],
+            "display": ["Inter"],
+            "code-block": ["JetBrains Mono"],
+            "headline-md": ["Inter"],
+            "code-inline": ["JetBrains Mono"],
+            "headline-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "secret-mask": ["14px", { "lineHeight": "18px", "letterSpacing": "0.18em", "fontWeight": "700" }],
+            "label-mono": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500" }],
+            "label-ui": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "code-block": ["13px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "code-inline": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .dot-grid {
+      background-image: radial-gradient(#21262d 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #12151a;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #21262d;
+      border-radius: 2px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #30363d;
+    }
+  </style>
+</head>
+<body class="bg-surface-canvas text-text-primary antialiased selection:bg-primary-container selection:text-on-primary-container h-screen w-screen overflow-hidden flex">
+<!-- SideNavBar Component -->
+<aside class="w-60 flex flex-col justify-between h-screen p-space-sm bg-surface-subtle dark:bg-surface-subtle border-r border-border-subtle dark:border-border-subtle shrink-0 select-none z-30">
+<div class="flex flex-col gap-space-sm">
+<!-- Header / Vault Status -->
+<div class="flex items-center justify-between px-space-xs py-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-7 h-7 rounded-lg bg-surface-container flex items-center justify-center border border-border-muted text-primary">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span>
+</div>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm font-bold text-text-primary dark:text-text-primary tracking-tight leading-none">EnvBook</span>
+<span class="text-label-mono font-label-mono text-text-muted mt-1">Encrypted Vault</span>
+</div>
+</div>
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald"></span>
+</span>
+</div>
+<!-- Quick Switcher Bar -->
+<div class="mt-space-xs px-space-xs">
+<div class="flex items-center justify-between w-full px-space-sm py-1.5 bg-surface-panel border border-border-subtle rounded text-text-muted hover:border-border-muted cursor-pointer transition-colors">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]" data-icon="search">search</span>
+<span class="text-label-ui font-label-ui">Quick open...</span>
+</div>
+<kbd class="text-label-mono font-label-mono bg-surface-raised border border-border-muted px-1 rounded text-text-muted">⌘K</kbd>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-0.5 mt-space-xs">
+<div class="px-space-xs py-1 text-label-mono font-label-mono text-text-muted uppercase tracking-wider">Workspace</div>
+<!-- Tab 0: Home -->
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="home">home</span>
+<span class="text-label-ui font-label-ui">Home</span>
+</a>
+<!-- Tab 1: All Entries (Active) -->
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-primary dark:text-text-primary bg-surface-raised dark:bg-surface-raised border-l-2 border-primary font-medium hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="article">article</span>
+<span class="text-label-ui font-label-ui flex-1">All Entries</span>
+<span class="text-label-mono font-label-mono bg-surface-panel px-1 py-0.5 rounded text-text-muted text-[10px]">12</span>
+</a>
+<!-- Tab 2: Projects -->
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="folder">folder</span>
+<span class="text-label-ui font-label-ui">Projects</span>
+</a>
+<!-- Tab 3: Credentials Vault -->
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="key">key</span>
+<span class="text-label-ui font-label-ui">Credentials Vault</span>
+</a>
+<!-- Tab 4: Environments -->
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="terminal">terminal</span>
+<span class="text-label-ui font-label-ui">Environments</span>
+</a>
+<!-- Tab 5: Ideas Inbox -->
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="lightbulb">lightbulb</span>
+<span class="text-label-ui font-label-ui">Ideas Inbox</span>
+</a>
+<!-- Tab 6: Code Library -->
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="code">code</span>
+<span class="text-label-ui font-label-ui">Code Library</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Actions / Footer Tabs -->
+<div class="flex flex-col gap-1 border-t border-border-subtle pt-space-sm">
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="star">star</span>
+<span class="text-label-ui font-label-ui">Favorites</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-xs py-1.5 rounded text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer select-none" href="#">
+<span class="material-symbols-outlined text-[16px]" data-icon="delete">delete</span>
+<span class="text-label-ui font-label-ui">Trash</span>
+</a>
+<!-- Lock Vault CTA -->
+<button class="mt-space-xs flex items-center justify-between w-full px-space-sm py-1.5 bg-surface-container border border-border-muted rounded text-text-secondary hover:border-status-danger hover:text-status-danger transition-colors cursor-pointer text-left">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px]" data-icon="lock">lock</span>
+<span class="text-label-ui font-label-ui font-medium">Lock Vault</span>
+</div>
+<kbd class="text-label-mono font-label-mono text-[10px] text-text-muted">Esc</kbd>
+</button>
+</div>
+</aside>
+<!-- Right App Body (TopBar + Content Split) -->
+<div class="flex-1 flex flex-col h-screen min-w-0 overflow-hidden">
+<!-- TopNavBar Component -->
+<header class="flex justify-between items-center h-12 px-space-md w-full bg-surface dark:bg-surface border-b border-border-subtle shrink-0 z-20">
+<!-- Breadcrumbs & Status -->
+<div class="flex items-center gap-space-sm min-w-0">
+<nav class="flex items-center gap-1.5 text-body-sm font-body-sm text-text-muted truncate">
+<span class="hover:text-text-primary cursor-pointer transition-colors">EnvBook</span>
+<span class="text-border-muted">/</span>
+<span class="hover:text-text-primary cursor-pointer transition-colors">Projects</span>
+<span class="text-border-muted">/</span>
+<span class="hover:text-text-primary cursor-pointer transition-colors">Architecture</span>
+<span class="text-border-muted">/</span>
+<span class="text-text-primary dark:text-text-primary font-medium truncate">Microservice Auth Specification</span>
+</nav>
+<!-- Saved Status Indicator -->
+<div class="hidden sm:flex items-center gap-1.5 pl-3 border-l border-border-subtle">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="cloud_done">cloud_done</span>
+<span class="text-label-mono font-label-mono text-text-muted whitespace-nowrap">Saved to local SQLite • 2s ago</span>
+</div>
+</div>
+<!-- Controls & Trailing Actions -->
+<div class="flex items-center gap-space-sm shrink-0">
+<!-- Rendered vs Raw Segmented Toggle -->
+<div class="flex items-center bg-surface-subtle p-0.5 rounded border border-border-subtle">
+<button class="px-2 py-1 text-label-ui font-label-ui bg-surface-raised text-text-primary rounded shadow-sm border border-border-muted transition-all">Rendered</button>
+<button class="px-2 py-1 text-label-ui font-label-ui text-text-muted hover:text-text-primary transition-all">Raw Markdown</button>
+</div>
+<div class="h-4 w-px bg-border-subtle"></div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-0.5">
+<button class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded transition-colors" title="Vault Encrypted">
+<span class="material-symbols-outlined text-[18px]" data-icon="lock_open">lock_open</span>
+</button>
+<button class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded transition-colors" title="Synced">
+<span class="material-symbols-outlined text-[18px]" data-icon="cloud_done">cloud_done</span>
+</button>
+<button class="p-1.5 text-primary hover:bg-surface-raised rounded transition-colors" title="Toggle Table of Contents">
+<span class="material-symbols-outlined text-[18px]" data-icon="format_list_bulleted">format_list_bulleted</span>
+</button>
+<button class="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded transition-colors" title="More actions">
+<span class="material-symbols-outlined text-[18px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<div class="h-4 w-px bg-border-subtle"></div>
+<!-- Action Buttons -->
+<button class="px-2.5 py-1 text-label-ui font-label-ui border border-border-subtle bg-transparent text-text-secondary hover:bg-surface-panel hover:border-border-muted hover:text-text-primary rounded transition-all">Preview</button>
+<button class="px-3 py-1 text-label-ui font-label-ui font-semibold bg-accent-emerald text-surface hover:bg-accent-emerald-bright rounded transition-all shadow-[0_0_12px_rgba(16,185,129,0.35)]">Export</button>
+</div>
+</header>
+<!-- Editor Workspace Layout (Canvas + TOC Sidebar) -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Main Dot-Grid Content Canvas -->
+<main class="flex-1 dot-grid overflow-y-auto custom-scroll relative flex justify-center px-4 py-8">
+<!-- Reading / Writing Container (840px Max Width) -->
+<article class="w-full max-w-[840px] flex flex-col gap-6 relative pb-32">
+<!-- Document Header -->
+<header class="flex flex-col gap-3 pb-6 border-b border-border-subtle">
+<!-- Icon & Metadata Bar -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-9 h-9 rounded bg-surface-panel border border-border-subtle flex items-center justify-center text-text-secondary hover:border-border-muted cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="article">article</span>
+</div>
+<span class="text-label-mono font-label-mono text-text-muted px-2 py-0.5 rounded bg-surface-subtle border border-border-subtle">DOC-2024-AUTH</span>
+</div>
+<!-- Metadata Badges -->
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 text-label-mono font-label-mono text-text-muted bg-surface-subtle px-2 py-0.5 rounded border border-border-subtle">
+<span class="material-symbols-outlined text-[12px]" data-icon="schedule">schedule</span>
+                  Today, 14:28
+                </span>
+<span class="inline-flex items-center gap-1 text-label-mono font-label-mono text-text-muted bg-surface-subtle px-2 py-0.5 rounded border border-border-subtle">
+<span class="material-symbols-outlined text-[12px]" data-icon="format_align_left">format_align_left</span>
+                  840 words
+                </span>
+<span class="inline-flex items-center gap-1.5 text-label-mono font-label-mono text-primary bg-surface-subtle px-2 py-0.5 rounded border border-border-accent/40 shadow-[0_0_8px_rgba(16,185,129,0.15)]">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+                  AES-256 GCM
+                </span>
+</div>
+</div>
+<!-- Editable Title -->
+<h1 class="text-display font-display text-text-primary tracking-tight outline-none focus:ring-0 focus:border-transparent mt-2 cursor-text" contenteditable="true" spellcheck="false">
+              Microservice Auth &amp; Session Architecture
+            </h1>
+<p class="text-body-lg font-body-lg text-text-secondary leading-relaxed">
+              Cryptographic design specification detailing asymmetric JWT verification, Argon2id master credentials invalidation, and zero-knowledge session caching over local ephemeral clusters.
+            </p>
+</header>
+<!-- Callout Block: Security Boundary -->
+<div class="p-space-md rounded bg-surface-panel/70 border-l-[3px] border-accent-emerald border-y border-r border-border-subtle flex items-start gap-3">
+<div class="text-accent-emerald mt-0.5 shrink-0">
+<span class="material-symbols-outlined text-[20px]" data-icon="shield">shield</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="text-label-mono font-label-mono text-primary uppercase font-bold tracking-wider text-[10px]">High Security Boundary</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">• Spec v2.1</span>
+</div>
+<p class="text-body-md font-body-md text-text-primary leading-snug">
+                Token signing keys and HMAC secrets must never be exposed to public clients. Boundary middleware enforces strict Ed25519 asymmetric verification with hardware-backed KMS anchors.
+              </p>
+</div>
+</div>
+<!-- Section Heading -->
+<section class="flex flex-col gap-3 group pt-2">
+<div class="flex items-center justify-between border-b border-border-subtle pb-2">
+<h2 class="text-headline-md font-headline-md text-text-primary flex items-center gap-2 cursor-pointer">
+<span>Token Lifecycle &amp; Argon2id Invalidation</span>
+<span class="material-symbols-outlined text-[16px] text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" data-icon="link">link</span>
+</h2>
+<span class="text-label-mono font-label-mono text-text-muted text-[11px]">SECTION 01</span>
+</div>
+<p class="text-body-md font-body-md text-text-secondary leading-relaxed">
+              Every issued refresh token holds a cryptographically random rotation handle. On authentication, state transitions trigger Argon2id hash recomputation with memory-hard cost parameters ($m=65536, t=3, p=4$).
+            </p>
+</section>
+<!-- Interactive Checklist / Todo Block -->
+<div class="flex flex-col gap-2 p-space-md bg-surface-subtle/80 rounded border border-border-subtle">
+<div class="flex items-center justify-between pb-1 border-b border-border-subtle">
+<span class="text-label-mono font-label-mono text-text-muted uppercase tracking-wider text-[10px]">Deployment Implementation Checklist</span>
+<span class="text-label-mono font-label-mono text-primary text-[11px]">2/3 Complete</span>
+</div>
+<div class="flex flex-col gap-2.5 mt-1">
+<!-- Item 1 (Checked) -->
+<label class="flex items-start gap-3 cursor-pointer group">
+<input checked="" class="mt-1 rounded bg-surface-raised border-border-muted text-accent-emerald focus:ring-accent-emerald focus:ring-offset-surface" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-text-muted line-through group-hover:text-text-secondary transition-colors">Implement Ed25519 token rotation middleware in Go microservices</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">Merged via PR #412 • Validated on staging-us-east</span>
+</div>
+</label>
+<!-- Item 2 (Checked) -->
+<label class="flex items-start gap-3 cursor-pointer group">
+<input checked="" class="mt-1 rounded bg-surface-raised border-border-muted text-accent-emerald focus:ring-accent-emerald focus:ring-offset-surface" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-text-muted line-through group-hover:text-text-secondary transition-colors">Configure Argon2id parameters (m=64MB, t=3, p=4) on edge auth proxy</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">Latency bounded under 42ms p99</span>
+</div>
+</label>
+<!-- Item 3 (Unchecked) -->
+<label class="flex items-start gap-3 cursor-pointer group">
+<input class="mt-1 rounded bg-surface-panel border-border-muted text-accent-emerald focus:ring-accent-emerald focus:ring-offset-surface" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-body-md font-body-md text-text-primary group-hover:text-primary transition-colors">Set up automatic SQLite secret vacuuming on container SIGTERM</span>
+<span class="text-label-mono font-label-mono text-status-warning text-[10px]">Pending review from @infra-sec</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Live Slash Command Tooltip (Floating State Mock) -->
+<div class="relative my-2">
+<div class="flex items-center gap-2 text-body-md font-body-md text-text-muted py-1 border-b border-dashed border-border-muted/60">
+<span class="text-accent-emerald font-label-mono font-label-mono font-bold">/</span>
+<span class="text-text-primary">sec</span>
+<span class="inline-block w-1.5 h-4 bg-accent-emerald animate-pulse"></span>
+</div>
+<!-- Floating Command Popup -->
+<div class="absolute left-0 top-full mt-2 w-80 bg-surface-panel border border-border-muted rounded shadow-[0_8px_24px_rgba(0,0,0,0.65)] z-40 overflow-hidden flex flex-col">
+<div class="px-3 py-2 border-b border-border-subtle bg-surface-subtle flex items-center justify-between">
+<span class="text-label-mono font-label-mono text-text-muted text-[10px] uppercase tracking-wider">Slash Commands</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">Filtering: "sec"</span>
+</div>
+<div class="max-h-64 overflow-y-auto custom-scroll p-1 flex flex-col gap-0.5">
+<!-- Group: Security -->
+<div class="px-2 pt-1 pb-0.5 text-label-mono font-label-mono text-text-muted text-[10px] uppercase font-bold">Security Primitives</div>
+<!-- Active Option: /credential -->
+<div class="flex items-center justify-between px-2 py-1.5 rounded bg-surface-raised border-l-2 border-accent-emerald cursor-pointer">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-accent-emerald" data-icon="key">key</span>
+<div class="flex flex-col">
+<span class="text-label-ui font-label-ui text-text-primary font-medium">/credential</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">Encrypted secret key-value card</span>
+</div>
+</div>
+<kbd class="text-label-mono font-label-mono bg-surface-subtle border border-border-muted px-1 rounded text-text-muted text-[10px]">↵</kbd>
+</div>
+<!-- Option: /env -->
+<div class="flex items-center justify-between px-2 py-1.5 rounded hover:bg-surface-raised cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-text-muted" data-icon="terminal">terminal</span>
+<div class="flex flex-col">
+<span class="text-label-ui font-label-ui text-text-secondary font-medium">/env</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">Masked .env block with auto-remask</span>
+</div>
+</div>
+</div>
+<!-- Option: /warning -->
+<div class="flex items-center justify-between px-2 py-1.5 rounded hover:bg-surface-raised cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-status-warning" data-icon="warning">warning</span>
+<div class="flex flex-col">
+<span class="text-label-ui font-label-ui text-text-secondary font-medium">/warning</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">High-security perimeter alert block</span>
+</div>
+</div>
+</div>
+<!-- Group: Code & Execution -->
+<div class="px-2 pt-2 pb-0.5 text-label-mono font-label-mono text-text-muted text-[10px] uppercase font-bold border-t border-border-subtle mt-1">Code Blocks</div>
+<!-- Option: /code -->
+<div class="flex items-center justify-between px-2 py-1.5 rounded hover:bg-surface-raised cursor-pointer transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-text-muted" data-icon="code">code</span>
+<div class="flex flex-col">
+<span class="text-label-ui font-label-ui text-text-secondary font-medium">/code</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">Syntax highlighted code fence</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer with keyboard hints -->
+<div class="px-3 py-1.5 border-t border-border-subtle bg-surface-subtle flex items-center justify-between text-label-mono font-label-mono text-text-muted text-[10px]">
+<span>Navigate <strong class="text-text-primary">↑↓</strong></span>
+<span>Select <strong class="text-text-primary">Enter</strong></span>
+<span>Dismiss <strong class="text-text-primary">Esc</strong></span>
+</div>
+</div>
+</div>
+<!-- Fenced Syntax-Highlighted Code Block -->
+<div class="flex flex-col rounded border border-border-subtle bg-surface-panel overflow-hidden">
+<!-- Code Block Header -->
+<div class="flex items-center justify-between px-space-md py-2 bg-surface-subtle border-b border-border-subtle">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-border-muted inline-block"></span>
+<span class="text-label-mono font-label-mono text-primary font-medium">auth_middleware.go</span>
+<span class="text-label-mono font-label-mono text-text-muted px-1.5 py-0.2 rounded bg-surface-raised text-[10px]">Go 1.22</span>
+</div>
+<div class="flex items-center gap-2">
+<!-- Language Selector -->
+<select class="bg-surface-panel border border-border-subtle rounded text-label-mono font-label-mono text-text-secondary text-[11px] py-0.5 px-2 focus:border-accent-emerald focus:ring-0">
+<option selected="">Go (Standard Library)</option>
+<option>TypeScript (Node.js)</option>
+<option>Rust (Actix-Web)</option>
+</select>
+<!-- Copy Snippet Button -->
+<button class="flex items-center gap-1 px-2 py-1 rounded bg-surface-raised hover:bg-surface-variant border border-border-muted text-text-secondary hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-[13px]" data-icon="content_copy">content_copy</span>
+<span class="text-label-mono font-label-mono text-[10px]">Copy</span>
+</button>
+</div>
+</div>
+<!-- Code Content (JetBrains Mono) -->
+<div class="p-space-md overflow-x-auto custom-scroll text-code-block font-code-block leading-relaxed bg-[#0b0e14]">
+<pre class="text-text-secondary"><span class="text-[#8b949e]">// ValidateBearerToken executes asymmetric Ed25519 signature checks</span>
+<span class="text-[#ff7b72]">func</span> <span class="text-[#d2a8ff]">ValidateBearerToken</span>(rawHeader <span class="text-[#79c0ff]">string</span>) (*Claims, <span class="text-[#79c0ff]">error</span>) {
+    <span class="text-[#ff7b72]">if</span> !strings.<span class="text-[#d2a8ff]">HasPrefix</span>(rawHeader, <span class="text-[#a5d6ff]">"Bearer "</span>) {
+        <span class="text-[#ff7b72]">return</span> <span class="text-[#79c0ff]">nil</span>, ErrMalformedAuthorizationHeader
+    }
+    
+    tokenBytes := []<span class="text-[#79c0ff]">byte</span>(rawHeader[<span class="text-[#79c0ff]">7</span>:])
+    claims, err := verifier.<span class="text-[#d2a8ff]">VerifySignature</span>(tokenBytes, kmsPublicKey)
+    <span class="text-[#ff7b72]">if</span> err != <span class="text-[#79c0ff]">nil</span> {
+        audit.<span class="text-[#d2a8ff]">RecordSecurityEvent</span>(<span class="text-[#a5d6ff]">"INVALID_SIGNATURE"</span>, audit.SeverityCritical)
+        <span class="text-[#ff7b72]">return</span> <span class="text-[#79c0ff]">nil</span>, ErrSignatureMismatch
+    }
+
+    <span class="text-[#8b949e]">// Validate active SQLite session revocation cache</span>
+    <span class="text-[#ff7b72]">if</span> sessionVault.<span class="text-[#d2a8ff]">IsRevoked</span>(claims.SessionID) {
+        <span class="text-[#ff7b72]">return</span> <span class="text-[#79c0ff]">nil</span>, ErrSessionRevoked
+    }
+
+    <span class="text-[#ff7b72]">return</span> claims, <span class="text-[#79c0ff]">nil</span>
+}</pre>
+</div>
+</div>
+<!-- Collapsible Toggle Block -->
+<details class="group rounded border border-border-subtle bg-surface-subtle overflow-hidden" open="">
+<summary class="flex items-center justify-between p-space-md cursor-pointer select-none bg-surface-panel/40 hover:bg-surface-panel transition-colors">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-text-muted transition-transform group-open:rotate-90" data-icon="chevron_right">chevron_right</span>
+<span class="text-headline-sm font-headline-sm text-text-primary">Data Flow Diagram &amp; Schema Definitions</span>
+</div>
+<span class="text-label-mono font-label-mono text-text-muted text-[11px] bg-surface-raised px-2 py-0.5 rounded">SQLite 3.45</span>
+</summary>
+<div class="p-space-md border-t border-border-subtle flex flex-col gap-3 bg-surface-panel/20">
+<p class="text-body-md font-body-md text-text-secondary">
+                The embedded session storage operates in WAL mode (Write-Ahead-Logging) with zero external network socket dependencies.
+              </p>
+<!-- Embedded Schema Table -->
+<div class="overflow-x-auto rounded border border-border-subtle bg-surface-canvas">
+<table class="w-full text-left text-body-sm font-body-sm">
+<thead>
+<tr class="border-b border-border-subtle bg-surface-panel text-label-mono font-label-mono text-text-muted text-[11px]">
+<th class="p-2.5">Field</th>
+<th class="p-2.5">Type</th>
+<th class="p-2.5">Index</th>
+<th class="p-2.5">Encryption</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle text-text-secondary font-code-inline text-code-inline">
+<tr>
+<td class="p-2.5 text-primary">session_id</td>
+<td class="p-2.5 text-text-muted">BLOB (UUIDv4)</td>
+<td class="p-2.5 text-text-muted">PRIMARY KEY</td>
+<td class="p-2.5 text-text-muted">Plaintext (B-Tree indexed)</td>
+</tr>
+<tr>
+<td class="p-2.5 text-primary">argon2_hash</td>
+<td class="p-2.5 text-text-muted">VARCHAR(96)</td>
+<td class="p-2.5 text-text-muted">UNIQUE</td>
+<td class="p-2.5 text-text-muted">Salted 256-bit hash</td>
+</tr>
+<tr>
+<td class="p-2.5 text-primary">credential_payload</td>
+<td class="p-2.5 text-text-muted">BLOB</td>
+<td class="p-2.5 text-text-muted">NONE</td>
+<td class="p-2.5 text-accent-emerald font-semibold">AES-256-GCM (Chacha20 fallback)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</details>
+</article>
+</main>
+<!-- Right Contextual Drawer: Table of Contents -->
+<aside class="w-64 bg-surface border-l border-border-subtle hidden xl:flex flex-col justify-between p-space-md shrink-0 select-none">
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between pb-2 border-b border-border-subtle">
+<span class="text-label-mono font-label-mono text-text-muted uppercase tracking-wider text-[11px] font-semibold">Table of Contents</span>
+<span class="text-label-mono font-label-mono text-primary text-[10px]">Outline</span>
+</div>
+<nav class="flex flex-col gap-1 text-body-sm font-body-sm">
+<a class="px-2 py-1.5 rounded text-primary bg-surface-raised border-l-2 border-primary font-medium transition-colors" href="#">
+              Microservice Auth
+            </a>
+<a class="px-2 py-1.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel transition-colors pl-4" href="#">
+              Security Boundary Callout
+            </a>
+<a class="px-2 py-1.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel transition-colors" href="#">
+              Token Lifecycle &amp; Argon2id
+            </a>
+<a class="px-2 py-1.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel transition-colors pl-4" href="#">
+              Implementation Checklist
+            </a>
+<a class="px-2 py-1.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel transition-colors pl-4" href="#">
+              auth_middleware.go Snippet
+            </a>
+<a class="px-2 py-1.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel transition-colors" href="#">
+              Data Flow &amp; Schema Definitions
+            </a>
+</nav>
+<!-- Cryptographic Context Card -->
+<div class="mt-4 p-space-sm bg-surface-panel border border-border-subtle rounded flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-label-mono font-label-mono text-text-muted uppercase text-[10px]">Vault Security</span>
+<span class="material-symbols-outlined text-[14px] text-accent-emerald" data-icon="verified_user">verified_user</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<span class="text-label-mono font-label-mono text-text-primary text-[11px]">PBKDF2 Iterations</span>
+<span class="text-label-mono font-label-mono text-text-muted text-[10px]">600,000 passes</span>
+</div>
+<div class="flex flex-col gap-0.5">
+<span class="text-label-mono font-label-mono text-text-primary text-[11px]">Key Fingerprint</span>
+<span class="text-label-mono font-label-mono text-primary text-[10px] truncate">SHA256:8f2a...91ce</span>
+</div>
+</div>
+</div>
+<!-- TOC Bottom Stats -->
+<div class="pt-3 border-t border-border-subtle flex items-center justify-between text-label-mono font-label-mono text-text-muted text-[11px]">
+<span>Sync Status</span>
+<span class="text-accent-emerald flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+            Clean
+          </span>
+</div>
+</aside>
+</div>
+</div>
+</body></html>

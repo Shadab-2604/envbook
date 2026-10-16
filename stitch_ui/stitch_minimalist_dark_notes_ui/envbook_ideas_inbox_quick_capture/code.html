@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnvBook - Ideas Inbox</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-bright": "#353940",
+            "error": "#ffb4ab",
+            "tertiary-container": "#fc7c78",
+            "outline": "#86948a",
+            "accent-emerald": "#10b981",
+            "error-container": "#93000a",
+            "primary-fixed": "#6ffbbe",
+            "text-muted": "#8b949e",
+            "surface-variant": "#31353c",
+            "surface": "#10141a",
+            "surface-container-high": "#262a31",
+            "on-tertiary-fixed-variant": "#842225",
+            "text-primary": "#f0f6fc",
+            "background": "#10141a",
+            "on-secondary": "#29313a",
+            "on-primary-container": "#00422b",
+            "on-surface": "#dfe2eb",
+            "primary-container": "#10b981",
+            "on-secondary-fixed-variant": "#3f4850",
+            "border-muted": "#30363d",
+            "status-danger": "#f85149",
+            "border-subtle": "#21262d",
+            "accent-emerald-bright": "#34d399",
+            "surface-subtle": "#12151a",
+            "inverse-primary": "#006c49",
+            "tertiary": "#ffb3af",
+            "primary": "#4edea3",
+            "surface-tint": "#4edea3",
+            "surface-panel": "#161b22",
+            "tertiary-fixed-dim": "#ffb3af",
+            "mask-glyph": "#484f58",
+            "surface-container": "#1c2026",
+            "on-primary-fixed-variant": "#005236",
+            "surface-canvas": "#0d1117",
+            "accent-emerald-glow": "rgba(16, 185, 129, 0.15)",
+            "surface-container-low": "#181c22",
+            "on-error": "#690005",
+            "on-tertiary": "#650911",
+            "secondary": "#bec7d2",
+            "text-secondary": "#c9d1d9",
+            "status-warning": "#d29922",
+            "on-primary": "#003824",
+            "secondary-fixed-dim": "#bec7d2",
+            "on-tertiary-container": "#711419",
+            "outline-variant": "#3c4a42",
+            "secondary-container": "#414a53",
+            "surface-dim": "#10141a",
+            "tertiary-fixed": "#ffdad7",
+            "on-tertiary-fixed": "#410005",
+            "inverse-surface": "#dfe2eb",
+            "on-error-container": "#ffdad6",
+            "border-accent": "#10b981",
+            "on-primary-fixed": "#002113",
+            "secondary-fixed": "#dae3ee",
+            "surface-container-lowest": "#0a0e14",
+            "surface-raised": "#21262d",
+            "surface-container-highest": "#31353c",
+            "on-background": "#dfe2eb",
+            "on-secondary-container": "#b0b9c4",
+            "inverse-on-surface": "#2d3137",
+            "on-surface-variant": "#bbcabf",
+            "primary-fixed-dim": "#4edea3",
+            "on-secondary-fixed": "#141c24"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "margin": "1rem",
+            "space-sm": "0.5rem",
+            "gutter": "1rem",
+            "space-xl": "2rem",
+            "space-2xl": "3rem",
+            "space-lg": "1.25rem",
+            "gutter-desktop": "1.5rem",
+            "margin-desktop": "2rem",
+            "space-md": "0.75rem"
+          },
+          "fontFamily": {
+            "headline-lg-mobile": ["Inter"],
+            "headline-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "secret-mask": ["JetBrains Mono"],
+            "label-mono": ["JetBrains Mono"],
+            "label-ui": ["Inter"],
+            "display": ["Inter"],
+            "code-block": ["JetBrains Mono"],
+            "headline-md": ["Inter"],
+            "code-inline": ["JetBrains Mono"],
+            "headline-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "body-md": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "secret-mask": ["14px", { "lineHeight": "18px", "letterSpacing": "0.18em", "fontWeight": "700" }],
+            "label-mono": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500" }],
+            "label-ui": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "code-block": ["13px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "code-inline": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    .canvas-dots {
+      background-color: #0d1117;
+      background-image: radial-gradient(#21262d 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .mono-scroll::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .mono-scroll::-webkit-scrollbar-thumb {
+      background: #21262d;
+      border-radius: 2px;
+    }
+    .mono-scroll::-webkit-scrollbar-thumb:hover {
+      background: #30363d;
+    }
+  </style>
+</head>
+<body class="bg-surface-canvas text-text-primary antialiased h-screen overflow-hidden flex flex-row">
+<!-- COLLAPSIBLE SIDEBAR (Shared Component: SideNavBar) -->
+<aside class="w-60 flex flex-col justify-between h-screen p-space-sm bg-surface-subtle dark:bg-surface-subtle border-r border-border-subtle dark:border-border-subtle shrink-0 select-none">
+<!-- Top Area: Brand & Primary Navigation -->
+<div class="flex flex-col gap-space-md">
+<!-- Vault Header -->
+<div class="flex items-center justify-between px-space-xs py-space-xs">
+<div class="flex items-center gap-space-sm">
+<div class="w-7 h-7 rounded-lg bg-surface-panel border border-border-muted flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+</div>
+<div>
+<div class="text-headline-sm font-headline-sm font-bold text-text-primary dark:text-text-primary tracking-tight leading-none">EnvBook</div>
+<div class="text-label-mono font-label-mono text-text-muted text-[10px] tracking-widest uppercase">Encrypted Vault</div>
+</div>
+</div>
+<button class="text-text-muted hover:text-text-primary transition-colors duration-150 p-space-xs">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+</div>
+<!-- Navigation Tabs (Shared Components JSON) -->
+<nav class="flex flex-col gap-0.5 mt-space-xs">
+<!-- Home -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">home</span>
+<span>Home</span>
+</a>
+<!-- All Entries -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">article</span>
+<span>All Entries</span>
+</a>
+<!-- Projects -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">folder</span>
+<span>Projects</span>
+</a>
+<!-- Credentials Vault -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">key</span>
+<span>Credentials Vault</span>
+</a>
+<!-- Environments -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">terminal</span>
+<span>Environments</span>
+</a>
+<!-- Ideas Inbox (ACTIVE ITEM - Exact context match) -->
+<a class="flex items-center justify-between px-space-sm py-1.5 rounded-r text-label-ui font-label-ui text-text-primary dark:text-text-primary bg-surface-raised dark:bg-surface-raised border-l-2 border-primary font-medium cursor-pointer" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<span>Ideas Inbox</span>
+</div>
+<span class="text-label-mono font-label-mono text-[10px] px-1.5 py-0.5 rounded bg-surface-panel border border-border-muted text-primary font-bold">7</span>
+</a>
+<!-- Code Library -->
+<a class="flex items-center gap-space-sm px-space-sm py-1.5 rounded text-label-ui font-label-ui text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised dark:hover:bg-surface-raised transition-colors duration-150 cursor-pointer" href="#">
+<span class="material-symbols-outlined text-[18px]">code</span>
+<span>Code Library</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Footers & Security Lock -->
+<div class="flex flex-col gap-space-sm pt-space-sm border-t border-border-subtle">
+<!-- Footer Nav Items -->
+<div class="flex flex-col gap-0.5">
+<a class="flex items-center gap-space-sm px-space-sm py-1 rounded text-label-ui font-label-ui text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[16px]">star</span>
+<span>Favorites</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-sm py-1 rounded text-label-ui font-label-ui text-text-muted dark:text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-raised transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-[16px]">delete</span>
+<span>Trash</span>
+</a>
+</div>
+<!-- Developer Info & Lock CTA -->
+<div class="pt-space-xs">
+<div class="flex items-center justify-between p-space-xs rounded bg-surface-panel border border-border-subtle mb-space-xs">
+<div class="flex items-center gap-space-xs">
+<div class="w-5 h-5 rounded-full bg-surface-bright flex items-center justify-center text-text-secondary text-label-mono text-[10px]">
+              DV
+            </div>
+<span class="text-label-mono font-label-mono text-text-secondary text-[11px] truncate max-w-[90px]">dev@local.box</span>
+</div>
+<span class="inline-block w-2 h-2 rounded-full bg-accent-emerald"></span>
+</div>
+<button class="w-full flex items-center justify-center gap-space-xs py-1.5 px-space-sm rounded bg-surface-panel hover:bg-surface-raised border border-border-muted text-text-secondary hover:text-status-danger transition-colors duration-150 text-label-ui font-label-ui">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+<span>Lock Vault</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- MAIN CANVAS CONTAINER -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TOP NAVIGATION BAR (Derived & Styled from Shared Components: TopNavBar) -->
+<header class="flex justify-between items-center h-12 px-space-md w-full bg-surface border-b border-border-subtle shrink-0">
+<!-- Left: Breadcrumb Anchor -->
+<div class="flex items-center gap-space-xs text-body-sm font-body-sm">
+<span class="text-text-muted">EnvBook</span>
+<span class="text-mask-glyph font-label-mono">/</span>
+<span class="text-text-primary font-medium flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">lightbulb</span>
+          Ideas Inbox
+        </span>
+<span class="ml-space-xs px-1.5 py-0.5 rounded text-label-mono font-label-mono text-[10px] bg-surface-panel text-text-muted border border-border-subtle">
+          7 ITEMS
+        </span>
+</div>
+<!-- Center: Quick Capture Bar Trigger -->
+<div class="hidden lg:flex items-center">
+<div class="flex items-center gap-space-sm bg-surface-panel border border-border-subtle hover:border-border-muted px-space-md py-1 rounded w-80 text-text-muted cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-[16px] text-text-muted">add_circle</span>
+<span class="text-body-sm font-body-sm truncate flex-1">Press ⌘+N or type idea...</span>
+<kbd class="text-label-mono font-label-mono text-[10px] bg-surface-raised text-text-muted px-1.5 py-0.5 rounded border border-border-muted">⌘N</kbd>
+</div>
+</div>
+<!-- Right: Actions & Cryptographic Indicators -->
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-subtle border border-border-subtle text-label-mono font-label-mono text-[11px] text-accent-emerald">
+<span class="material-symbols-outlined text-[14px]">lock_open</span>
+<span>AES-256 GCM</span>
+</div>
+<div class="flex items-center text-text-muted">
+<button class="p-1.5 hover:text-text-primary hover:bg-surface-raised rounded transition-colors" title="Vault In Sync">
+<span class="material-symbols-outlined text-[18px] text-primary">cloud_done</span>
+</button>
+<button class="p-1.5 hover:text-text-primary hover:bg-surface-raised rounded transition-colors">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+</header>
+<!-- SECONDARY FILTER & SEARCH BAR -->
+<div class="h-11 px-space-md bg-surface-subtle border-b border-border-subtle flex items-center justify-between shrink-0 gap-space-md">
+<!-- Filter Pills -->
+<div class="flex items-center gap-1.5 overflow-x-auto mono-scroll py-1">
+<button class="px-2.5 py-1 rounded bg-surface-raised text-text-primary text-label-ui font-label-ui font-medium border border-border-muted flex items-center gap-1">
+<span>All</span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">(7)</span>
+</button>
+<button class="px-2.5 py-1 rounded bg-surface hover:bg-surface-panel text-text-muted hover:text-text-primary text-label-ui font-label-ui border border-border-subtle flex items-center gap-1.5 transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-status-warning"></span>
+<span>Considering</span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">3</span>
+</button>
+<button class="px-2.5 py-1 rounded bg-surface hover:bg-surface-panel text-text-muted hover:text-text-primary text-label-ui font-label-ui border border-border-subtle flex items-center gap-1.5 transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Planned</span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">2</span>
+</button>
+<button class="px-2.5 py-1 rounded bg-surface hover:bg-surface-panel text-text-muted hover:text-text-primary text-label-ui font-label-ui border border-border-subtle flex items-center gap-1.5 transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+<span>In Progress</span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">1</span>
+</button>
+<button class="px-2.5 py-1 rounded bg-surface hover:bg-surface-panel text-text-muted hover:text-text-primary text-label-ui font-label-ui border border-border-subtle flex items-center gap-1.5 transition-colors">
+<span class="material-symbols-outlined text-[14px]">archive</span>
+<span>Archived</span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">1</span>
+</button>
+</div>
+<!-- Quick Filter Search Input -->
+<div class="relative w-56 shrink-0">
+<span class="material-symbols-outlined absolute left-2 top-2 text-[16px] text-text-muted">search</span>
+<input class="w-full bg-surface-panel border border-border-subtle rounded pl-7 pr-space-sm py-1 text-label-ui font-label-ui text-text-primary placeholder-text-muted focus:outline-none focus:border-border-accent focus:ring-1 focus:ring-accent-emerald text-xs" placeholder="Filter ideas by #tag or text..." type="text"/>
+</div>
+</div>
+<!-- CANVAS SCROLLABLE BODY -->
+<main class="flex-1 overflow-y-auto canvas-dots p-space-lg mono-scroll">
+<div class="max-w-[1040px] mx-auto flex flex-col gap-space-lg">
+<!-- QUICK CAPTURE CARD -->
+<div class="bg-surface-subtle border border-border-subtle rounded-lg p-space-md shadow-lg transition-all focus-within:border-border-accent focus-within:ring-1 focus-within:ring-accent-emerald">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">bolt</span>
+<input class="w-full bg-transparent border-none p-0 text-body-md font-body-md text-text-primary placeholder:text-text-muted focus:ring-0 focus:outline-none" placeholder="Capture an idea, technical note, or architecture thought..." type="text"/>
+</div>
+<!-- Lower Action Strip -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs border-t border-border-subtle">
+<!-- Tag Selectors & Target Project -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted uppercase tracking-wider mr-1">Tags:</span>
+<button class="px-2 py-0.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-label-mono font-label-mono text-[11px] text-text-secondary transition-colors">
+                  #ai
+                </button>
+<button class="px-2 py-0.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-label-mono font-label-mono text-[11px] text-text-secondary transition-colors">
+                  #database
+                </button>
+<button class="px-2 py-0.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-label-mono font-label-mono text-[11px] text-text-secondary transition-colors">
+                  #backend
+                </button>
+<button class="px-1.5 py-0.5 rounded hover:bg-surface-raised text-text-muted text-label-mono font-label-mono text-[11px]">
+                  + Custom
+                </button>
+<div class="h-3 w-px bg-border-subtle mx-1"></div>
+<!-- Target Project Selector -->
+<div class="flex items-center gap-1 bg-surface-panel border border-border-subtle rounded px-2 py-0.5 text-label-ui font-label-ui text-text-secondary hover:border-border-muted cursor-pointer text-xs">
+<span class="material-symbols-outlined text-[14px] text-text-muted">folder</span>
+<span>Target: Unassigned</span>
+<span class="material-symbols-outlined text-[14px] text-text-muted">arrow_drop_down</span>
+</div>
+</div>
+<!-- Submit Button -->
+<div class="flex items-center gap-space-sm">
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted hidden sm:inline">↵ to save</span>
+<button class="flex items-center gap-1 px-space-md py-1 rounded bg-accent-emerald hover:bg-accent-emerald-bright text-surface font-label-ui font-label-ui font-semibold text-xs transition-all shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+<span class="material-symbols-outlined text-[16px]">send</span>
+<span>Capture Idea</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- BOARD SECTION HEADER -->
+<div class="flex items-center justify-between text-label-ui font-label-ui text-text-muted">
+<div class="flex items-center gap-space-xs font-label-mono text-label-mono uppercase tracking-wider">
+<span>Active Idea Stream</span>
+<span class="text-mask-glyph">•</span>
+<span class="text-text-secondary">4 Pending Execution</span>
+</div>
+<div class="flex items-center gap-space-xs text-xs">
+<span class="material-symbols-outlined text-[16px]">sort</span>
+<span>Sorted by Updated</span>
+</div>
+</div>
+<!-- IDEA CARDS BENTO / ASYMMETRIC GRID -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- IDEA CARD 1: Distributed SQLite Sync with CRDTs -->
+<div class="group bg-surface-subtle hover:bg-surface-panel border border-border-subtle hover:border-border-muted rounded-lg p-space-md flex flex-col justify-between transition-all duration-150">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between gap-space-sm mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-[#312b17] border border-[#594819] text-[#e3b341] text-label-mono font-label-mono text-[10px] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-warning"></span>
+                    Considering
+                  </span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">ID-204</span>
+</div>
+<!-- Card Utility Icons -->
+<div class="flex items-center gap-1 text-text-muted">
+<button class="hover:text-status-warning p-1 rounded hover:bg-surface-raised transition-colors" title="Star">
+<span class="material-symbols-outlined text-[16px]">star</span>
+</button>
+<button class="hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Quick Options">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Title -->
+<h3 class="text-headline-sm font-headline-sm text-text-primary font-semibold mb-space-xs group-hover:text-primary transition-colors">
+                Distributed SQLite Sync with CRDTs
+              </h3>
+<!-- Target Project Pill -->
+<div class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface border border-border-subtle text-label-mono font-label-mono text-[11px] text-secondary mb-space-sm">
+<span class="material-symbols-outlined text-[13px] text-text-muted">folder</span>
+<span>Target: Auth Service v2</span>
+</div>
+<!-- Next Action Callout -->
+<div class="bg-surface-panel/60 border-l-2 border-primary p-2 rounded-r mb-space-md">
+<div class="text-label-mono font-label-mono text-[10px] text-primary uppercase font-bold tracking-wider">Next Action</div>
+<div class="text-body-sm font-body-sm text-text-secondary mt-0.5">Benchmark y-webrtc latency across local LAN mesh.</div>
+</div>
+</div>
+<!-- Card Footer: Tags & Quick Action Row -->
+<div class="pt-space-sm border-t border-border-subtle flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted hover:text-text-primary cursor-pointer">#sqlite</span>
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted hover:text-text-primary cursor-pointer">#sync</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 rounded bg-surface-panel hover:bg-surface-raised text-label-ui font-label-ui text-text-secondary hover:text-text-primary border border-border-subtle text-xs transition-colors" title="Convert to PRD / Document">
+                  Convert to PRD
+                </button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-text-primary border border-border-subtle transition-colors" title="Move to Project">
+<span class="material-symbols-outlined text-[15px]">drive_file_move</span>
+</button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-text-primary border border-border-subtle transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+</button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-status-danger border border-border-subtle transition-colors" title="Archive">
+<span class="material-symbols-outlined text-[15px]">archive</span>
+</button>
+</div>
+</div>
+</div>
+<!-- IDEA CARD 2: In-Memory Zero-Leak Clipboard Scrubbing -->
+<div class="group bg-surface-subtle hover:bg-surface-panel border border-border-subtle hover:border-border-muted rounded-lg p-space-md flex flex-col justify-between transition-all duration-150 relative">
+<div class="absolute -top-px left-4 right-4 h-0.5 bg-accent-emerald"></div>
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between gap-space-sm mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-[#113524] border border-[#19593c] text-accent-emerald-bright text-label-mono font-label-mono text-[10px] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                    In Progress
+                  </span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">ID-205</span>
+</div>
+<div class="flex items-center gap-1 text-text-muted">
+<button class="text-status-warning p-1 rounded hover:bg-surface-raised transition-colors" title="Starred">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</button>
+<button class="hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Quick Options">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Title -->
+<h3 class="text-headline-sm font-headline-sm text-text-primary font-semibold mb-space-xs group-hover:text-primary transition-colors">
+                In-Memory Zero-Leak Clipboard Scrubbing
+              </h3>
+<!-- Target Project Pill -->
+<div class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface border border-border-subtle text-label-mono font-label-mono text-[11px] text-secondary mb-space-sm">
+<span class="material-symbols-outlined text-[13px] text-text-muted">folder</span>
+<span>Target: Core Engine</span>
+</div>
+<!-- Cryptographic / Security Spec callout -->
+<div class="bg-surface-panel/60 border border-border-subtle p-2 rounded mb-space-md flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-accent-emerald">shield_locked</span>
+<span class="text-body-sm font-body-sm text-text-secondary">Auto-flush timer at 15s via libsodium guard.</span>
+</div>
+<span class="text-label-mono font-label-mono text-[10px] text-accent-emerald">WIP</span>
+</div>
+</div>
+<!-- Card Footer: Tags & Quick Action Row -->
+<div class="pt-space-sm border-t border-border-subtle flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted hover:text-text-primary cursor-pointer">#security</span>
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted hover:text-text-primary cursor-pointer">#vault</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 rounded bg-surface-panel hover:bg-surface-raised text-label-ui font-label-ui text-text-secondary hover:text-text-primary border border-border-subtle text-xs transition-colors" title="Convert to PRD / Document">
+                  Convert to PRD
+                </button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-text-primary border border-border-subtle transition-colors" title="Move to Project">
+<span class="material-symbols-outlined text-[15px]">drive_file_move</span>
+</button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-text-primary border border-border-subtle transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+</button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-status-danger border border-border-subtle transition-colors" title="Archive">
+<span class="material-symbols-outlined text-[15px]">archive</span>
+</button>
+</div>
+</div>
+</div>
+<!-- IDEA CARD 3: WASM-based Argon2id Benchmark Worker -->
+<div class="group bg-surface-subtle hover:bg-surface-panel border border-border-subtle hover:border-border-muted rounded-lg p-space-md flex flex-col justify-between transition-all duration-150">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between gap-space-sm mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-panel border border-border-muted text-secondary text-label-mono font-label-mono text-[10px] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    Planned
+                  </span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">ID-206</span>
+</div>
+<div class="flex items-center gap-1 text-text-muted">
+<button class="hover:text-status-warning p-1 rounded hover:bg-surface-raised transition-colors" title="Star">
+<span class="material-symbols-outlined text-[16px]">star</span>
+</button>
+<button class="hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Quick Options">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Title -->
+<h3 class="text-headline-sm font-headline-sm text-text-primary font-semibold mb-space-xs group-hover:text-primary transition-colors">
+                WASM-based Argon2id Benchmark Worker
+              </h3>
+<!-- Target Unassigned -->
+<div class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface border border-dashed border-border-muted text-label-mono font-label-mono text-[11px] text-text-muted mb-space-sm">
+<span class="material-symbols-outlined text-[13px]">folder_off</span>
+<span>Target: Unassigned</span>
+</div>
+<p class="text-body-sm font-body-sm text-text-secondary mb-space-md line-clamp-2">
+                Offload key derivation loop to background web-worker thread to keep UI thread frame-budget at 120fps during vault decryption phase.
+              </p>
+</div>
+<!-- Card Footer: Tags & Quick Action Row -->
+<div class="pt-space-sm border-t border-border-subtle flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted hover:text-text-primary cursor-pointer">#crypto</span>
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted hover:text-text-primary cursor-pointer">#perf</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 rounded bg-surface-panel hover:bg-surface-raised text-label-ui font-label-ui text-text-secondary hover:text-text-primary border border-border-subtle text-xs transition-colors" title="Convert to PRD / Document">
+                  Convert to PRD
+                </button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-text-primary border border-border-subtle transition-colors" title="Move to Project">
+<span class="material-symbols-outlined text-[15px]">drive_file_move</span>
+</button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-text-primary border border-border-subtle transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+</button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-status-danger border border-border-subtle transition-colors" title="Archive">
+<span class="material-symbols-outlined text-[15px]">archive</span>
+</button>
+</div>
+</div>
+</div>
+<!-- IDEA CARD 4: Terminal Command Sandboxing via Docker Socket -->
+<div class="group bg-surface-subtle hover:bg-surface-panel border border-border-subtle hover:border-border-muted rounded-lg p-space-md flex flex-col justify-between transition-all duration-150">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between gap-space-sm mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-[#312b17] border border-[#594819] text-[#e3b341] text-label-mono font-label-mono text-[10px] font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-warning"></span>
+                    Considering
+                  </span>
+<span class="text-label-mono font-label-mono text-[10px] text-text-muted">ID-207</span>
+</div>
+<div class="flex items-center gap-1 text-text-muted">
+<button class="hover:text-status-warning p-1 rounded hover:bg-surface-raised transition-colors" title="Star">
+<span class="material-symbols-outlined text-[16px]">star</span>
+</button>
+<button class="hover:text-text-primary p-1 rounded hover:bg-surface-raised transition-colors" title="Quick Options">
+<span class="material-symbols-outlined text-[16px]">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Title -->
+<h3 class="text-headline-sm font-headline-sm text-text-primary font-semibold mb-space-xs group-hover:text-primary transition-colors">
+                Terminal Command Sandboxing via Docker Socket
+              </h3>
+<!-- Target Project Pill -->
+<div class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-surface border border-border-subtle text-label-mono font-label-mono text-[11px] text-secondary mb-space-sm">
+<span class="material-symbols-outlined text-[13px] text-text-muted">terminal</span>
+<span>Target: Env Runner</span>
+</div>
+<p class="text-body-sm font-body-sm text-text-secondary mb-space-md line-clamp-2">
+                Evaluate proxying execution through gVisor or microVMs when running untrusted test scripts from markdown blocks.
+              </p>
+</div>
+<!-- Card Footer: Tags & Quick Action Row -->
+<div class="pt-space-sm border-t border-border-subtle flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted hover:text-text-primary cursor-pointer">#cli</span>
+<span class="text-label-mono font-label-mono text-[11px] text-text-muted hover:text-text-primary cursor-pointer">#devops</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="px-2 py-1 rounded bg-surface-panel hover:bg-surface-raised text-label-ui font-label-ui text-text-secondary hover:text-text-primary border border-border-subtle text-xs transition-colors" title="Convert to PRD / Document">
+                  Convert to PRD
+                </button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-text-primary border border-border-subtle transition-colors" title="Move to Project">
+<span class="material-symbols-outlined text-[15px]">drive_file_move</span>
+</button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-text-primary border border-border-subtle transition-colors" title="Edit">
+<span class="material-symbols-outlined text-[15px]">edit</span>
+</button>
+<button class="p-1 rounded bg-surface-panel hover:bg-surface-raised text-text-muted hover:text-status-danger border border-border-subtle transition-colors" title="Archive">
+<span class="material-symbols-outlined text-[15px]">archive</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BOTTOM HARDWARE & ENCRYPTION STATUS BAR -->
+<footer class="h-7 px-space-md bg-surface-subtle border-t border-border-subtle flex items-center justify-between text-label-mono font-label-mono text-[10px] text-text-muted shrink-0 select-none">
+<!-- Left: Storage Stats -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+<span>LOCAL DB: <strong class="text-text-secondary font-medium">IndexedDB (14.2 MB / 2 GB quota)</strong></span>
+</div>
+<div class="hidden sm:flex items-center gap-1 text-mask-glyph">
+<span>|</span>
+<span class="text-text-muted">READ/WRITE LATENCY: <strong>1.4ms</strong></span>
+</div>
+</div>
+<!-- Right: Cryptographic Status -->
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px] text-accent-emerald">verified_user</span>
+<span class="text-accent-emerald uppercase font-semibold">Integrity Verified (SHA-512)</span>
+</div>
+<span class="hidden md:inline text-mask-glyph font-mono">ENCRYPTED-SESSION-7X98</span>
+</div>
+</footer>
+</div>
+</body></html>

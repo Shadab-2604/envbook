@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-canvas: #0d1117;
+  }
+  
+  body {
+    background-color: #0d1117;
+    color: #f0f6fc;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Micro-dot grid background from Terminal Noir specification */
+.dot-grid {
+  background-color: #0d1117;
+  background-image: radial-gradient(#21262d 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Custom 4px Monospace Scrollbars */
+.custom-scroll::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #12151a;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #21262d;
+  border-radius: 2px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #30363d;
+}
+
+/* Security Button Glow */
+.btn-security-glow:hover {
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+}
+
+/* Emerald Outline Glow Focus */
+.glow-emerald-focus:focus-within {
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px #10b981, 0 0 12px rgba(16, 185, 129, 0.2);
+}

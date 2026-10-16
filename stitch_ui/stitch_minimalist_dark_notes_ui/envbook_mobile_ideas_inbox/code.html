@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnvBook - Ideas Inbox &amp; Quick Capture</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#00422b",
+            "tertiary-fixed-dim": "#ffb3af",
+            "secondary": "#bec7d2",
+            "primary-fixed-dim": "#4edea3",
+            "on-primary-fixed-variant": "#005236",
+            "surface": "#10141a",
+            "outline": "#86948a",
+            "on-surface": "#dfe2eb",
+            "surface-container-low": "#181c22",
+            "border-subtle": "#21262d",
+            "on-tertiary-container": "#711419",
+            "inverse-primary": "#006c49",
+            "primary-container": "#10b981",
+            "surface-bright": "#353940",
+            "text-secondary": "#c9d1d9",
+            "inverse-on-surface": "#2d3137",
+            "secondary-fixed": "#dae3ee",
+            "text-muted": "#8b949e",
+            "surface-subtle": "#12151a",
+            "on-surface-variant": "#bbcabf",
+            "surface-raised": "#21262d",
+            "tertiary": "#ffb3af",
+            "on-background": "#dfe2eb",
+            "surface-variant": "#31353c",
+            "on-primary-fixed": "#002113",
+            "surface-dim": "#10141a",
+            "on-secondary-fixed-variant": "#3f4850",
+            "accent-emerald-glow": "rgba(16, 185, 129, 0.15)",
+            "tertiary-container": "#fc7c78",
+            "on-error": "#690005",
+            "tertiary-fixed": "#ffdad7",
+            "background": "#10141a",
+            "outline-variant": "#3c4a42",
+            "on-tertiary-fixed": "#410005",
+            "surface-canvas": "#0d1117",
+            "surface-container-highest": "#31353c",
+            "status-warning": "#d29922",
+            "surface-container-high": "#262a31",
+            "surface-container-lowest": "#0a0e14",
+            "on-primary": "#003824",
+            "border-muted": "#30363d",
+            "inverse-surface": "#dfe2eb",
+            "border-accent": "#10b981",
+            "on-error-container": "#ffdad6",
+            "accent-emerald-bright": "#34d399",
+            "surface-panel": "#161b22",
+            "secondary-container": "#414a53",
+            "surface-container": "#1c2026",
+            "surface-tint": "#4edea3",
+            "status-danger": "#f85149",
+            "on-secondary-container": "#b0b9c4",
+            "accent-emerald": "#10b981",
+            "on-secondary-fixed": "#141c24",
+            "error": "#ffb4ab",
+            "text-primary": "#f0f6fc",
+            "mask-glyph": "#484f58",
+            "on-secondary": "#29313a",
+            "primary-fixed": "#6ffbbe",
+            "error-container": "#93000a",
+            "on-tertiary": "#650911",
+            "primary": "#4edea3",
+            "secondary-fixed-dim": "#bec7d2",
+            "on-tertiary-fixed-variant": "#842225"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-lg": "1.25rem",
+            "margin-desktop": "2rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "gutter-desktop": "1.5rem",
+            "margin": "1rem",
+            "space-md": "0.75rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "secret-mask": ["JetBrains Mono"],
+            "headline-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-mono": ["JetBrains Mono"],
+            "display": ["Inter"],
+            "code-block": ["JetBrains Mono"],
+            "code-inline": ["JetBrains Mono"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "label-ui": ["Inter"],
+            "headline-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-md": ["14px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }],
+            "secret-mask": ["14px", { "lineHeight": "18px", "letterSpacing": "0.18em", "fontWeight": "700" }],
+            "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "label-mono": ["11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500" }],
+            "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "code-block": ["13px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "code-inline": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-ui": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+            "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Technical micro-dot grid pattern */
+    .bg-grid-dots {
+      background-image: radial-gradient(#21262d 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    /* Hide scrollbars for clean terminal aesthetic */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body class="bg-surface-canvas text-text-primary min-h-screen flex justify-center selection:bg-accent-emerald selection:text-surface-canvas font-body-md text-body-md antialiased">
+<!-- Mobile Device Simulation Shell (~390px viewport container) -->
+<div class="w-full max-w-[390px] min-h-screen flex flex-col bg-surface border-x border-border-subtle relative shadow-2xl">
+<!-- Top App Bar (PRD Section 7.1 / Shared TopBar Semantics adapted to Mobile Viewport) -->
+<!-- Shell Border Ban respected: separated via subtle tonal shift and shadow rather than borders -->
+<header class="sticky top-0 z-40 bg-surface/95 backdrop-blur-md px-space-md pt-3 pb-3 flex items-center justify-between shadow-[0_4px_16px_rgba(0,0,0,0.5)]">
+<div class="flex items-center gap-space-sm">
+<div class="w-7 h-7 rounded-lg bg-surface-raised flex items-center justify-center border border-border-muted text-primary">
+<span class="material-symbols-outlined" data-icon="lightbulb" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div class="flex items-center gap-2">
+<h1 class="font-headline-sm text-headline-sm font-bold text-text-primary tracking-tight">Ideas Inbox</h1>
+<span class="px-1.5 py-0.5 rounded bg-surface-raised border border-border-muted font-label-mono text-label-mono text-primary font-bold">7</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button aria-label="Search ideas" class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button aria-label="Filter options" class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas with Micro-dot Grid -->
+<main class="flex-1 bg-grid-dots px-space-md pt-space-sm pb-24 overflow-y-auto no-scrollbar flex flex-col gap-space-md">
+<!-- PRD 10.8: Quick Capture Input Module (Sticky Context Block) -->
+<section class="bg-surface-subtle border border-border-muted rounded-xl p-space-sm shadow-[0_4px_20px_rgba(0,0,0,0.4)] relative">
+<div class="flex items-center justify-between mb-1.5 px-0.5">
+<div class="flex items-center gap-1.5">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+<span class="font-label-mono text-label-mono text-text-muted uppercase">Terminal Capture</span>
+</div>
+<span class="font-label-mono text-label-mono text-text-muted">AES-256 GCM</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="relative flex-1">
+<input class="w-full bg-surface-panel border border-border-subtle rounded-lg px-2.5 py-2 font-body-sm text-body-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-border-accent focus:ring-1 focus:ring-accent-emerald transition-all" placeholder="Quick capture idea or thought..." type="text"/>
+</div>
+<button class="bg-accent-emerald hover:bg-accent-emerald-bright text-surface font-label-ui text-label-ui font-semibold px-3 py-2 rounded-lg flex items-center gap-1 transition-all cursor-pointer shadow-[0_0_10px_rgba(16,185,129,0.25)] flex-shrink-0">
+<span class="material-symbols-outlined" data-icon="add" style="font-size: 16px;">add</span>
+<span>Add</span>
+</button>
+</div>
+<!-- Tag Quick Injectors -->
+<div class="flex items-center gap-1.5 mt-2 pt-1 border-t border-border-subtle/50 overflow-x-auto no-scrollbar">
+<span class="font-label-mono text-label-mono text-text-muted text-[10px]">Insert:</span>
+<button class="px-1.5 py-0.5 rounded bg-surface-raised hover:border-accent-emerald border border-border-subtle font-label-mono text-label-mono text-text-secondary hover:text-primary transition-colors cursor-pointer">#sqlite</button>
+<button class="px-1.5 py-0.5 rounded bg-surface-raised hover:border-accent-emerald border border-border-subtle font-label-mono text-label-mono text-text-secondary hover:text-primary transition-colors cursor-pointer">#crypto</button>
+<button class="px-1.5 py-0.5 rounded bg-surface-raised hover:border-accent-emerald border border-border-subtle font-label-mono text-label-mono text-text-secondary hover:text-primary transition-colors cursor-pointer">#cli</button>
+<button class="px-1.5 py-0.5 rounded bg-surface-raised hover:border-accent-emerald border border-border-subtle font-label-mono text-label-mono text-text-secondary hover:text-primary transition-colors cursor-pointer">#mesh</button>
+</div>
+</section>
+<!-- Status Filter Tabs (Horizontal Scrollable) -->
+<section class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-raised border border-border-accent text-text-primary font-label-ui text-label-ui font-medium flex-shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.15)] cursor-pointer">
+<span>All</span>
+<span class="font-label-mono text-label-mono text-primary font-semibold">(7)</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary hover:text-text-primary font-label-ui text-label-ui flex-shrink-0 transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-status-warning"></span>
+<span>Considering</span>
+<span class="font-label-mono text-label-mono text-text-muted">(3)</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary hover:text-text-primary font-label-ui text-label-ui flex-shrink-0 transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span>Planned</span>
+<span class="font-label-mono text-label-mono text-text-muted">(2)</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary hover:text-text-primary font-label-ui text-label-ui flex-shrink-0 transition-colors cursor-pointer">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+<span>In Progress</span>
+<span class="font-label-mono text-label-mono text-text-muted">(1)</span>
+</button>
+</section>
+<!-- Ideas Feed Stream -->
+<div class="flex flex-col gap-space-sm">
+<!-- Card 1: Considering -->
+<article class="bg-surface-subtle border border-border-subtle hover:border-border-muted rounded-xl p-3.5 transition-all duration-150 flex flex-col gap-2 relative group shadow-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-status-warning/10 border border-status-warning/30 text-status-warning font-label-mono text-label-mono font-medium">
+<span class="w-1 h-1 rounded-full bg-status-warning"></span>
+                Considering
+              </span>
+<span class="font-label-mono text-label-mono text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined" data-icon="terminal" style="font-size: 14px;">terminal</span>
+                Auth Service v2
+              </span>
+</div>
+<button aria-label="Star idea" class="text-text-muted hover:text-status-warning transition-colors cursor-pointer p-0.5">
+<span class="material-symbols-outlined" data-icon="star">star</span>
+</button>
+</div>
+<div>
+<h2 class="font-headline-sm text-[15px] leading-snug font-semibold text-text-primary group-hover:text-primary transition-colors">
+              Distributed SQLite Sync with CRDTs
+            </h2>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1 line-clamp-2">
+              Benchmark y-webrtc latency across local LAN mesh and integrate state-based reconciliation logic for multi-agent keys.
+            </p>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-border-subtle/40">
+<div class="flex items-center gap-1.5">
+<span class="font-code-inline text-code-inline text-primary bg-surface-raised px-1.5 py-0.5 rounded border border-border-subtle">#sqlite</span>
+<span class="font-code-inline text-code-inline text-primary bg-surface-raised px-1.5 py-0.5 rounded border border-border-subtle">#sync</span>
+</div>
+<button class="flex items-center gap-1 px-2 py-1 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle hover:border-border-accent text-text-primary font-label-ui text-label-ui font-medium transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="sync_alt" style="font-size: 14px;">sync_alt</span>
+<span>Convert to PRD</span>
+</button>
+</div>
+</article>
+<!-- Card 2: In Progress -->
+<article class="bg-surface-subtle border border-border-subtle hover:border-border-muted rounded-xl p-3.5 transition-all duration-150 flex flex-col gap-2 relative group shadow-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary/10 border border-primary/30 text-primary font-label-mono text-label-mono font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse"></span>
+                In Progress
+              </span>
+<span class="font-label-mono text-label-mono text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined" data-icon="memory" style="font-size: 14px;">memory</span>
+                Core Engine
+              </span>
+</div>
+<button aria-label="Star idea" class="text-text-muted hover:text-status-warning transition-colors cursor-pointer p-0.5">
+<span class="material-symbols-outlined" data-icon="star">star</span>
+</button>
+</div>
+<div>
+<h2 class="font-headline-sm text-[15px] leading-snug font-semibold text-text-primary group-hover:text-primary transition-colors">
+              In-Memory Zero-Leak Clipboard Scrubbing
+            </h2>
+<div class="mt-1.5 flex items-center gap-2 bg-surface-canvas/80 border border-border-subtle px-2 py-1.5 rounded-lg">
+<span class="material-symbols-outlined text-status-warning" data-icon="timer" style="font-size: 16px;">timer</span>
+<span class="font-body-sm text-[12px] text-text-secondary">Auto-flush timer: wipes memory payload after 15s</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-border-subtle/40">
+<div class="flex items-center gap-1.5">
+<span class="font-code-inline text-code-inline text-primary bg-surface-raised px-1.5 py-0.5 rounded border border-border-subtle">#security</span>
+<span class="font-code-inline text-code-inline text-primary bg-surface-raised px-1.5 py-0.5 rounded border border-border-subtle">#vault</span>
+</div>
+<span class="font-label-mono text-[10px] text-text-muted">Updated 12m ago</span>
+</div>
+</article>
+<!-- Card 3: Planned -->
+<article class="bg-surface-subtle border border-border-subtle hover:border-border-muted rounded-xl p-3.5 transition-all duration-150 flex flex-col gap-2 relative group shadow-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-secondary-container/30 border border-border-muted text-secondary-fixed font-label-mono text-label-mono font-medium">
+<span class="w-1 h-1 rounded-full bg-secondary"></span>
+                Planned
+              </span>
+<span class="font-label-mono text-label-mono text-text-muted flex items-center gap-1">
+<span class="material-symbols-outlined" data-icon="security" style="font-size: 14px;">security</span>
+                Crypto Kernel
+              </span>
+</div>
+<button aria-label="Star idea" class="text-text-muted hover:text-status-warning transition-colors cursor-pointer p-0.5">
+<span class="material-symbols-outlined" data-icon="star">star</span>
+</button>
+</div>
+<div>
+<h2 class="font-headline-sm text-[15px] leading-snug font-semibold text-text-primary group-hover:text-primary transition-colors">
+              WASM-based Argon2id Benchmark Worker
+            </h2>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">
+              Offload intensive KDF rounds to multi-threaded web workers without blocking UI thread during key derivation.
+            </p>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-border-subtle/40">
+<div class="flex items-center gap-1.5">
+<span class="font-code-inline text-code-inline text-primary bg-surface-raised px-1.5 py-0.5 rounded border border-border-subtle">#crypto</span>
+<span class="font-code-inline text-code-inline text-primary bg-surface-raised px-1.5 py-0.5 rounded border border-border-subtle">#perf</span>
+</div>
+<span class="font-label-mono text-[10px] text-text-muted">Target v2.4</span>
+</div>
+</article>
+</div>
+</main>
+<!-- Bottom Navigation Bar for Mobile (PRD Mobile Pivot & Design System Hierarchy) -->
+<!-- Shell Border Ban respected: using background shift and atmospheric ambient drop shadow -->
+<nav class="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none">
+<div class="w-full max-w-[390px] bg-surface-subtle/95 backdrop-blur-lg px-space-md py-2 shadow-[0_-8px_24px_rgba(0,0,0,0.7)] pointer-events-auto flex items-center justify-around">
+<!-- Tab 1: Notes / All Entries -->
+<a class="flex flex-col items-center gap-0.5 text-text-muted hover:text-text-primary py-1 px-2 rounded transition-colors duration-150 cursor-pointer" href="#notes">
+<span class="material-symbols-outlined" data-icon="article">article</span>
+<span class="font-label-ui text-[11px]">Notes</span>
+</a>
+<!-- Tab 2: Ideas - Active (Semantic mapping with Shared Components: Ideas Inbox) -->
+<a class="flex flex-col items-center gap-0.5 text-primary py-1 px-3 rounded bg-surface-raised border-b-2 border-primary font-medium transition-colors duration-150 cursor-pointer" href="#ideas">
+<span class="material-symbols-outlined" data-icon="lightbulb" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+<span class="font-label-ui text-[11px] font-semibold text-text-primary">Ideas</span>
+</a>
+<!-- Tab 3: Environments -->
+<a class="flex flex-col items-center gap-0.5 text-text-muted hover:text-text-primary py-1 px-2 rounded transition-colors duration-150 cursor-pointer" href="#environments">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-label-ui text-[11px]">Environments</span>
+</a>
+<!-- Tab 4: Lock Vault CTA from Shared Components -->
+<button class="flex flex-col items-center gap-0.5 text-status-danger/80 hover:text-status-danger py-1 px-2 rounded transition-colors duration-150 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span class="font-label-ui text-[11px]">Lock Vault</span>
+</button>
+</div>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnvBook - Environments &amp; Secrets Manager</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#00422b",
+            "tertiary-fixed-dim": "#ffb3af",
+            "secondary": "#bec7d2",
+            "primary-fixed-dim": "#4edea3",
+            "on-primary-fixed-variant": "#005236",
+            "surface": "#10141a",
+            "outline": "#86948a",
+            "on-surface": "#dfe2eb",
+            "surface-container-low": "#181c22",
+            "border-subtle": "#21262d",
+            "on-tertiary-container": "#711419",
+            "inverse-primary": "#006c49",
+            "primary-container": "#10b981",
+            "surface-bright": "#353940",
+            "text-secondary": "#c9d1d9",
+            "inverse-on-surface": "#2d3137",
+            "secondary-fixed": "#dae3ee",
+            "text-muted": "#8b949e",
+            "surface-subtle": "#12151a",
+            "on-surface-variant": "#bbcabf",
+            "surface-raised": "#21262d",
+            "tertiary": "#ffb3af",
+            "on-background": "#dfe2eb",
+            "surface-variant": "#31353c",
+            "on-primary-fixed": "#002113",
+            "on-secondary-fixed-variant": "#3f4850",
+            "accent-emerald-glow": "rgba(16, 185, 129, 0.15)",
+            "tertiary-container": "#fc7c78",
+            "on-error": "#690005",
+            "tertiary-fixed": "#ffdad7",
+            "background": "#10141a",
+            "outline-variant": "#3c4a42",
+            "on-tertiary-fixed": "#410005",
+            "surface-canvas": "#0d1117",
+            "surface-container-highest": "#31353c",
+            "status-warning": "#d29922",
+            "surface-container-high": "#262a31",
+            "surface-container-lowest": "#0a0e14",
+            "on-primary": "#003824",
+            "border-muted": "#30363d",
+            "inverse-surface": "#dfe2eb",
+            "border-accent": "#10b981",
+            "on-error-container": "#ffdad6",
+            "accent-emerald-bright": "#34d399",
+            "surface-panel": "#161b22",
+            "secondary-container": "#414a53",
+            "surface-container": "#1c2026",
+            "surface-tint": "#4edea3",
+            "status-danger": "#f85149",
+            "on-secondary-container": "#b0b9c4",
+            "accent-emerald": "#10b981",
+            "on-secondary-fixed": "#141c24",
+            "error": "#ffb4ab",
+            "text-primary": "#f0f6fc",
+            "mask-glyph": "#484f58",
+            "on-secondary": "#29313a",
+            "primary-fixed": "#6ffbbe",
+            "error-container": "#93000a",
+            "on-tertiary": "#650911",
+            "primary": "#4edea3",
+            "secondary-fixed-dim": "#bec7d2",
+            "on-tertiary-fixed-variant": "#842225"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-lg": "1.25rem",
+            "margin-desktop": "2rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "gutter-desktop": "1.5rem",
+            "margin": "1rem",
+            "space-md": "0.75rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "secret-mask": ["JetBrains Mono"],
+            "headline-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-mono": ["JetBrains Mono"],
+            "display": ["Inter"],
+            "code-block": ["JetBrains Mono"],
+            "code-inline": ["JetBrains Mono"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "label-ui": ["Inter"],
+            "headline-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-md": ["14px", {"lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+            "secret-mask": ["14px", {"lineHeight": "18px", "letterSpacing": "0.18em", "fontWeight": "700"}],
+            "headline-sm": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+            "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600"}],
+            "label-mono": ["11px", {"lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500"}],
+            "display": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+            "code-block": ["13px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+            "code-inline": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+            "body-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}],
+            "body-lg": ["16px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "label-ui": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+            "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Technical micro-dot grid */
+    .bg-micro-grid {
+      background-color: #0d1117;
+      background-image: radial-gradient(#21262d 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    /* Hide scrollbar for clean horizontal scrolling */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-surface-canvas text-text-primary antialiased flex justify-center min-h-screen selection:bg-accent-emerald selection:text-surface-canvas">
+<!-- Mobile Viewport Container (~390px width) -->
+<div class="w-full max-w-[412px] min-h-screen bg-micro-grid flex flex-col relative pb-24 shadow-2xl">
+<!-- Top App Bar (Semantic Shell, Mobile Viewport) -->
+<header class="sticky top-0 z-40 bg-surface/95 backdrop-blur-md px-space-md py-space-sm flex items-center justify-between shadow-sm">
+<div class="flex items-center space-x-space-sm">
+<div class="flex items-center justify-center w-8 h-8 rounded bg-surface-panel border border-border-subtle">
+<span class="material-symbols-outlined text-primary text-base" data-icon="terminal">terminal</span>
+</div>
+<div>
+<div class="flex items-center space-x-1.5">
+<span class="font-headline-sm text-headline-sm font-bold tracking-tight text-text-primary">EnvBook</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-label-mono text-primary bg-primary-container/10 border border-primary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-primary mr-1 animate-pulse"></span>
+              ENCRYPTED
+            </span>
+</div>
+<p class="font-label-mono text-label-mono text-text-muted leading-none mt-0.5">.env.prod • AES-256 GCM</p>
+</div>
+</div>
+<div class="flex items-center space-x-1">
+<button aria-label="Lock Vault" class="p-2 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded transition-colors duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="lock">lock</span>
+</button>
+<button aria-label="Menu" class="p-2 text-text-muted hover:text-text-primary hover:bg-surface-raised rounded transition-colors duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="menu">menu</span>
+</button>
+</div>
+</header>
+<!-- Sub-header & Title Canvas -->
+<section class="px-space-md pt-space-md pb-space-xs">
+<div class="flex items-center justify-between">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-text-primary">Environments</h1>
+<div class="flex items-center space-x-1 font-label-mono text-label-mono text-text-muted bg-surface-subtle px-2 py-1 rounded border border-border-subtle">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="check_circle">check_circle</span>
+<span>In Sync</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted mt-1">Manage, rotate, and export decrypted runtime secrets securely.</p>
+</section>
+<!-- Environment Selector Tabs (Horizontal Scrolling Pills) -->
+<div class="px-space-md py-space-sm">
+<div class="flex items-center space-x-2 overflow-x-auto no-scrollbar py-1">
+<!-- Active Pill: Production -->
+<button class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-surface-raised border border-primary/40 text-text-primary shadow-sm flex-shrink-0">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-label-ui text-label-ui font-medium">Production</span>
+<span class="font-label-mono text-[10px] text-text-muted ml-0.5">5</span>
+</button>
+<!-- Inactive Pill: Staging -->
+<button class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-surface-subtle border border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-status-warning"></span>
+<span class="font-label-ui text-label-ui">Staging</span>
+<span class="font-label-mono text-[10px] text-text-muted">8</span>
+</button>
+<!-- Inactive Pill: Local Dev -->
+<button class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-surface-subtle border border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-label-ui text-label-ui">Local Dev</span>
+<span class="font-label-mono text-[10px] text-text-muted">12</span>
+</button>
+<!-- Inactive Pill: Preview -->
+<button class="flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-surface-subtle border border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 flex-shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+<span class="font-label-ui text-label-ui">Preview</span>
+<span class="font-label-mono text-[10px] text-text-muted">3</span>
+</button>
+</div>
+</div>
+<!-- Actions Control Bar -->
+<div class="px-space-md py-space-xs flex items-center justify-between gap-2">
+<div class="flex items-center space-x-2">
+<button class="inline-flex items-center space-x-1.5 px-2.5 py-1.5 bg-surface-subtle hover:bg-surface-raised border border-border-subtle rounded text-text-secondary hover:text-text-primary text-label-ui font-label-ui transition-colors duration-150">
+<span class="material-symbols-outlined text-base" data-icon="file_upload">file_upload</span>
+<span>Import</span>
+</button>
+<button class="inline-flex items-center space-x-1.5 px-2.5 py-1.5 bg-surface-subtle hover:bg-surface-raised border border-border-subtle rounded text-text-secondary hover:text-text-primary text-label-ui font-label-ui transition-colors duration-150">
+<span class="material-symbols-outlined text-base" data-icon="file_download">file_download</span>
+<span>Export</span>
+</button>
+</div>
+<!-- Emerald Primary Action Button -->
+<button class="inline-flex items-center space-x-1 px-3 py-1.5 bg-primary hover:bg-accent-emerald-bright text-on-primary-container font-label-ui text-label-ui font-semibold rounded shadow-sm transition-all duration-150">
+<span class="material-symbols-outlined text-base" data-icon="add">add</span>
+<span>Add Key</span>
+</button>
+</div>
+<!-- Security Assurance Banner -->
+<div class="mx-space-md my-space-sm p-space-sm rounded bg-surface-panel border border-border-subtle flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-base" data-icon="shield">shield</span>
+<span class="font-label-mono text-label-mono text-text-muted">Zero Cloud Exposure • Masked values</span>
+</div>
+<span class="font-label-mono text-[10px] text-primary/80 bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">STRICT</span>
+</div>
+<!-- Variable Cards List (Bento-style Touch-Friendly Cards) -->
+<main class="px-space-md space-y-2.5 flex-1">
+<!-- Variable Card 1: DATABASE_URL -->
+<article class="bg-surface-subtle border border-border-subtle rounded-lg p-space-sm relative group hover:border-border-muted transition-colors duration-150">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center space-x-2">
+<span class="font-code-block text-code-block font-semibold text-text-primary tracking-tight">DATABASE_URL</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-label-mono text-status-warning bg-status-warning/10 border border-status-warning/20">SECRET</span>
+</div>
+<span class="font-label-mono text-[10px] text-text-muted">rotated 3d ago</span>
+</div>
+<div class="flex items-center justify-between bg-surface-panel border border-border-subtle rounded px-2.5 py-2">
+<div class="flex items-center space-x-2 overflow-hidden">
+<span class="font-secret-mask text-secret-mask text-mask-glyph tracking-widest select-none">••••••••••••••••••••</span>
+</div>
+<div class="flex items-center space-x-1 flex-shrink-0">
+<button aria-label="Reveal Secret" class="p-1 text-text-muted hover:text-text-primary rounded hover:bg-surface-raised transition-colors" title="Reveal Secret">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+</button>
+<button aria-label="Copy Secret" class="p-1 text-text-muted hover:text-primary rounded hover:bg-surface-raised transition-colors" title="Copy Secret">
+<span class="material-symbols-outlined text-lg" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Variable Card 2: STRIPE_SECRET_KEY -->
+<article class="bg-surface-subtle border border-border-subtle rounded-lg p-space-sm relative group hover:border-border-muted transition-colors duration-150">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center space-x-2">
+<span class="font-code-block text-code-block font-semibold text-text-primary tracking-tight">STRIPE_SECRET_KEY</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-label-mono text-status-warning bg-status-warning/10 border border-status-warning/20">SECRET</span>
+</div>
+<span class="font-label-mono text-[10px] text-text-muted">rotated 12d ago</span>
+</div>
+<div class="flex items-center justify-between bg-surface-panel border border-border-subtle rounded px-2.5 py-2">
+<div class="flex items-center space-x-2 overflow-hidden">
+<span class="font-secret-mask text-secret-mask text-mask-glyph tracking-widest select-none">••••••••••••••••</span>
+</div>
+<div class="flex items-center space-x-1 flex-shrink-0">
+<button aria-label="Reveal Secret" class="p-1 text-text-muted hover:text-text-primary rounded hover:bg-surface-raised transition-colors" title="Reveal Secret">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+</button>
+<button aria-label="Copy Secret" class="p-1 text-text-muted hover:text-primary rounded hover:bg-surface-raised transition-colors" title="Copy Secret">
+<span class="material-symbols-outlined text-lg" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Variable Card 3: REDIS_CLUSTER_URI -->
+<article class="bg-surface-subtle border border-border-subtle rounded-lg p-space-sm relative group hover:border-border-muted transition-colors duration-150">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center space-x-2">
+<span class="font-code-block text-code-block font-semibold text-text-primary tracking-tight">REDIS_CLUSTER_URI</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-label-mono text-status-warning bg-status-warning/10 border border-status-warning/20">SECRET</span>
+</div>
+<span class="font-label-mono text-[10px] text-text-muted">synced</span>
+</div>
+<div class="flex items-center justify-between bg-surface-panel border border-border-subtle rounded px-2.5 py-2">
+<div class="flex items-center space-x-2 overflow-hidden">
+<span class="font-secret-mask text-secret-mask text-mask-glyph tracking-widest select-none">••••••••••••</span>
+</div>
+<div class="flex items-center space-x-1 flex-shrink-0">
+<button aria-label="Reveal Secret" class="p-1 text-text-muted hover:text-text-primary rounded hover:bg-surface-raised transition-colors" title="Reveal Secret">
+<span class="material-symbols-outlined text-lg" data-icon="visibility">visibility</span>
+</button>
+<button aria-label="Copy Secret" class="p-1 text-text-muted hover:text-primary rounded hover:bg-surface-raised transition-colors" title="Copy Secret">
+<span class="material-symbols-outlined text-lg" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Variable Card 4: API_PORT (CONFIG badge) -->
+<article class="bg-surface-subtle border border-border-subtle rounded-lg p-space-sm relative group hover:border-border-muted transition-colors duration-150">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center space-x-2">
+<span class="font-code-block text-code-block font-semibold text-text-primary tracking-tight">API_PORT</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-label-mono text-secondary bg-surface-raised border border-border-subtle">CONFIG</span>
+</div>
+<span class="font-label-mono text-[10px] text-text-muted">static</span>
+</div>
+<div class="flex items-center justify-between bg-surface-panel border border-border-subtle rounded px-2.5 py-2">
+<div class="flex items-center space-x-2 overflow-hidden">
+<span class="font-code-inline text-code-inline text-primary-fixed-dim">8080</span>
+</div>
+<div class="flex items-center space-x-1 flex-shrink-0">
+<button aria-label="Copy Value" class="p-1 text-text-muted hover:text-primary rounded hover:bg-surface-raised transition-colors" title="Copy Value">
+<span class="material-symbols-outlined text-lg" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Variable Card 5: CORS_ORIGIN (CONFIG badge) -->
+<article class="bg-surface-subtle border border-border-subtle rounded-lg p-space-sm relative group hover:border-border-muted transition-colors duration-150">
+<div class="flex items-center justify-between mb-1.5">
+<div class="flex items-center space-x-2">
+<span class="font-code-block text-code-block font-semibold text-text-primary tracking-tight">CORS_ORIGIN</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-label-mono text-secondary bg-surface-raised border border-border-subtle">CONFIG</span>
+</div>
+<span class="font-label-mono text-[10px] text-text-muted">runtime</span>
+</div>
+<div class="flex items-center justify-between bg-surface-panel border border-border-subtle rounded px-2.5 py-2">
+<div class="flex items-center space-x-2 truncate">
+<span class="font-code-inline text-code-inline text-text-secondary truncate">https://app.local</span>
+</div>
+<div class="flex items-center space-x-1 flex-shrink-0">
+<button aria-label="Copy Value" class="p-1 text-text-muted hover:text-primary rounded hover:bg-surface-raised transition-colors" title="Copy Value">
+<span class="material-symbols-outlined text-lg" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</article>
+</main>
+<!-- Bottom Floating Dock / Navigation Shell (Filtered semantic shell for Mobile) -->
+<nav class="fixed bottom-3 inset-x-0 mx-auto w-[calc(100%-2rem)] max-w-[380px] z-50 bg-surface-subtle/95 backdrop-blur-md rounded-xl border border-border-subtle shadow-2xl px-3 py-2 flex items-center justify-around">
+<!-- Notes Tab -->
+<button class="flex flex-col items-center justify-center p-1 text-text-muted hover:text-text-primary transition-colors duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="article">article</span>
+<span class="font-label-ui text-[10px] mt-0.5">Notes</span>
+</button>
+<!-- Ideas Tab -->
+<button class="flex flex-col items-center justify-center p-1 text-text-muted hover:text-text-primary transition-colors duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="lightbulb">lightbulb</span>
+<span class="font-label-ui text-[10px] mt-0.5">Ideas</span>
+</button>
+<!-- Environments Tab (ACTIVE per hierarchy & prompt) -->
+<button class="flex flex-col items-center justify-center px-3 py-1 rounded-lg bg-surface-raised text-text-primary relative transition-colors duration-150">
+<span class="material-symbols-outlined text-xl text-primary" data-icon="terminal">terminal</span>
+<span class="font-label-ui text-[10px] font-semibold mt-0.5 text-primary">Environments</span>
+<span class="absolute -top-1 w-6 h-0.5 bg-primary rounded-full"></span>
+</button>
+<!-- Vault Lock Action -->
+<button class="flex flex-col items-center justify-center p-1 text-text-muted hover:text-status-danger transition-colors duration-150">
+<span class="material-symbols-outlined text-xl" data-icon="key">key</span>
+<span class="font-label-ui text-[10px] mt-0.5">Vault Lock</span>
+</button>
+</nav>
+</div>
+</body></html>

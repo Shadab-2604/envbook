@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EnvBook - Notes &amp; Live Block Editor</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-primary-container": "#00422b",
+            "tertiary-fixed-dim": "#ffb3af",
+            "secondary": "#bec7d2",
+            "primary-fixed-dim": "#4edea3",
+            "on-primary-fixed-variant": "#005236",
+            "surface": "#10141a",
+            "outline": "#86948a",
+            "on-surface": "#dfe2eb",
+            "surface-container-low": "#181c22",
+            "border-subtle": "#21262d",
+            "on-tertiary-container": "#711419",
+            "inverse-primary": "#006c49",
+            "primary-container": "#10b981",
+            "surface-bright": "#353940",
+            "text-secondary": "#c9d1d9",
+            "inverse-on-surface": "#2d3137",
+            "secondary-fixed": "#dae3ee",
+            "text-muted": "#8b949e",
+            "surface-subtle": "#12151a",
+            "on-surface-variant": "#bbcabf",
+            "surface-raised": "#21262d",
+            "tertiary": "#ffb3af",
+            "on-background": "#dfe2eb",
+            "surface-variant": "#31353c",
+            "on-primary-fixed": "#002113",
+            "surface-dim": "#10141a",
+            "on-secondary-fixed-variant": "#3f4850",
+            "accent-emerald-glow": "rgba(16, 185, 129, 0.15)",
+            "tertiary-container": "#fc7c78",
+            "on-error": "#690005",
+            "tertiary-fixed": "#ffdad7",
+            "background": "#10141a",
+            "outline-variant": "#3c4a42",
+            "on-tertiary-fixed": "#410005",
+            "surface-canvas": "#0d1117",
+            "surface-container-highest": "#31353c",
+            "status-warning": "#d29922",
+            "surface-container-high": "#262a31",
+            "surface-container-lowest": "#0a0e14",
+            "on-primary": "#003824",
+            "border-muted": "#30363d",
+            "inverse-surface": "#dfe2eb",
+            "border-accent": "#10b981",
+            "on-error-container": "#ffdad6",
+            "accent-emerald-bright": "#34d399",
+            "surface-panel": "#161b22",
+            "secondary-container": "#414a53",
+            "surface-container": "#1c2026",
+            "surface-tint": "#4edea3",
+            "status-danger": "#f85149",
+            "on-secondary-container": "#b0b9c4",
+            "accent-emerald": "#10b981",
+            "on-secondary-fixed": "#141c24",
+            "error": "#ffb4ab",
+            "text-primary": "#f0f6fc",
+            "mask-glyph": "#484f58",
+            "on-secondary": "#29313a",
+            "primary-fixed": "#6ffbbe",
+            "error-container": "#93000a",
+            "on-tertiary": "#650911",
+            "primary": "#4edea3",
+            "secondary-fixed-dim": "#bec7d2",
+            "on-tertiary-fixed-variant": "#842225"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter": "1rem",
+            "space-lg": "1.25rem",
+            "margin-desktop": "2rem",
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "gutter-desktop": "1.5rem",
+            "margin": "1rem",
+            "space-md": "0.75rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.5rem"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "secret-mask": ["JetBrains Mono"],
+            "headline-sm": ["Inter"],
+            "headline-lg": ["Inter"],
+            "label-mono": ["JetBrains Mono"],
+            "display": ["Inter"],
+            "code-block": ["JetBrains Mono"],
+            "code-inline": ["JetBrains Mono"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-lg-mobile": ["Inter"],
+            "label-ui": ["Inter"],
+            "headline-md": ["Inter"]
+          },
+          "fontSize": {
+            "body-md": ["14px", {"lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400"}],
+            "secret-mask": ["14px", {"lineHeight": "18px", "letterSpacing": "0.18em", "fontWeight": "700"}],
+            "headline-sm": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+            "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "600"}],
+            "label-mono": ["11px", {"lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "500"}],
+            "display": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700"}],
+            "code-block": ["13px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}],
+            "code-inline": ["13px", {"lineHeight": "18px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+            "body-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}],
+            "body-lg": ["16px", {"lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "400"}],
+            "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "label-ui": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+            "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .bg-dot-matrix {
+      background-image: radial-gradient(#21262d 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    @keyframes pulse-emerald {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+    .cursor-blink {
+      animation: pulse-emerald 1.1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="bg-surface-canvas text-text-primary antialiased font-body-md min-h-screen flex flex-col justify-between select-none">
+<!-- Mobile Viewport Shell (Max ~390px-420px mobile-centered wrapper) -->
+<div class="w-full max-w-md mx-auto min-h-screen flex flex-col bg-surface-canvas relative shadow-2xl overflow-x-hidden">
+<!-- Top App Bar (Border-free per Semantic Shell Mandate, tonal depth only) -->
+<header class="sticky top-0 z-40 bg-surface/95 backdrop-blur-md px-space-md py-space-sm shadow-md">
+<div class="flex items-center justify-between gap-space-xs">
+<!-- Left: Chevron Navigation & Title -->
+<div class="flex items-center gap-space-xs min-w-0 flex-1">
+<button class="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150 flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">arrow_back</span>
+</button>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm font-semibold tracking-tight text-text-primary truncate">
+              Microservice Auth...
+            </span>
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald"></span>
+<span class="font-label-mono text-label-mono text-text-muted">Saved</span>
+</div>
+</div>
+</div>
+<!-- Right: Dual Toggle (Rendered / MD) & Menu -->
+<div class="flex items-center gap-space-xs shrink-0">
+<!-- Segmented Toggle -->
+<div class="flex bg-surface-subtle p-0.5 rounded border border-border-subtle">
+<button class="px-2 py-0.5 rounded text-text-primary bg-surface-raised font-label-ui text-label-ui font-medium">
+              Rendered
+            </button>
+<button class="px-2 py-0.5 rounded text-text-muted hover:text-text-primary font-label-ui text-label-ui">
+              MD
+            </button>
+</div>
+<!-- More Actions Icon -->
+<button class="p-1.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors duration-150">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Live Editor Canvas with Micro-dot Background -->
+<main class="flex-1 bg-dot-matrix px-space-md pt-space-md pb-28">
+<!-- Document Metadata Row -->
+<section class="flex items-center justify-between pb-space-sm mb-space-md border-b border-border-subtle">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-label-mono text-primary bg-on-primary-container/40 px-1.5 py-0.5 rounded border border-primary/20">
+            #DOC-2024-AUTH
+          </span>
+<span class="font-label-mono text-label-mono text-text-muted">
+            840 words
+          </span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-panel px-2 py-0.5 rounded border border-border-subtle">
+<span class="w-1.5 h-1.5 rounded-full bg-accent-emerald shadow-[0_0_6px_#10b981]"></span>
+<span class="material-symbols-outlined text-accent-emerald text-[13px]">lock</span>
+<span class="font-label-mono text-label-mono text-text-secondary tracking-wider">AES-256 GCM</span>
+</div>
+</section>
+<!-- Note Title (Mobile Variant H1) -->
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-semibold text-text-primary tracking-tight mb-space-md">
+        Microservice Auth &amp; Session Architecture
+      </h1>
+<!-- Security Boundary Callout Box -->
+<section class="mb-space-md rounded bg-surface-panel/80 border-l-2 border-accent-emerald border-y border-r border-border-subtle p-space-sm shadow-sm backdrop-blur-sm">
+<div class="flex items-start gap-space-xs">
+<div class="p-1 rounded bg-accent-emerald-glow text-accent-emerald mt-0.5 shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">security</span>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-label-ui text-label-ui font-semibold text-accent-emerald uppercase tracking-wider">Zero-Trust Perimeter</span>
+<span class="font-label-mono text-label-mono text-text-muted">v2.4.1</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">
+              Token issuance requires dual-node consensus. Downstream gateways must verify client assertions via public JWKS key rotations every 180 seconds.
+            </p>
+</div>
+</div>
+</section>
+<!-- Section Subheading -->
+<h2 class="font-headline-sm text-headline-sm font-semibold text-text-primary mt-space-lg mb-space-sm flex items-center gap-1.5">
+<span class="text-text-muted text-[13px] font-label-mono">01.</span>
+        Token Lifecycle &amp; Argon2id Invalidation
+      </h2>
+<!-- Interactive Checklist -->
+<div class="space-y-space-xs mb-space-md">
+<!-- Checklist Item 1 (Completed) -->
+<label class="flex items-start gap-space-xs p-1.5 rounded hover:bg-surface-panel/40 cursor-pointer group transition-colors">
+<div class="mt-0.5 w-4 h-4 rounded-sm bg-accent-emerald flex items-center justify-center text-surface shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+<span class="material-symbols-outlined text-[14px] font-bold">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted line-through">
+            Propagate ephemeral JWT session revocation via Redis clusters
+          </span>
+</label>
+<!-- Checklist Item 2 (Completed) -->
+<label class="flex items-start gap-space-xs p-1.5 rounded hover:bg-surface-panel/40 cursor-pointer group transition-colors">
+<div class="mt-0.5 w-4 h-4 rounded-sm bg-accent-emerald flex items-center justify-center text-surface shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.3)]">
+<span class="material-symbols-outlined text-[14px] font-bold">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted line-through">
+            Enforce Argon2id memory-cost parameter m=65536, t=3, p=4
+          </span>
+</label>
+<!-- Checklist Item 3 (Pending) -->
+<label class="flex items-start gap-space-xs p-1.5 rounded hover:bg-surface-panel/40 cursor-pointer group transition-colors">
+<div class="mt-0.5 w-4 h-4 rounded-sm border border-border-muted bg-surface-subtle group-hover:border-accent-emerald shrink-0 transition-colors"></div>
+<span class="font-body-sm text-body-sm text-text-primary">
+            Integrate rate-limiting sidecar for automated key renegotiation
+          </span>
+</label>
+</div>
+<!-- Syntax-Highlighted Code Block -->
+<section class="rounded border border-border-subtle bg-surface-panel mb-space-md overflow-hidden">
+<!-- Code Block Header -->
+<div class="flex items-center justify-between px-space-sm py-1.5 bg-surface-subtle border-b border-border-subtle">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-mono text-label-mono text-text-muted">jwt_validator.rs</span>
+<span class="px-1.5 py-0.2 bg-surface-raised rounded font-label-mono text-[10px] text-accent-emerald">Rust</span>
+</div>
+<button class="flex items-center gap-1 text-text-muted hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span class="font-label-mono text-[10px]">copy</span>
+</button>
+</div>
+<!-- Code Content -->
+<pre class="p-space-sm font-code-block text-code-block text-text-secondary overflow-x-auto leading-relaxed"><code><span class="text-tertiary-fixed-dim">pub fn</span> <span class="text-primary-fixed-dim">verify_argon_ticket</span>(claims: &amp;Claims) -&gt; <span class="text-secondary-fixed">Result</span>&lt;()&gt; {
+  <span class="text-tertiary-fixed-dim">let</span> state = <span class="text-accent-emerald">VaultSession::load</span>()?;
+  <span class="text-text-muted">// Invalidate after single-use epoch</span>
+  state.burn_nonce(claims.nonce)?;
+  <span class="text-tertiary-fixed-dim">Ok</span>(())
+}</code></pre>
+</section>
+<!-- Active Cursor Block & Slash Command Popover -->
+<section class="relative mt-space-md">
+<!-- Live input line with blinking cursor -->
+<div class="flex items-center font-body-md text-body-md text-text-primary py-1 px-1">
+<span class="text-accent-emerald font-label-mono mr-1">/</span>
+<span class="text-text-primary">cred</span>
+<span class="w-2 h-4 bg-accent-emerald ml-0.5 cursor-blink inline-block"></span>
+</div>
+<!-- Slash Command Popover Menu (Tier 2 Elevation) -->
+<div class="absolute left-0 top-7 z-30 w-72 rounded bg-surface-panel border border-border-muted shadow-[0_8px_24px_rgba(0,0,0,0.65)] py-1.5 overflow-hidden backdrop-blur-md">
+<div class="px-space-sm py-1 font-label-mono text-label-mono text-text-muted border-b border-border-subtle flex justify-between items-center">
+<span>COMMANDS</span>
+<span class="text-[10px]">MATCHING "cred"</span>
+</div>
+<!-- Command Item 1 (Active) -->
+<div class="flex items-center justify-between px-space-sm py-2 bg-surface-raised border-l-2 border-accent-emerald cursor-pointer">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-accent-emerald text-[18px]">key</span>
+<div>
+<span class="font-body-sm text-body-sm font-medium text-text-primary block">/credential</span>
+<span class="font-label-mono text-[10px] text-text-muted">AES-256 encrypted secret vault card</span>
+</div>
+</div>
+<kbd class="px-1.5 py-0.5 text-[9px] font-label-mono bg-surface-subtle text-text-muted rounded border border-border-subtle">↵</kbd>
+</div>
+<!-- Command Item 2 -->
+<div class="flex items-center justify-between px-space-sm py-2 hover:bg-surface-raised cursor-pointer transition-colors">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-text-muted text-[18px]">terminal</span>
+<div>
+<span class="font-body-sm text-body-sm text-text-secondary block">/env</span>
+<span class="font-label-mono text-[10px] text-text-muted">Inject stage-specific environment map</span>
+</div>
+</div>
+</div>
+<!-- Command Item 3 -->
+<div class="flex items-center justify-between px-space-sm py-2 hover:bg-surface-raised cursor-pointer transition-colors">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-status-warning text-[18px]">warning</span>
+<div>
+<span class="font-body-sm text-body-sm text-text-secondary block">/warning</span>
+<span class="font-label-mono text-[10px] text-text-muted">Cryptographic caution callout block</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating Editor Auxiliary Toolbar (Fixed right above the Bottom Navigation Bar) -->
+<div class="sticky bottom-14 z-30 w-full px-space-sm py-1.5 bg-surface-panel/95 backdrop-blur-md border-t border-border-subtle flex items-center justify-between">
+<div class="flex items-center gap-1 overflow-x-auto no-scrollbar w-full justify-around">
+<!-- Slash Trigger -->
+<button class="flex items-center justify-center w-8 h-8 rounded bg-surface-raised text-accent-emerald font-label-mono text-[14px] font-bold border border-accent-emerald/30 active:scale-95 transition-transform">
+          /
+        </button>
+<div class="h-4 w-px bg-border-subtle"></div>
+<!-- Heading H -->
+<button class="flex items-center justify-center w-8 h-8 rounded text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors active:scale-95">
+<span class="font-headline-sm text-headline-sm font-bold">H</span>
+</button>
+<!-- Bold B -->
+<button class="flex items-center justify-center w-8 h-8 rounded text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors active:scale-95">
+<span class="font-body-md text-body-md font-bold">B</span>
+</button>
+<!-- Code Block -->
+<button class="flex items-center justify-center w-8 h-8 rounded text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[18px]">code</span>
+</button>
+<!-- Checkbox [ ] -->
+<button class="flex items-center justify-center w-8 h-8 rounded text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[18px]">check_box</span>
+</button>
+<!-- Link -->
+<button class="flex items-center justify-center w-8 h-8 rounded text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors active:scale-95">
+<span class="material-symbols-outlined text-[18px]">link</span>
+</button>
+<div class="h-4 w-px bg-border-subtle"></div>
+<!-- Undo / Redo micro-actions -->
+<button class="flex items-center justify-center w-8 h-8 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors">
+<span class="material-symbols-outlined text-[16px]">undo</span>
+</button>
+</div>
+</div>
+<!-- Bottom Navigation Bar (Semantic Shell: strictly tonal separation, NO top border) -->
+<nav class="sticky bottom-0 z-40 bg-surface px-space-xs py-1 shadow-[0_-4px_16px_rgba(0,0,0,0.5)]">
+<div class="grid grid-cols-4 items-center">
+<!-- Tab 1: Notes (Active per prompt mandate) -->
+<button class="flex flex-col items-center justify-center py-1 rounded text-primary transition-all duration-150">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">article</span>
+<span class="font-label-ui text-[11px] font-semibold mt-0.5">Notes</span>
+</button>
+<!-- Tab 2: Ideas -->
+<button class="flex flex-col items-center justify-center py-1 rounded text-text-muted hover:text-text-primary transition-all duration-150">
+<span class="material-symbols-outlined text-[20px]">lightbulb</span>
+<span class="font-label-ui text-[11px] font-medium mt-0.5">Ideas</span>
+</button>
+<!-- Tab 3: Environments -->
+<button class="flex flex-col items-center justify-center py-1 rounded text-text-muted hover:text-text-primary transition-all duration-150">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+<span class="font-label-ui text-[11px] font-medium mt-0.5">Environments</span>
+</button>
+<!-- Tab 4: Lock Vault -->
+<button class="flex flex-col items-center justify-center py-1 rounded text-text-muted hover:text-text-primary transition-all duration-150">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+<span class="font-label-ui text-[11px] font-medium mt-0.5">Lock Vault</span>
+</button>
+</div>
+</nav>
+</div>
+</body></html>
