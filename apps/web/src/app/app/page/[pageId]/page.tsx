@@ -26,6 +26,9 @@ import {
   Globe,
   ChevronDown,
   Sparkles,
+  Share2,
+  Users,
+  FilePlus,
 } from 'lucide-react';
 import { useVault } from '@/contexts/VaultContext';
 import {
@@ -41,6 +44,9 @@ import { exportToMarkdown, exportToHtml, exportToPdf } from '@/lib/exportUtils';
 import { BlockEditor } from '@/components/editor/BlockEditor';
 import { CreateItemModal } from '@/components/layout/CreateItemModal';
 import { EnvAiPanel } from '@/components/ai/EnvAiPanel';
+import { ShareModal } from '@/components/share/ShareModal';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { usePageCollaboration } from '@/lib/socket';
 import { EntryRecord, DecryptedNotePayload, EntryVersionSnapshot, WorkspaceItemType } from '@envbook/shared';
 
 export default function NotePage() {
@@ -73,6 +79,27 @@ export default function NotePage() {
   // envAi Assistant state
   const [showEnvAi, setShowEnvAi] = useState(false);
   const [selectedEditorText, setSelectedEditorText] = useState('');
+
+  // Share Modal state
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+
+  // Child Page creation prompt
+  const [childPageModalOpen, setChildPageModalOpen] = useState(false);
+  const [childPageTitle, setChildPageTitle] = useState('');
+  const [childPageCreating, setChildPageCreating] = useState(false);
+  const childPageCallbackRef = useRef<((child: { id: string; title: string }) => void) | null>(null);
+
+  // Real-time collaborative updates via WebSockets
+  const { isConnected, collaborators, broadcastChange } = usePageCollaboration(pageId, {
+    onRemoteUpdate: (data) => {
+      if (data.content && data.content !== content) {
+        setContent(data.content);
+        if (data.title && data.title !== title) {
+          setTitle(data.title);
+        }
+      }
+    },
+  });
 
   const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isDirtyRef = useRef(false);
@@ -161,12 +188,73 @@ export default function NotePage() {
 
   const handleTitleChange = (val: string) => {
     setTitle(val);
+    broadcastChange(content, val);
     queueSave(val, content, tags);
   };
 
   const handleContentChange = (val: string) => {
     setContent(val);
+    broadcastChange(val, title);
     queueSave(title, val, tags);
+  };
+
+  const handleRequestCreateChildPage = useCallback(
+    (onCreated: (child: { id: string; title: string }) => void) => {
+      childPageCallbackRef.current = onCreated;
+      setChildPageTitle('');
+      setChildPageModalOpen(true);
+    },
+    []
+  );
+
+  const handleConfirmCreateChildPage = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const finalTitle = childPageTitle.trim() || 'Untitled Subpage';
+    if (!entry || !vault.isUnlocked) return;
+
+    try {
+      setChildPageCreating(true);
+      const childId =
+        typeof crypto !== 'undefined' && crypto.randomUUID
+          ? crypto.randomUUID()
+          : 'page-' + Date.now();
+
+      const childPayload: DecryptedNotePayload = {
+        title: finalTitle,
+        content: '',
+        tags: [],
+        updatedAt: new Date().toISOString(),
+      };
+
+      const { ciphertext, nonce } = await vault.encrypt(childPayload, childId);
+
+      // Create entry with parentId set to CURRENT pageId
+      await apiCreateEntry({
+        entryId: childId,
+        parentId: entry.entryId,
+        type: 'notes_page',
+        encryptedPayload: ciphertext,
+        nonce,
+        sortOrder: 0,
+      });
+
+      // Insert child page node into editor at current cursor position
+      if (childPageCallbackRef.current) {
+        childPageCallbackRef.current({ id: childId, title: finalTitle });
+        childPageCallbackRef.current = null;
+      }
+
+      // Notify sidebar to refresh tree
+      window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
+
+      setChildPageModalOpen(false);
+      setChildPageTitle('');
+    } catch (err: any) {
+      console.error('[NotePage] Failed to create child page:', err);
+      alert('Failed to create child page: ' + (err.message || 'Unknown error'));
+    } finally {
+      setChildPageCreating(false);
+    }
   };
 
   const handleAddTag = () => {
@@ -565,6 +653,39 @@ export default function NotePage() {
             <span className="hidden sm:inline">envAi</span>
           </button>
 
+          {/* Real-time collaborator presence indicators */}
+          {collaborators.length > 0 && (
+            <div className="flex items-center -space-x-1.5 mr-1" title={`${collaborators.length} active collaborator(s)`}>
+              {collaborators.slice(0, 3).map((c, i) => (
+                <div
+                  key={c.userId || i}
+                  className="w-6 h-6 rounded-full bg-accent-emerald/20 border-2 border-surface-panel flex items-center justify-center text-[10px] font-bold text-accent-emerald uppercase"
+                  title={c.username}
+                >
+                  {c.username.slice(0, 1)}
+                </div>
+              ))}
+              {collaborators.length > 3 && (
+                <div className="w-6 h-6 rounded-full bg-surface-raised border-2 border-surface-panel flex items-center justify-center text-[9px] font-mono text-text-muted">
+                  +{collaborators.length - 3}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Share Page Button */}
+          <button
+            onClick={() => setShareModalOpen(true)}
+            className="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle hover:border-accent-emerald/40 text-xs font-medium text-text-primary flex items-center gap-1.5 transition-colors"
+            title="Share or Publish this note"
+          >
+            <Share2 className="w-3.5 h-3.5 text-accent-emerald" />
+            <span className="hidden sm:inline">Share</span>
+          </button>
+
+          {/* In-app Notification Center */}
+          <NotificationCenter />
+
           {/* Archive */}
           <button
             onClick={handleArchive}
@@ -648,6 +769,7 @@ export default function NotePage() {
                   setEditorCreateModalType(type);
                   setEditorCreateModalOpen(true);
                 }}
+                onRequestCreateChildPage={handleRequestCreateChildPage}
                 onOpenEnvAi={(sel) => {
                   setSelectedEditorText(sel || '');
                   setShowEnvAi(true);
@@ -661,6 +783,93 @@ export default function NotePage() {
               onClose={() => setEditorCreateModalOpen(false)}
               initialType={editorCreateModalType}
               initialParentId={entry?.parentId || null}
+            />
+
+            {/* Child Page Creation Dialog (Prompted on /page) */}
+            {childPageModalOpen && (
+              <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+                <div className="w-full max-w-md bg-surface-panel border border-border-muted rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-subtle">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-accent-emerald/10 border border-accent-emerald/30 flex items-center justify-center text-accent-emerald">
+                        <FilePlus className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-semibold text-text-primary">Create Subpage</h3>
+                        <p className="text-[11px] text-text-muted">
+                          Nest a new child page directly inside <span className="text-accent-emerald font-medium">"{title || 'this page'}"</span>
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setChildPageModalOpen(false);
+                        childPageCallbackRef.current = null;
+                      }}
+                      className="text-text-muted hover:text-text-primary p-1 rounded-md hover:bg-surface-raised transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleConfirmCreateChildPage} className="p-5 flex flex-col gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs font-medium text-text-secondary">
+                        Subpage Title
+                      </label>
+                      <input
+                        type="text"
+                        autoFocus
+                        required
+                        value={childPageTitle}
+                        onChange={(e) => setChildPageTitle(e.target.value)}
+                        placeholder="e.g. Test 2"
+                        className="w-full px-3 py-2 rounded-lg bg-surface-subtle border border-border-muted text-text-primary text-sm focus:outline-none focus:border-accent-emerald placeholder:text-text-muted transition-colors"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-border-subtle/60">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setChildPageModalOpen(false);
+                          childPageCallbackRef.current = null;
+                        }}
+                        className="px-3.5 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-raised transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={childPageCreating || !childPageTitle.trim()}
+                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-accent-emerald hover:bg-accent-emerald/90 text-black flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-sm"
+                      >
+                        {childPageCreating ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                            <span>Creating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <FilePlus className="w-3.5 h-3.5" />
+                            <span>Create & Insert</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+
+            {/* Sharing & Publishing Modal */}
+            <ShareModal
+              isOpen={shareModalOpen}
+              onClose={() => setShareModalOpen(false)}
+              pageId={pageId}
+              pageTitle={title}
+              pageContent={content}
             />
           </div>
         </main>

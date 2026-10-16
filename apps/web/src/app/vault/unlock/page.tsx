@@ -20,7 +20,7 @@ import { PasswordInput } from '@/components/ui/PasswordInput';
 export default function VaultUnlockPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { unlock, unlockWithRecoveryKey, isUnlocked, isInitialized } = useVault();
+  const { unlock, unlockWithRecoveryKey, isUnlocked, isInitialized, isRestoring } = useVault();
 
   const [mode, setMode] = useState<'passphrase' | 'recovery'>('passphrase');
   const [passphrase, setPassphrase] = useState('');
@@ -41,10 +41,23 @@ export default function VaultUnlockPage() {
 
   // If user is not initialized, redirect to setup
   useEffect(() => {
-    if (user && !user.vaultInitialized && !isInitialized) {
+    if (!isRestoring && user && !user.vaultInitialized && !isInitialized) {
       router.replace('/vault/setup');
     }
-  }, [user, isInitialized, router]);
+  }, [user, isInitialized, isRestoring, router]);
+
+  if (isRestoring) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface-canvas dot-grid">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 rounded bg-surface-panel border border-border-muted flex items-center justify-center animate-pulse">
+            <ShieldCheck className="w-5 h-5 text-accent-emerald" />
+          </div>
+          <span className="font-mono text-xs text-text-muted">Restoring encrypted vault session...</span>
+        </div>
+      </div>
+    );
+  }
 
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();

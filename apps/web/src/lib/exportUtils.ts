@@ -25,6 +25,12 @@ function domNodeToMarkdown(node: Node): string {
   const tag = el.tagName.toLowerCase();
   const children = Array.from(el.childNodes).map(domNodeToMarkdown).join('');
 
+  if (el.getAttribute('data-type') === 'child-page') {
+    const pageId = el.getAttribute('data-page-id') || '';
+    const title = el.getAttribute('data-page-title') || 'Untitled Subpage';
+    return `\n\n[📄 ${title}](/app/page/${pageId})\n\n`;
+  }
+
   switch (tag) {
     case 'h1':
       return `\n\n# ${children.trim()}\n\n`;
@@ -133,6 +139,12 @@ export function regexHtmlToMarkdown(html: string): string {
     codeBlocks.push(`\`\`\`${lang || ''}\n${unescaped.trim()}\n\`\`\``);
     return `\n\n${placeholder}\n\n`;
   });
+
+  // Protect child page links
+  md = md.replace(
+    /<div[^>]*data-type="child-page"[^>]*data-page-id="([^"]*)"[^>]*data-page-title="([^"]*)"[\s\S]*?<\/div>/gi,
+    '\n\n[📄 $2](/app/page/$1)\n\n'
+  );
 
   // Protect inline code
   const inlineCodes: string[] = [];

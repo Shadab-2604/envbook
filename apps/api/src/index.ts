@@ -12,6 +12,10 @@ async function bootstrap() {
       console.log(`[EnvBook API] Server running strictly on http://127.0.0.1:${config.PORT}`);
     });
 
+    // Attach Socket.IO real-time engine
+    const { initSocketServer } = await import('./socket.js');
+    initSocketServer(server);
+
     const shutdown = async () => {
       console.log('\n[EnvBook API] Gracefully shutting down...');
       server.close(async () => {

@@ -1060,4 +1060,124 @@ export type EnvAiGenerateInput = z.infer<typeof EnvAiGenerateSchema>;
 export type EnvAiScope = 'current_note' | 'selection' | 'selected' | 'my_notes';
 export type EnvAiTone = 'concise' | 'professional' | 'technical' | 'friendly';
 
+// ==========================================
+// 8. SHARING, PUBLISHING & COLLABORATION
+// ==========================================
+export type CollaboratorRole = 'viewer' | 'editor';
+
+export interface CollaboratorInfo {
+  userId: string;
+  username: string;
+  email: string;
+  name?: string;
+  role: CollaboratorRole;
+  invitedAt: string;
+}
+
+export interface PageShareRecord {
+  pageId: string;
+  ownerId: string;
+  isOwner?: boolean;
+  currentUserRole?: 'owner' | CollaboratorRole;
+  isPublicLinkEnabled: boolean;
+  publicShareToken: string | null;
+  publicAccessLevel: CollaboratorRole;
+  publicUrl?: string;
+  isPublished: boolean;
+  publishedSlug: string | null;
+  publishedUrl?: string;
+  publishedTitle?: string;
+  publishedContent?: string;
+  publishedAt?: string | null;
+  collaborators: CollaboratorInfo[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const SharePublicLinkSchema = z.object({
+  isEnabled: z.boolean(),
+  accessLevel: z.enum(['viewer', 'editor']).default('viewer').optional(),
+});
+export type SharePublicLinkInput = z.infer<typeof SharePublicLinkSchema>;
+
+export const PublishPageSchema = z.object({
+  slug: z
+    .string()
+    .trim()
+    .min(2, 'Slug must be at least 2 characters')
+    .max(60, 'Slug cannot exceed 60 characters')
+    .regex(/^[a-z0-9-_]+$/, 'Slug must only contain lowercase letters, numbers, hyphens and underscores')
+    .optional(),
+  title: z.string().trim().min(1, 'Title is required').max(200),
+  content: z.string(),
+});
+export type PublishPageInput = z.infer<typeof PublishPageSchema>;
+
+export const AddCollaboratorSchema = z.object({
+  usernameOrEmail: z.string().trim().min(1, 'Username or email is required'),
+  role: z.enum(['viewer', 'editor']).default('viewer'),
+});
+export type AddCollaboratorInput = z.infer<typeof AddCollaboratorSchema>;
+
+export const UpdateCollaboratorSchema = z.object({
+  role: z.enum(['viewer', 'editor']),
+});
+export type UpdateCollaboratorInput = z.infer<typeof UpdateCollaboratorSchema>;
+
+// ==========================================
+// 9. IN-APP NOTIFICATIONS
+// ==========================================
+export const NOTIFICATION_TYPES = [
+  'share_invite',
+  'permission_change',
+  'access_revoked',
+  'page_published',
+  'page_unpublished',
+  'collab_edit',
+] as const;
+
+export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
+
+export interface NotificationRecord {
+  id: string;
+  recipientId: string;
+  actorId: string;
+  actorName: string;
+  type: NotificationType;
+  pageId: string;
+  pageTitle: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+// ==========================================
+// 10. CODE BLOCK PROGRAMMING LANGUAGES
+// ==========================================
+export interface CodeLanguage {
+  id: string;
+  label: string;
+  aliases?: string[];
+}
+
+export const SUPPORTED_CODE_LANGUAGES: CodeLanguage[] = [
+  { id: 'plaintext', label: 'Plain Text', aliases: ['text', 'txt', 'none'] },
+  { id: 'javascript', label: 'JavaScript', aliases: ['js', 'jsx', 'node'] },
+  { id: 'typescript', label: 'TypeScript', aliases: ['ts', 'tsx'] },
+  { id: 'python', label: 'Python', aliases: ['py', 'python3'] },
+  { id: 'java', label: 'Java' },
+  { id: 'c', label: 'C' },
+  { id: 'cpp', label: 'C++', aliases: ['c++', 'cplusplus', 'cc'] },
+  { id: 'csharp', label: 'C#', aliases: ['c#', 'cs', 'dotnet'] },
+  { id: 'php', label: 'PHP' },
+  { id: 'html', label: 'HTML', aliases: ['xml', 'svg'] },
+  { id: 'css', label: 'CSS', aliases: ['scss', 'sass', 'less'] },
+  { id: 'json', label: 'JSON' },
+  { id: 'yaml', label: 'YAML', aliases: ['yml'] },
+  { id: 'sql', label: 'SQL', aliases: ['mysql', 'postgres', 'sqlite'] },
+  { id: 'bash', label: 'Bash', aliases: ['sh', 'shell', 'zsh'] },
+  { id: 'powershell', label: 'PowerShell', aliases: ['ps1', 'ps'] },
+  { id: 'markdown', label: 'Markdown', aliases: ['md'] },
+];
+
 

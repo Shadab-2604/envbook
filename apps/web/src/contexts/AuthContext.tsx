@@ -56,6 +56,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await apiLogout();
+      try {
+        const { clearAllPersistedVaultKeys } = await import('@/lib/vaultStorage');
+        await clearAllPersistedVaultKeys();
+      } catch (err) {
+        console.warn('[AuthContext] Error clearing persisted vault keys on logout:', err);
+      }
     } finally {
       setUser(null);
       router.push('/login');

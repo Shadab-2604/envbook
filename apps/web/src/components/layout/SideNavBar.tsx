@@ -31,6 +31,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useVault } from '@/contexts/VaultContext';
 import { EntryRecord, WorkspaceItemType } from '@envbook/shared';
 import { apiGetEntries, apiUpdateEntry, apiDeleteEntry, apiArchiveEntry } from '@/lib/api';
+import { useRealTimeEvents } from '@/lib/socket';
 import { CreateItemModal } from './CreateItemModal';
 
 interface SideNavBarProps {
@@ -104,6 +105,23 @@ export function SideNavBar({
   useEffect(() => {
     loadWorkspaceTree();
   }, [loadWorkspaceTree]);
+
+  useEffect(() => {
+    const handleTreeUpdated = () => {
+      loadWorkspaceTree();
+    };
+    window.addEventListener('envbook:workspace-tree-updated', handleTreeUpdated);
+    return () => {
+      window.removeEventListener('envbook:workspace-tree-updated', handleTreeUpdated);
+    };
+  }, [loadWorkspaceTree]);
+
+  // Real-time tree update via WebSockets
+  useRealTimeEvents({
+    onTreeUpdate: () => {
+      loadWorkspaceTree();
+    },
+  });
 
   const toggleContainer = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
@@ -211,12 +229,13 @@ export function SideNavBar({
 
   // Recursive tree node renderer
   const renderTreeItem = (item: DecryptedTreeItem, depth = 0) => {
+    const children = childrenMap[item.entry.entryId] || [];
     const isContainer =
       item.entry.type === 'section' ||
       item.entry.type === 'notes_section' ||
-      item.entry.type === 'folder';
-    const isExpanded = Boolean(expandedContainers[item.entry.entryId]);
-    const children = childrenMap[item.entry.entryId] || [];
+      item.entry.type === 'folder' ||
+      children.length > 0;
+    const isExpanded = expandedContainers[item.entry.entryId] ?? true;
     const IconComponent = getItemIcon(item.entry.type);
     const itemHref = getItemHref(item);
     const isActive = pathname.includes(item.entry.entryId);

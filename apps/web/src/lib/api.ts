@@ -12,6 +12,12 @@ import {
   EnvAiConfigInput,
   EnvAiGenerateInput,
   EnvAiConfigStatus,
+  PageShareRecord,
+  SharePublicLinkInput,
+  PublishPageInput,
+  AddCollaboratorInput,
+  UpdateCollaboratorInput,
+  NotificationRecord,
 } from '@envbook/shared';
 
 export class ApiError extends Error {
@@ -258,6 +264,131 @@ export async function apiGenerateEnvAi(
   return request('/api/v1/envai/generate', {
     method: 'POST',
     body: JSON.stringify(input),
+  });
+}
+
+// ==========================================
+// SHARING & PUBLISHING API
+// ==========================================
+export async function apiGetShareSettings(pageId: string): Promise<{ share: PageShareRecord }> {
+  return request(`/api/v1/pages/${pageId}/share`, {
+    method: 'GET',
+  });
+}
+
+export async function apiUpdatePublicLink(
+  pageId: string,
+  input: SharePublicLinkInput
+): Promise<{ share: PageShareRecord }> {
+  return request(`/api/v1/pages/${pageId}/share/public-link`, {
+    method: 'PUT',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function apiRevokePublicLink(pageId: string): Promise<{ success: boolean }> {
+  return request(`/api/v1/pages/${pageId}/share/public-link`, {
+    method: 'DELETE',
+  });
+}
+
+export async function apiPublishPage(
+  pageId: string,
+  input: PublishPageInput
+): Promise<{ success: boolean; share: PageShareRecord; publishedUrl: string }> {
+  return request(`/api/v1/pages/${pageId}/publish`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function apiUnpublishPage(pageId: string): Promise<{ success: boolean }> {
+  return request(`/api/v1/pages/${pageId}/unpublish`, {
+    method: 'POST',
+  });
+}
+
+export async function apiSearchUsers(
+  query: string
+): Promise<{ users: Array<{ id: string; username: string; email: string; name?: string }> }> {
+  return request(`/api/v1/users/search?q=${encodeURIComponent(query)}`, {
+    method: 'GET',
+  });
+}
+
+export async function apiAddCollaborator(
+  pageId: string,
+  input: AddCollaboratorInput
+): Promise<{ share: PageShareRecord }> {
+  return request(`/api/v1/pages/${pageId}/collaborators`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function apiUpdateCollaborator(
+  pageId: string,
+  userId: string,
+  input: UpdateCollaboratorInput
+): Promise<{ share: PageShareRecord }> {
+  return request(`/api/v1/pages/${pageId}/collaborators/${userId}`, {
+    method: 'PUT',
+    body: JSON.stringify(input),
+  });
+}
+
+export async function apiRemoveCollaborator(
+  pageId: string,
+  userId: string
+): Promise<{ share: PageShareRecord }> {
+  return request(`/api/v1/pages/${pageId}/collaborators/${userId}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function apiGetPublicPublishedPage(
+  slug: string
+): Promise<{ title: string; content: string; publishedAt: string | null; author: { name: string; username: string } }> {
+  return request(`/api/v1/public/p/${encodeURIComponent(slug)}`, {
+    method: 'GET',
+  });
+}
+
+export async function apiGetPublicSharedPage(
+  token: string
+): Promise<{ pageId: string; title: string; content: string; accessLevel: 'viewer' | 'editor'; author: { name: string; username: string } }> {
+  return request(`/api/v1/public/s/${encodeURIComponent(token)}`, {
+    method: 'GET',
+  });
+}
+
+// ==========================================
+// NOTIFICATIONS API
+// ==========================================
+export async function apiGetNotifications(): Promise<{
+  notifications: NotificationRecord[];
+  unreadCount: number;
+}> {
+  return request('/api/v1/notifications', {
+    method: 'GET',
+  });
+}
+
+export async function apiMarkNotificationRead(id: string): Promise<{ success: boolean }> {
+  return request(`/api/v1/notifications/${id}/read`, {
+    method: 'PUT',
+  });
+}
+
+export async function apiMarkAllNotificationsRead(): Promise<{ success: boolean }> {
+  return request('/api/v1/notifications/read-all', {
+    method: 'PUT',
+  });
+}
+
+export async function apiDismissNotification(id: string): Promise<{ success: boolean }> {
+  return request(`/api/v1/notifications/${id}`, {
+    method: 'DELETE',
   });
 }
 

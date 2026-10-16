@@ -37,6 +37,8 @@ import {
   BookOpen,
 } from 'lucide-react';
 import { SLASH_COMMANDS, SlashCommandItem, WorkspaceItemType } from '@envbook/shared';
+import { CustomCodeBlock } from './CodeBlockView';
+import { ChildPageNode } from './ChildPageNode';
 
 interface BlockEditorProps {
   content: string;
@@ -44,6 +46,7 @@ interface BlockEditorProps {
   isRawMarkdown?: boolean;
   onHeadingsChange?: (headings: Array<{ level: number; text: string; id: string }>) => void;
   onRequestCreateItem?: (type: WorkspaceItemType) => void;
+  onRequestCreateChildPage?: (onCreated: (child: { id: string; title: string }) => void) => void;
   onOpenEnvAi?: (selectedText?: string) => void;
 }
 
@@ -51,8 +54,13 @@ interface BlockEditorProps {
  * Converts initial markdown content to formatted HTML for Tiptap
  */
 function markdownToHtml(md: string): string {
-  if (!md) return '<p></p>';
-  if (md.startsWith('<') && md.endsWith('>')) return DOMPurify.sanitize(md);
+  const trimmed = (md || '').trim();
+  if (trimmed.startsWith('<') && trimmed.endsWith('>')) {
+    return DOMPurify.sanitize(trimmed, {
+      ADD_TAGS: ['div', 'span', 'pre', 'code', 'table', 'tr', 'td', 'th', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'blockquote', 'hr', 'a'],
+      ADD_ATTR: ['class', 'href', 'target', 'data-type', 'data-page-id', 'data-page-title'],
+    });
+  }
 
   const lines = md.split('\n');
   const htmlParts: string[] = [];
@@ -66,12 +74,12 @@ function markdownToHtml(md: string): string {
     if (line.startsWith('```')) {
       if (!inCode) {
         inCode = true;
-        codeLang = line.replace('```', '').trim();
+        codeLang = line.replace('```', '').trim() || 'plaintext';
         codeBuffer = [];
       } else {
         inCode = false;
         htmlParts.push(
-          `<pre><code class="language-${codeLang || 'text'}">${DOMPurify.sanitize(
+          `<pre><code class="language-${codeLang || 'plaintext'}">${DOMPurify.sanitize(
             codeBuffer.join('\n')
           )}</code></pre>`
         );
@@ -81,6 +89,16 @@ function markdownToHtml(md: string): string {
 
     if (inCode) {
       codeBuffer.push(line);
+      continue;
+    }
+
+    if (line.includes('data-type="child-page"')) {
+      htmlParts.push(
+        DOMPurify.sanitize(line, {
+          ADD_TAGS: ['div', 'span', 'a'],
+          ADD_ATTR: ['class', 'href', 'target', 'data-type', 'data-page-id', 'data-page-title'],
+        })
+      );
       continue;
     }
 
@@ -139,6 +157,7 @@ export function BlockEditor({
   isRawMarkdown = false,
   onHeadingsChange,
   onRequestCreateItem,
+  onRequestCreateChildPage,
   onOpenEnvAi,
 }: BlockEditorProps) {
   const [slashMenuOpen, setSlashMenuOpen] = useState(false);
@@ -226,7 +245,10 @@ export function BlockEditor({
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
+        codeBlock: false,
       }),
+      CustomCodeBlock,
+      ChildPageNode,
       Placeholder.configure({
         placeholder: "Type '/' for commands or start writing in Markdown...",
       }),
@@ -329,6 +351,24 @@ export function BlockEditor({
         if (range && range.from >= 0 && range.to <= editor.state.doc.content.size && range.from <= range.to) {
           editor.chain().focus().deleteRange(range).run();
         }
+        if (cmd.id === 'page' || cmd.id === 'notes-page') {
+          if (onRequestCreateChildPage) {
+            onRequestCreateChildPage((child) => {
+              editor
+                .chain()
+                .focus()
+                .insertContent({
+                  type: 'childPage',
+                  attrs: {
+                    pageId: child.id,
+                    title: child.title,
+                  },
+                })
+                .run();
+            });
+            return;
+          }
+        }
         if (onRequestCreateItem) {
           if (cmd.id === 'page' || cmd.id === 'notes-page') onRequestCreateItem('notes_page');
           else if (cmd.id === 'section') onRequestCreateItem('section');
@@ -364,6 +404,8 @@ export function BlockEditor({
           chain.toggleTaskList().run();
           break;
         case 'code':
+          chain.setCodeBlock({ language: 'plaintext' }).run();
+          break;
         case 'terminal':
         case 'env':
         case 'credential':

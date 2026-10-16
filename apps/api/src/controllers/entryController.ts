@@ -179,6 +179,22 @@ export async function updateEntry(
         });
         return;
       }
+      if (input.parentId !== null) {
+        let currParentId: string | null = input.parentId;
+        const visited = new Set<string>([entry.entryId]);
+        while (currParentId) {
+          if (visited.has(currParentId)) {
+            res.status(400).json({
+              error: 'Circular parent-child relationship detected.',
+              code: 'CIRCULAR_REFERENCE',
+            });
+            return;
+          }
+          visited.add(currParentId);
+          const parentDoc: any = await Entry.findOne({ owner, entryId: currParentId }).select('parentId');
+          currParentId = parentDoc ? parentDoc.parentId : null;
+        }
+      }
       entry.parentId = input.parentId;
     }
 

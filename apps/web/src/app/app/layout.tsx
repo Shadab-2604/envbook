@@ -13,14 +13,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { user, loading: authLoading } = useAuth();
-  const { isUnlocked, isInitialized } = useVault();
+  const { isUnlocked, isInitialized, isRestoring } = useVault();
 
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
 
   // Authentication & Vault Guard
   useEffect(() => {
-    if (authLoading) return;
+    // Wait until both auth and persisted key restoration have finished
+    if (authLoading || isRestoring) return;
 
     if (!user) {
       router.replace('/login');
@@ -29,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     } else if (!isUnlocked) {
       router.replace('/vault/unlock');
     }
-  }, [user, authLoading, isUnlocked, isInitialized, router]);
+  }, [user, authLoading, isUnlocked, isInitialized, isRestoring, router]);
 
   // Global Keyboard Shortcuts (Cmd+K for switcher, Esc for locking when no modal)
   useEffect(() => {
@@ -44,14 +45,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  if (authLoading || !user || !isUnlocked) {
+  if (authLoading || isRestoring || !user || !isUnlocked) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-surface-canvas dot-grid">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 rounded bg-surface-panel border border-border-muted flex items-center justify-center animate-pulse">
             <Terminal className="w-5 h-5 text-accent-emerald" />
           </div>
-          <span className="font-mono text-xs text-text-muted">Authenticating encrypted session...</span>
+          <span className="font-mono text-xs text-text-muted">
+            {isRestoring ? 'Restoring encrypted vault session...' : 'Authenticating encrypted session...'}
+          </span>
         </div>
       </div>
     );

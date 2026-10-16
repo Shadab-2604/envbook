@@ -18,6 +18,7 @@ import { apiGetVaultStatus, apiSetupVault, apiRekeyVault } from '@/lib/api';
 interface VaultContextType {
   isInitialized: boolean;
   isUnlocked: boolean;
+  isRestoring: boolean;
   lock: () => void;
   unlock: (passphrase: string) => Promise<void>;
   unlockWithRecoveryKey: (recoveryKey: string) => Promise<void>;
@@ -29,65 +30,90 @@ interface VaultContextType {
 
 const VaultContext = createContext<VaultContextType | undefined>(undefined);
 
-const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes idle timeout matching Design System
-
 export function VaultProvider({ children }: { children: React.ReactNode }) {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
 
   const [dek, setDek] = useState<CryptoKey | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
-  const lastActivityRef = useRef<number>(Date.now());
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isRestoring, setIsRestoring] = useState<boolean>(true);
 
-  // Sync initialization state with user profile
+  // Restore persisted non-extractable CryptoKey from IndexedDB on initial mount / reload
   useEffect(() => {
-    if (user) {
+    let active = true;
+
+    async function restoreKey() {
+      if (!user) {
+        setDek(null);
+        setIsInitialized(false);
+        setIsRestoring(false);
+        return;
+      }
+
       setIsInitialized(Boolean(user.vaultInitialized));
-    } else {
-      setIsInitialized(false);
-      setDek(null);
+
+      if (user.vaultInitialized) {
+        setIsRestoring(true);
+        try {
+          const { getPersistedVaultKey } = await import('@/lib/vaultStorage');
+          const persistedKey = await getPersistedVaultKey(user.id);
+          if (active && persistedKey) {
+            setDek(persistedKey);
+            console.log('[Vault] Restored non-extractable CryptoKey from IndexedDB. Vault remains unlocked.');
+          }
+        } catch (err) {
+          console.warn('[Vault] Failed to restore persisted key:', err);
+        } finally {
+          if (active) setIsRestoring(false);
+        }
+      } else {
+        setIsRestoring(false);
+      }
     }
+
+    restoreKey();
+
+    return () => {
+      active = false;
+    };
   }, [user]);
 
-  const lock = useCallback(() => {
-    // Clear the unwrapped DEK from active React state
+  // Listen for vault lock event across browser tabs/components
+  useEffect(() => {
+    const handleRemoteLock = () => {
+      setDek(null);
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('envbook:vault-locked', handleRemoteLock);
+      return () => window.removeEventListener('envbook:vault-locked', handleRemoteLock);
+    }
+  }, []);
+
+  const lock = useCallback(async () => {
+    // 1. Clear the unwrapped DEK from active React state immediately
     setDek(null);
-    console.log('[Vault] In-memory decryption keys wiped. Vault locked.');
+
+    // 2. Remove persisted key from IndexedDB
+    if (user?.id) {
+      try {
+        const { removePersistedVaultKey } = await import('@/lib/vaultStorage');
+        await removePersistedVaultKey(user.id);
+      } catch (err) {
+        console.warn('[Vault] Error clearing persisted vault key:', err);
+      }
+    }
+
+    // 3. Broadcast lock event to other tabs
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('envbook:vault-locked'));
+    }
+
+    console.log('[Vault] In-memory decryption keys wiped and storage cleared. Vault locked.');
     if (user && user.vaultInitialized) {
       router.push('/vault/unlock');
     }
   }, [router, user]);
-
-  // Inactivity auto-lock listener
-  useEffect(() => {
-    if (!dek) return;
-
-    const resetTimer = () => {
-      lastActivityRef.current = Date.now();
-    };
-
-    const checkInactivity = () => {
-      if (Date.now() - lastActivityRef.current >= INACTIVITY_TIMEOUT_MS) {
-        lock();
-      }
-    };
-
-    window.addEventListener('mousemove', resetTimer);
-    window.addEventListener('keydown', resetTimer);
-    window.addEventListener('click', resetTimer);
-    window.addEventListener('scroll', resetTimer);
-
-    timerRef.current = setInterval(checkInactivity, 30 * 1000); // Check every 30s
-
-    return () => {
-      window.removeEventListener('mousemove', resetTimer);
-      window.removeEventListener('keydown', resetTimer);
-      window.removeEventListener('click', resetTimer);
-      window.removeEventListener('scroll', resetTimer);
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [dek, lock]);
 
   const unlock = async (passphrase: string) => {
     const status = await apiGetVaultStatus();
@@ -105,7 +131,16 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
 
     const unwrappedDEK = await unwrapDEK(status.wrappedDEK, status.nonce, kek);
     setDek(unwrappedDEK);
-    lastActivityRef.current = Date.now();
+
+    // Persist non-extractable CryptoKey across reloads
+    if (user?.id) {
+      try {
+        const { savePersistedVaultKey } = await import('@/lib/vaultStorage');
+        await savePersistedVaultKey(user.id, unwrappedDEK);
+      } catch (err) {
+        console.warn('[Vault] Could not persist key to IndexedDB:', err);
+      }
+    }
   };
 
   const unlockWithRecoveryKey = async (recoveryKey: string) => {
@@ -118,7 +153,15 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
     const kek = await deriveKEK(cleanKey, status.recoverySalt, 16384, 2, 1);
     const unwrappedDEK = await unwrapDEK(status.recoveryWrappedDEK, status.recoveryNonce, kek);
     setDek(unwrappedDEK);
-    lastActivityRef.current = Date.now();
+
+    if (user?.id) {
+      try {
+        const { savePersistedVaultKey } = await import('@/lib/vaultStorage');
+        await savePersistedVaultKey(user.id, unwrappedDEK);
+      } catch (err) {
+        console.warn('[Vault] Could not persist recovery-unwrapped key:', err);
+      }
+    }
   };
 
   const setup = async (passphrase: string): Promise<{ recoveryKey: string }> => {
@@ -148,6 +191,15 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
 
     setDek(newDEK);
     setIsInitialized(true);
+
+    if (user?.id) {
+      try {
+        const { savePersistedVaultKey } = await import('@/lib/vaultStorage');
+        await savePersistedVaultKey(user.id, newDEK);
+      } catch (err) {
+        console.warn('[Vault] Could not persist setup key:', err);
+      }
+    }
     await refreshUser();
 
     return { recoveryKey };
@@ -188,6 +240,7 @@ export function VaultProvider({ children }: { children: React.ReactNode }) {
       value={{
         isInitialized,
         isUnlocked: Boolean(dek),
+        isRestoring,
         lock,
         unlock,
         unlockWithRecoveryKey,
