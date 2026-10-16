@@ -19,6 +19,7 @@ import {
   PublishPageSchema,
   AddCollaboratorSchema,
   UpdateCollaboratorSchema,
+  normalizeGeminiModel,
 } from '@envbook/shared';
 import { AiProviderSettings } from '@/server/models/AiProviderSettings';
 import { PageShare } from '@/server/models/PageShare';
@@ -180,7 +181,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ path
 
     return NextResponse.json({
       isConfigured: true,
-      model: settings.model || DEFAULT_GEMINI_MODEL,
+      model: normalizeGeminiModel(settings.model) || DEFAULT_GEMINI_MODEL,
       lastTestedAt: settings.lastTestedAt?.toISOString(),
       lastTestStatus: settings.lastTestStatus || 'untested',
       message: settings.lastTestMessage,
@@ -816,7 +817,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pat
       );
     }
 
-    const testResult = await testGeminiApiKey(apiKey, settings.model || DEFAULT_GEMINI_MODEL);
+    const testResult = await testGeminiApiKey(apiKey, normalizeGeminiModel(settings.model) || DEFAULT_GEMINI_MODEL);
 
     settings.lastTestedAt = new Date();
     settings.lastTestStatus = testResult.success ? 'success' : 'failed';
@@ -921,7 +922,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pat
     try {
       const result = await callGeminiApi({
         apiKey,
-        model: settings.model || DEFAULT_GEMINI_MODEL,
+        model: normalizeGeminiModel(settings.model) || DEFAULT_GEMINI_MODEL,
         action: input.action,
         prompt: input.prompt,
         contextText: contextualNotes,
@@ -1230,9 +1231,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ path
     }
 
     const { apiKey, model = DEFAULT_GEMINI_MODEL } = parseResult.data;
+    const normalizedModel = normalizeGeminiModel(model);
     const jwtSecret = process.env.JWT_SECRET || 'fallback-envbook-secret-key-32bytes-min';
 
-    const testResult = await testGeminiApiKey(apiKey, model);
+    const testResult = await testGeminiApiKey(apiKey, normalizedModel);
     const { ciphertext, iv, tag, keyVersion } = encryptProviderKey(apiKey, jwtSecret);
 
     await AiProviderSettings.findOneAndUpdate(
@@ -1243,7 +1245,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ path
         iv,
         tag,
         keyVersion,
-        model,
+        model: normalizedModel,
         lastTestedAt: new Date(),
         lastTestStatus: testResult.success ? 'success' : 'failed',
         lastTestMessage: testResult.message,

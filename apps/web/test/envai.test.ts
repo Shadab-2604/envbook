@@ -18,6 +18,8 @@ import {
   SLASH_COMMANDS,
   EnvAiConfigSchema,
   EnvAiGenerateSchema,
+  normalizeGeminiModel,
+  AVAILABLE_GEMINI_MODELS,
 } from '@envbook/shared';
 
 describe('envAi Cryptographic Key Protection (Zero-Plaintext Storage)', () => {
@@ -197,11 +199,33 @@ describe('envAi Schemas & Slash Command Verification', () => {
   it('validates valid envAi config payload', () => {
     const valid = {
       apiKey: 'mock-gemini-flash-api-key-test-value-12345',
-      model: 'gemini-flash-latest',
+      model: 'gemini-3.8-flash',
     };
     const parsed = EnvAiConfigSchema.parse(valid);
     expect(parsed.apiKey).toBe(valid.apiKey);
     expect(parsed.model).toBe(valid.model);
+  });
+
+  it('defaults omitted model to gemini-3.8-flash', () => {
+    const parsed = EnvAiConfigSchema.parse({
+      apiKey: 'mock-gemini-flash-api-key-test-value-12345',
+    });
+    expect(parsed.model).toBe('gemini-3.8-flash');
+    expect(DEFAULT_GEMINI_MODEL).toBe('gemini-3.8-flash');
+  });
+
+  it('contains curated models with gemini-3.8-flash marked recommended', () => {
+    const recommended = AVAILABLE_GEMINI_MODELS.find((m) => m.isRecommended);
+    expect(recommended).toBeDefined();
+    expect(recommended?.id).toBe('gemini-3.8-flash');
+    expect(AVAILABLE_GEMINI_MODELS.some((m) => m.id === 'gemini-flash-latest')).toBe(true);
+    expect(AVAILABLE_GEMINI_MODELS.some((m) => m.id === 'gemini-3.1-pro-preview')).toBe(true);
+  });
+
+  it('normalizes model input and auto-migrates deprecated models', () => {
+    expect(normalizeGeminiModel('models/gemini-3.8-flash')).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('gemini-2.0-flash')).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('models/gemini-2.0-flash')).toBe('gemini-3.8-flash');
   });
 
   it('rejects empty or whitespace-only API key', () => {

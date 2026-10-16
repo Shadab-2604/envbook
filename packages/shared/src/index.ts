@@ -1019,9 +1019,116 @@ export interface EnvAiConfigStatus {
   message?: string;
 }
 
+export interface GeminiModelInfo {
+  id: string;
+  name: string;
+  description: string;
+  contextWindow: string;
+  outputLimit: string;
+  isRecommended?: boolean;
+}
+
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+
+export const AVAILABLE_GEMINI_MODELS: GeminiModelInfo[] = [
+  {
+    id: 'gemini-3.8-flash',
+    name: 'Gemini 3.8 Flash',
+    description: 'Flagship next-gen Flash model with exceptional speed, deep reasoning, and high throughput (Google Recommended)',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+    isRecommended: true,
+  },
+  {
+    id: 'gemini-flash-latest',
+    name: 'Gemini Flash Latest',
+    description: 'Always routes to the newest stable production Flash model released by Google',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+  },
+  {
+    id: 'gemini-3.7-flash',
+    name: 'Gemini 3.7 Flash',
+    description: 'High-speed reasoning model tailored for technical documentation, coding, and analysis',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+  },
+  {
+    id: 'gemini-3.5-flash',
+    name: 'Gemini 3.5 Flash',
+    description: 'Fast, cost-efficient, and versatile multimodal model with strong baseline capabilities',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+  },
+  {
+    id: 'gemini-3.1-pro-preview',
+    name: 'Gemini 3.1 Pro Preview',
+    description: 'Frontier reasoning model for complex architectural reviews, PRDs, and deep refactoring',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+  },
+  {
+    id: 'gemini-pro-latest',
+    name: 'Gemini Pro Latest',
+    description: 'Latest high-capacity Pro model with advanced analytical depth',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+  },
+  {
+    id: 'gemini-3.1-flash-lite',
+    name: 'Gemini 3.1 Flash Lite',
+    description: 'Ultra-low latency model engineered for quick completions, grammar, and brief summaries',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+  },
+  {
+    id: 'gemini-2.5-pro',
+    name: 'Gemini 2.5 Pro',
+    description: 'Established high-reasoning model with expansive 1M context',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+  },
+  {
+    id: 'gemini-2.5-flash',
+    name: 'Gemini 2.5 Flash',
+    description: 'Reliable high-throughput workhorse for standard developer workflows',
+    contextWindow: '1,048,576 tokens (~1M)',
+    outputLimit: '65,536 tokens',
+  },
+  {
+    id: 'gemma-4-31b-it',
+    name: 'Gemma 4 31B IT',
+    description: 'Instruction-tuned open model architecture optimized for direct coding assistance',
+    contextWindow: '262,144 tokens',
+    outputLimit: '32,768 tokens',
+  },
+];
+
+/**
+ * Normalizes user/API model input:
+ * - Strips redundant 'models/' prefix (e.g. 'models/gemini-3.8-flash' -> 'gemini-3.8-flash')
+ * - Automatically migrates retired models (e.g. 'gemini-2.0-flash', 'gemini-1.5-*') to DEFAULT_GEMINI_MODEL
+ */
+export function normalizeGeminiModel(rawModel?: string): string {
+  if (!rawModel) return DEFAULT_GEMINI_MODEL;
+  let model = rawModel.trim();
+  if (model.startsWith('models/')) {
+    model = model.slice(7);
+  }
+  // Auto-migrate retired or deprecated models to Google recommended gemini-3.8-flash
+  if (
+    model === 'gemini-2.0-flash' ||
+    model.startsWith('gemini-2.0') ||
+    model.startsWith('gemini-1.5')
+  ) {
+    return DEFAULT_GEMINI_MODEL;
+  }
+  return model || DEFAULT_GEMINI_MODEL;
+}
+
 export const EnvAiConfigSchema = z.object({
   apiKey: z.string().min(10, 'Gemini API key must be at least 10 characters').max(200),
-  model: z.string().default('gemini-flash-latest').optional(),
+  model: z.string().optional().default(DEFAULT_GEMINI_MODEL),
 });
 
 export type EnvAiConfigInput = z.infer<typeof EnvAiConfigSchema>;

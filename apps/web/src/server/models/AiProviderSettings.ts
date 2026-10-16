@@ -44,7 +44,7 @@ const AiProviderSettingsSchema = new Schema<IAiProviderSettings>(
     },
     model: {
       type: String,
-      default: 'gemini-flash-latest',
+      default: 'gemini-3.8-flash',
     },
     lastTestedAt: {
       type: Date,

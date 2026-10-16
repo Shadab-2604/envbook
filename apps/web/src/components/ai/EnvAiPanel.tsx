@@ -31,6 +31,7 @@ import {
   EnvAiTone,
   EnvAiCitation,
   EnvAiConfigStatus,
+  DEFAULT_GEMINI_MODEL,
 } from '@envbook/shared';
 import { apiGetEnvAiStatus, apiGenerateEnvAi } from '@/lib/api';
 
@@ -318,7 +319,7 @@ export function EnvAiPanel({
             <div className="flex items-center gap-2">
               <span className="font-semibold text-text-primary text-xs tracking-tight">envAi</span>
               <span className="text-[10px] font-label-mono px-1.5 py-0.5 rounded bg-surface-raised border border-border-subtle text-text-muted">
-                {configStatus?.model || 'gemini-flash-latest'}
+                {configStatus?.model || DEFAULT_GEMINI_MODEL}
               </span>
             </div>
           </div>

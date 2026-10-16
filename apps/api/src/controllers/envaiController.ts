@@ -5,7 +5,7 @@ import { logSecurityEvent } from '../models/AuditLog.js';
 import { encryptProviderKey, decryptProviderKey } from '../services/envai/keyCrypto.js';
 import { testGeminiApiKey, callGeminiApi, DEFAULT_GEMINI_MODEL } from '../services/envai/geminiService.js';
 import { isResourceAllowed } from '../services/envai/securityFilter.js';
-import { EnvAiConfigSchema, EnvAiGenerateSchema } from '@envbook/shared';
+import { EnvAiConfigSchema, EnvAiGenerateSchema, normalizeGeminiModel } from '@envbook/shared';
 
 function getJwtSecret(): string {
   const secret = process.env.JWT_SECRET;
@@ -39,7 +39,7 @@ export async function getEnvAiStatus(req: Request, res: Response): Promise<void>
 
   res.json({
     isConfigured: true,
-    model: settings.model || DEFAULT_GEMINI_MODEL,
+    model: normalizeGeminiModel(settings.model) || DEFAULT_GEMINI_MODEL,
     lastTestedAt: settings.lastTestedAt?.toISOString(),
     lastTestStatus: settings.lastTestStatus || 'untested',
     message: settings.lastTestMessage,
@@ -68,10 +68,11 @@ export async function saveEnvAiConfig(req: Request, res: Response): Promise<void
   }
 
   const { apiKey, model = DEFAULT_GEMINI_MODEL } = parseResult.data;
+  const normalizedModel = normalizeGeminiModel(model);
   const jwtSecret = getJwtSecret();
 
   // Test the key non-destructively
-  const testResult = await testGeminiApiKey(apiKey, model);
+  const testResult = await testGeminiApiKey(apiKey, normalizedModel);
 
   // Encrypt with HKDF derived key
   const { ciphertext, iv, tag, keyVersion } = encryptProviderKey(apiKey, jwtSecret);
@@ -84,7 +85,7 @@ export async function saveEnvAiConfig(req: Request, res: Response): Promise<void
       iv,
       tag,
       keyVersion,
-      model,
+      model: normalizedModel,
       lastTestedAt: new Date(),
       lastTestStatus: testResult.success ? 'success' : 'failed',
       lastTestMessage: testResult.message,
@@ -145,7 +146,7 @@ export async function testEnvAiConnection(req: Request, res: Response): Promise<
     return;
   }
 
-  const testResult = await testGeminiApiKey(apiKey, settings.model || DEFAULT_GEMINI_MODEL);
+  const testResult = await testGeminiApiKey(apiKey, normalizeGeminiModel(settings.model) || DEFAULT_GEMINI_MODEL);
 
   settings.lastTestedAt = new Date();
   settings.lastTestStatus = testResult.success ? 'success' : 'failed';
@@ -270,7 +271,7 @@ export async function generateEnvAiContent(req: Request, res: Response): Promise
   try {
     const result = await callGeminiApi({
       apiKey,
-      model: settings.model || DEFAULT_GEMINI_MODEL,
+      model: normalizeGeminiModel(settings.model) || DEFAULT_GEMINI_MODEL,
       action: input.action,
       prompt: input.prompt,
       contextText: contextualNotes,

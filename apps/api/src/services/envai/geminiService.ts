@@ -3,10 +3,10 @@
  * Communicates server-side with Google's Generative Language API.
  */
 
-import { EnvAiAction, EnvAiCitation } from '@envbook/shared';
+import { EnvAiAction, EnvAiCitation, DEFAULT_GEMINI_MODEL, normalizeGeminiModel } from '@envbook/shared';
 import { redactSecrets } from './securityFilter.js';
 
-export const DEFAULT_GEMINI_MODEL = 'gemini-flash-latest';
+export { DEFAULT_GEMINI_MODEL };
 
 export const ENVAI_BASE_SYSTEM_INSTRUCTION = `You are envAi, the AI assistant integrated into EnvBook, a private developer notebook and encrypted credential vault.
 
@@ -145,7 +145,7 @@ export async function callGeminiApi(options: GenerateOptions): Promise<{
   citations: EnvAiCitation[];
   redactedCount: number;
 }> {
-  const model = options.model || DEFAULT_GEMINI_MODEL;
+  let model = normalizeGeminiModel(options.model || DEFAULT_GEMINI_MODEL);
   const apiKey = options.apiKey;
 
   if (!apiKey) {
@@ -227,10 +227,21 @@ export async function callGeminiApi(options: GenerateOptions): Promise<{
     const errorData = await response.json().catch(() => null);
     const message = errorData?.error?.message || `HTTP ${response.status}`;
 
+    // Auto-fallback retry on 404 retired models to recommended default
+    if (response.status === 404 && model !== DEFAULT_GEMINI_MODEL) {
+      console.warn(`[envAi] Model ${model} returned 404. Auto-falling back to recommended ${DEFAULT_GEMINI_MODEL}.`);
+      return callGeminiApi({
+        ...options,
+        model: DEFAULT_GEMINI_MODEL,
+      });
+    }
+
     if (response.status === 400) {
       throw new Error(`Gemini API Request Error: ${message}`);
     } else if (response.status === 401 || response.status === 403) {
       throw new Error('Invalid or expired Gemini API key. Please reconfigure your key in Settings → envAi.');
+    } else if (response.status === 404) {
+      throw new Error(`Gemini error (404): Model '${model}' is unavailable or discontinued. Please select '${DEFAULT_GEMINI_MODEL}' (Recommended) in Settings → envAi. (${message})`);
     } else if (response.status === 429) {
       throw new Error('Gemini API rate limit or quota exceeded. Please wait a few seconds before trying again.');
     } else if (response.status >= 500) {
@@ -265,8 +276,9 @@ export async function callGeminiApi(options: GenerateOptions): Promise<{
  */
 export async function testGeminiApiKey(
   apiKey: string,
-  model: string = DEFAULT_GEMINI_MODEL
+  rawModel: string = DEFAULT_GEMINI_MODEL
 ): Promise<{ success: boolean; message: string }> {
+  const model = normalizeGeminiModel(rawModel);
   try {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
     const response = await fetch(url, {
@@ -285,6 +297,12 @@ export async function testGeminiApiKey(
     if (!response.ok) {
       const err = await response.json().catch(() => null);
       const msg = err?.error?.message || `Status ${response.status}`;
+
+      if (response.status === 404 && model !== DEFAULT_GEMINI_MODEL) {
+        // Automatically retry with recommended model
+        return testGeminiApiKey(apiKey, DEFAULT_GEMINI_MODEL);
+      }
+
       return {
         success: false,
         message: `Connection failed (${response.status}): ${msg}`,

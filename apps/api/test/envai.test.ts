@@ -12,7 +12,7 @@ import {
   buildPromptForAction,
   DEFAULT_GEMINI_MODEL,
 } from '../src/services/envai/geminiService.js';
-import { ENVAI_ACTIONS, EnvAiConfigSchema } from '@envbook/shared';
+import { ENVAI_ACTIONS, EnvAiConfigSchema, normalizeGeminiModel } from '@envbook/shared';
 
 describe('Express Backend envAi Cryptographic & Security Layer', () => {
   const secret = 'backend-test-jwt-secret-with-sufficient-entropy-for-hkdf-test';
@@ -53,8 +53,18 @@ describe('Express Backend envAi Cryptographic & Security Layer', () => {
     expect(isResourceAllowed('notes_page')).toBe(true);
   });
 
-  it('defaults to gemini-flash-latest', () => {
-    expect(DEFAULT_GEMINI_MODEL).toBe('gemini-flash-latest');
+  it('defaults to gemini-3.8-flash', () => {
+    expect(DEFAULT_GEMINI_MODEL).toBe('gemini-3.8-flash');
+  });
+
+  it('normalizes model strings and auto-migrates deprecated models', () => {
+    expect(normalizeGeminiModel('models/gemini-3.8-flash')).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('gemini-3.8-flash')).toBe('gemini-3.8-flash');
+    // Deprecated models auto-migrate to DEFAULT_GEMINI_MODEL
+    expect(normalizeGeminiModel('gemini-2.0-flash')).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('models/gemini-2.0-flash')).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel('gemini-1.5-flash')).toBe('gemini-3.8-flash');
+    expect(normalizeGeminiModel(undefined)).toBe('gemini-3.8-flash');
   });
 
   it('builds valid prompts for all 15 actions', () => {

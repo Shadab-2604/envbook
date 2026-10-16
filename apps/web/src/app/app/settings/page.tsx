@@ -32,7 +32,12 @@ import {
   apiTestEnvAi,
   apiDeleteEnvAiConfig,
 } from '@/lib/api';
-import { EnvAiConfigStatus } from '@envbook/shared';
+import {
+  EnvAiConfigStatus,
+  AVAILABLE_GEMINI_MODELS,
+  DEFAULT_GEMINI_MODEL,
+  normalizeGeminiModel,
+} from '@envbook/shared';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 
 export default function SettingsPage() {
@@ -42,7 +47,7 @@ export default function SettingsPage() {
   // envAi state
   const [aiStatus, setAiStatus] = useState<EnvAiConfigStatus | null>(null);
   const [aiApiKey, setAiApiKey] = useState('');
-  const [aiModel, setAiModel] = useState('gemini-flash-latest');
+  const [aiModel, setAiModel] = useState(DEFAULT_GEMINI_MODEL);
   const [aiShowKey, setAiShowKey] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiTesting, setAiTesting] = useState(false);
@@ -76,7 +81,7 @@ export default function SettingsPage() {
     try {
       const status = await apiGetEnvAiStatus();
       setAiStatus(status);
-      if (status.model) setAiModel(status.model);
+      if (status.model) setAiModel(normalizeGeminiModel(status.model));
     } catch {
       // Ignored if user not authenticated or network error
     }
@@ -554,7 +559,14 @@ export default function SettingsPage() {
             <div className="p-3 rounded bg-surface border border-border-subtle text-xs space-y-2">
               <div className="flex items-center justify-between text-[11px] font-label-mono">
                 <span className="text-text-muted">ACTIVE MODEL</span>
-                <span className="text-primary font-semibold">{aiStatus.model || 'gemini-flash-latest'}</span>
+                <span className="text-primary font-semibold flex items-center gap-1.5">
+                  {AVAILABLE_GEMINI_MODELS.find((m) => m.id === normalizeGeminiModel(aiStatus.model))?.name || aiStatus.model || DEFAULT_GEMINI_MODEL}
+                  {(normalizeGeminiModel(aiStatus.model) === DEFAULT_GEMINI_MODEL || !aiStatus.model) && (
+                    <span className="text-[9px] px-1.5 py-0.2 bg-primary/20 text-primary border border-primary/30 rounded font-semibold">
+                      Recommended
+                    </span>
+                  )}
+                </span>
               </div>
               <div className="flex items-center justify-between text-[11px] font-label-mono">
                 <span className="text-text-muted">LAST TESTED</span>
@@ -628,19 +640,47 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-label-mono uppercase text-text-muted mb-1">
-                Model Tier
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-[11px] font-label-mono uppercase text-text-muted">
+                  Model Tier
+                </label>
+                <span className="text-[10px] text-primary font-mono">
+                  Google Recommended: gemini-3.8-flash
+                </span>
+              </div>
               <select
                 value={aiModel}
                 onChange={(e) => setAiModel(e.target.value)}
-                className="w-full bg-surface-raised border border-border-subtle focus:border-primary focus:outline-none rounded px-3 py-2 text-xs text-text-primary"
+                className="w-full bg-surface-raised border border-border-subtle focus:border-primary focus:outline-none rounded px-3 py-2 text-xs text-text-primary font-mono"
               >
-                <option value="gemini-flash-latest">gemini-flash-latest (Recommended, Ultra Fast &amp; Multimodal)</option>
-                <option value="gemini-1.5-flash">gemini-1.5-flash (Standard Flash)</option>
-                <option value="gemini-1.5-pro">gemini-1.5-pro (High Reasoning)</option>
-                <option value="gemini-2.0-flash">gemini-2.0-flash (Experimental)</option>
+                {AVAILABLE_GEMINI_MODELS.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name} {m.isRecommended ? '⭐ (Recommended)' : ''}
+                  </option>
+                ))}
               </select>
+
+              {(() => {
+                const selectedInfo = AVAILABLE_GEMINI_MODELS.find((m) => m.id === aiModel) || AVAILABLE_GEMINI_MODELS[0];
+                return (
+                  <div className="mt-2 p-2.5 rounded bg-surface border border-border-subtle text-[11px] text-text-secondary space-y-1">
+                    <div className="flex items-center justify-between text-text-primary font-medium">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-semibold text-text-primary">{selectedInfo.name}</span>
+                        {selectedInfo.isRecommended && (
+                          <span className="text-[9px] px-1.5 py-0.5 bg-primary/20 text-primary border border-primary/30 rounded font-semibold uppercase tracking-wider">
+                            Recommended
+                          </span>
+                        )}
+                      </div>
+                      <span className="font-mono text-[10px] text-text-muted">
+                        Context: {selectedInfo.contextWindow}
+                      </span>
+                    </div>
+                    <p className="text-text-muted leading-relaxed">{selectedInfo.description}</p>
+                  </div>
+                );
+              })()}
             </div>
 
             <button
