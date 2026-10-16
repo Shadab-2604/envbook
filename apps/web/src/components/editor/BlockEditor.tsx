@@ -120,6 +120,18 @@ function markdownToHtml(md: string): string {
   return htmlParts.join('');
 }
 
+function getFilteredCommands(filter: string): SlashCommandItem[] {
+  if (!filter) return SLASH_COMMANDS;
+  const f = filter.toLowerCase().trim();
+  return SLASH_COMMANDS.filter(
+    (cmd) =>
+      cmd.command.toLowerCase().includes(f) ||
+      cmd.label.toLowerCase().includes(f) ||
+      cmd.aliases.some((a) => a.toLowerCase().includes(f)) ||
+      cmd.category.toLowerCase().includes(f)
+  );
+}
+
 export function BlockEditor({
   content,
   onChange,
@@ -138,6 +150,74 @@ export function BlockEditor({
 
   const slashMenuRef = useRef<HTMLDivElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
+
+  // Synchronized refs to avoid stale closures in ProseMirror handleKeyDown
+  const slashMenuOpenRef = useRef(false);
+  const filteredCommandsRef = useRef<SlashCommandItem[]>(SLASH_COMMANDS);
+  const slashIndexRef = useRef(0);
+  const slashRangeRef = useRef<{ from: number; to: number } | null>(null);
+  const executeCommandRef = useRef<(cmd: SlashCommandItem) => void>(() => {});
+
+  const filteredCommands = getFilteredCommands(slashFilter);
+
+  // Sync refs on every render
+  slashMenuOpenRef.current = slashMenuOpen;
+  filteredCommandsRef.current = filteredCommands;
+  slashIndexRef.current = slashIndex;
+  slashRangeRef.current = slashRange;
+
+  // Slash command detector (called on document edit and selection change)
+  const detectSlashCommand = useCallback((ed: any) => {
+    if (!ed || ed.isDestroyed) return;
+    const { selection } = ed.state;
+    const { $from } = selection;
+    const textBefore = $from.parent.textBetween(0, $from.parentOffset, undefined, '\ufffc');
+    const lastSlash = textBefore.lastIndexOf('/');
+
+    if (lastSlash !== -1 && (lastSlash === 0 || textBefore[lastSlash - 1] === ' ')) {
+      const query = textBefore.slice(lastSlash + 1);
+      if (!query.startsWith(' ') && query.length <= 25) {
+        try {
+          const coords = ed.view.coordsAtPos($from.pos);
+          const containerRect = editorContainerRef.current?.getBoundingClientRect();
+
+          if (containerRect) {
+            const menuHeight = 280;
+            const spaceBelow = window.innerHeight - coords.bottom;
+            const showAbove = spaceBelow < menuHeight && coords.top > menuHeight;
+
+            setSlashPosition({
+              top: showAbove
+                ? Math.max(10, coords.top - containerRect.top - menuHeight)
+                : Math.max(10, coords.bottom - containerRect.top + 8),
+              left: Math.max(10, Math.min(coords.left - containerRect.left, containerRect.width - 330)),
+            });
+          }
+
+          const from = $from.pos - query.length - 1;
+          const to = $from.pos;
+          const matching = getFilteredCommands(query);
+
+          setSlashRange({ from, to });
+          slashRangeRef.current = { from, to };
+          setSlashFilter(query);
+          filteredCommandsRef.current = matching;
+          setSlashIndex(0);
+          slashIndexRef.current = 0;
+          setSlashMenuOpen(true);
+          slashMenuOpenRef.current = true;
+          return;
+        } catch {
+          // ignore coords calculation error
+        }
+      }
+    }
+
+    if (slashMenuOpenRef.current) {
+      setSlashMenuOpen(false);
+      slashMenuOpenRef.current = false;
+    }
+  }, []);
 
   // Initialize Tiptap WYSIWYG Editor
   const editor = useEditor({
@@ -160,15 +240,62 @@ export function BlockEditor({
       attributes: {
         class: 'focus:outline-none min-h-[480px] p-6 text-sm text-text-primary leading-relaxed',
       },
+      handleKeyDown: (_view, event) => {
+        // Intercept keys directly in ProseMirror before default splitBlock / newlines occur
+        if (slashMenuOpenRef.current) {
+          if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            const list = filteredCommandsRef.current;
+            if (list.length > 0) {
+              const nextIdx = (slashIndexRef.current + 1) % list.length;
+              slashIndexRef.current = nextIdx;
+              setSlashIndex(nextIdx);
+            }
+            return true;
+          }
+
+          if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            const list = filteredCommandsRef.current;
+            if (list.length > 0) {
+              const prevIdx = (slashIndexRef.current - 1 + list.length) % list.length;
+              slashIndexRef.current = prevIdx;
+              setSlashIndex(prevIdx);
+            }
+            return true;
+          }
+
+          if (event.key === 'Enter' || event.key === 'Tab') {
+            const list = filteredCommandsRef.current;
+            const cmd = list[slashIndexRef.current];
+            if (cmd) {
+              event.preventDefault();
+              executeCommandRef.current(cmd);
+              return true;
+            } else {
+              setSlashMenuOpen(false);
+              slashMenuOpenRef.current = false;
+            }
+          }
+
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            setSlashMenuOpen(false);
+            slashMenuOpenRef.current = false;
+            return true;
+          }
+        }
+        return false;
+      },
     },
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
+    onUpdate: ({ editor: ed }) => {
+      const html = ed.getHTML();
       onChange(html);
 
       // Extract headings for Table of Contents
       if (onHeadingsChange) {
         const extracted: Array<{ level: number; text: string; id: string }> = [];
-        editor.state.doc.descendants((node) => {
+        ed.state.doc.descendants((node) => {
           if (node.type.name === 'heading') {
             const level = node.attrs.level || 1;
             const text = node.textContent;
@@ -179,42 +306,96 @@ export function BlockEditor({
         onHeadingsChange(extracted);
       }
 
-      // Detect slash command at caret
-      const { selection } = editor.state;
-      const { $from } = selection;
-      const textBefore = $from.parent.textBetween(0, $from.parentOffset, undefined, '\ufffc');
-      const lastSlash = textBefore.lastIndexOf('/');
-
-      if (lastSlash !== -1 && (lastSlash === 0 || textBefore[lastSlash - 1] === ' ')) {
-        const query = textBefore.slice(lastSlash + 1);
-        if (!query.includes(' ') && query.length <= 20) {
-          try {
-            const coords = editor.view.coordsAtPos($from.pos);
-            const containerRect = editorContainerRef.current?.getBoundingClientRect();
-
-            if (containerRect) {
-              setSlashPosition({
-                top: Math.max(10, coords.bottom - containerRect.top + 8),
-                left: Math.max(10, Math.min(coords.left - containerRect.left, containerRect.width - 320)),
-              });
-            }
-
-            const from = $from.pos - query.length - 1;
-            const to = $from.pos;
-            setSlashRange({ from, to });
-            setSlashFilter(query);
-            setSlashIndex(0);
-            setSlashMenuOpen(true);
-            return;
-          } catch {
-            // position calculation error fallback
-          }
-        }
-      }
-
-      setSlashMenuOpen(false);
+      detectSlashCommand(ed);
+    },
+    onSelectionUpdate: ({ editor: ed }) => {
+      detectSlashCommand(ed);
     },
   });
+
+  // Execute selected slash command
+  const executeCommand = useCallback(
+    (cmd: SlashCommandItem) => {
+      if (!editor) return;
+
+      const range = slashRangeRef.current;
+      setSlashMenuOpen(false);
+      slashMenuOpenRef.current = false;
+
+      // 1. Workspace Item Creation Commands
+      if (['page', 'section', 'notes-page', 'environment', 'notes-section'].includes(cmd.id)) {
+        if (range && range.from >= 0 && range.to <= editor.state.doc.content.size && range.from <= range.to) {
+          editor.chain().focus().deleteRange(range).run();
+        }
+        if (onRequestCreateItem) {
+          if (cmd.id === 'page' || cmd.id === 'notes-page') onRequestCreateItem('notes_page');
+          else if (cmd.id === 'section') onRequestCreateItem('section');
+          else if (cmd.id === 'environment') onRequestCreateItem('environment_page');
+          else if (cmd.id === 'notes-section') onRequestCreateItem('notes_section');
+        }
+        return;
+      }
+
+      // 2. Editor Formatting & Block Commands
+      let chain = editor.chain().focus();
+      if (range && range.from >= 0 && range.to <= editor.state.doc.content.size && range.from <= range.to) {
+        chain = chain.deleteRange(range);
+      }
+
+      switch (cmd.id) {
+        case 'h1':
+          chain.setHeading({ level: 1 }).run();
+          break;
+        case 'h2':
+          chain.setHeading({ level: 2 }).run();
+          break;
+        case 'h3':
+          chain.setHeading({ level: 3 }).run();
+          break;
+        case 'bulleted-list':
+          chain.toggleBulletList().run();
+          break;
+        case 'numbered-list':
+          chain.toggleOrderedList().run();
+          break;
+        case 'todo':
+          chain.toggleTaskList().run();
+          break;
+        case 'code':
+        case 'terminal':
+        case 'env':
+        case 'credential':
+          chain.toggleCodeBlock().run();
+          break;
+        case 'quote':
+        case 'callout':
+          chain.toggleBlockquote().run();
+          break;
+        case 'divider':
+          chain.setHorizontalRule().run();
+          break;
+        case 'table':
+          chain.insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+          break;
+        case 'bold':
+          chain.toggleBold().run();
+          break;
+        case 'italic':
+          chain.toggleItalic().run();
+          break;
+        case 'inline-code':
+          chain.toggleCode().run();
+          break;
+        case 'text':
+        default:
+          chain.setParagraph().run();
+          break;
+      }
+    },
+    [editor, onRequestCreateItem]
+  );
+
+  executeCommandRef.current = executeCommand;
 
   // Keep editor content in sync when external content prop updates
   useEffect(() => {
@@ -226,127 +407,35 @@ export function BlockEditor({
     }
   }, [content, editor, rawText]);
 
-  // Slash commands list filtered
-  const filteredCommands = SLASH_COMMANDS.filter((cmd) => {
-    if (!slashFilter) return true;
-    const f = slashFilter.toLowerCase();
-    return (
-      cmd.command.toLowerCase().includes(f) ||
-      cmd.label.toLowerCase().includes(f) ||
-      cmd.aliases.some((a) => a.toLowerCase().includes(f)) ||
-      cmd.category.toLowerCase().includes(f)
-    );
-  });
+  // Auto-scroll selected command item into view
+  useEffect(() => {
+    if (slashMenuOpen && slashMenuRef.current) {
+      const selectedEl = slashMenuRef.current.querySelector('[data-selected="true"]');
+      if (selectedEl) {
+        selectedEl.scrollIntoView({ block: 'nearest' });
+      }
+    }
+  }, [slashIndex, slashMenuOpen]);
 
-  // Execute selected slash command
-  const executeCommand = (cmd: SlashCommandItem) => {
-    if (!editor) return;
-
-    // Delete the triggering slash query text
-    if (slashRange) {
-      editor.chain().focus().deleteRange(slashRange).run();
-    }
-    setSlashMenuOpen(false);
-
-    // 1. Workspace Item Creation Commands
-    if (cmd.id === 'page') {
-      if (onRequestCreateItem) onRequestCreateItem('notes_page');
-      return;
-    }
-    if (cmd.id === 'section') {
-      if (onRequestCreateItem) onRequestCreateItem('section');
-      return;
-    }
-    if (cmd.id === 'notes-page') {
-      if (onRequestCreateItem) onRequestCreateItem('notes_page');
-      return;
-    }
-    if (cmd.id === 'environment') {
-      if (onRequestCreateItem) onRequestCreateItem('environment_page');
-      return;
-    }
-    if (cmd.id === 'notes-section') {
-      if (onRequestCreateItem) onRequestCreateItem('notes_section');
-      return;
-    }
-
-    // 2. Editor Formatting & Block Commands
-    switch (cmd.id) {
-      case 'h1':
-        editor.chain().focus().setHeading({ level: 1 }).run();
-        break;
-      case 'h2':
-        editor.chain().focus().setHeading({ level: 2 }).run();
-        break;
-      case 'h3':
-        editor.chain().focus().setHeading({ level: 3 }).run();
-        break;
-      case 'bulleted-list':
-        editor.chain().focus().toggleBulletList().run();
-        break;
-      case 'numbered-list':
-        editor.chain().focus().toggleOrderedList().run();
-        break;
-      case 'todo':
-        editor.chain().focus().toggleTaskList().run();
-        break;
-      case 'code':
-      case 'terminal':
-      case 'env':
-      case 'credential':
-        editor.chain().focus().toggleCodeBlock().run();
-        break;
-      case 'quote':
-      case 'callout':
-        editor.chain().focus().toggleBlockquote().run();
-        break;
-      case 'divider':
-        editor.chain().focus().setHorizontalRule().run();
-        break;
-      case 'table':
-        editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
-        break;
-      case 'bold':
-        editor.chain().focus().toggleBold().run();
-        break;
-      case 'italic':
-        editor.chain().focus().toggleItalic().run();
-        break;
-      case 'inline-code':
-        editor.chain().focus().toggleCode().run();
-        break;
-      default:
-        // Default insert paragraph
-        editor.chain().focus().setParagraph().run();
-        break;
-    }
-  };
-
-  // Keyboard navigation for slash picker
+  // Click outside listener to dismiss slash menu
   useEffect(() => {
     if (!slashMenuOpen) return;
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSlashIndex((prev) => (prev < filteredCommands.length - 1 ? prev + 1 : 0));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSlashIndex((prev) => (prev > 0 ? prev - 1 : filteredCommands.length - 1));
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (filteredCommands[slashIndex]) {
-          executeCommand(filteredCommands[slashIndex]);
-        }
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        slashMenuRef.current &&
+        !slashMenuRef.current.contains(e.target as Node) &&
+        editorContainerRef.current &&
+        !editorContainerRef.current.contains(e.target as Node)
+      ) {
         setSlashMenuOpen(false);
+        slashMenuOpenRef.current = false;
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [slashMenuOpen, filteredCommands, slashIndex]);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [slashMenuOpen]);
 
   // Handle Raw Markdown toggle
   const handleRawChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -379,8 +468,16 @@ export function BlockEditor({
               return (
                 <div
                   key={cmd.id}
+                  data-selected={isSelected ? 'true' : undefined}
+                  onMouseDown={(e) => {
+                    e.preventDefault(); // Keep editor focus
+                    executeCommand(cmd);
+                  }}
                   onClick={() => executeCommand(cmd)}
-                  onMouseEnter={() => setSlashIndex(idx)}
+                  onMouseEnter={() => {
+                    setSlashIndex(idx);
+                    slashIndexRef.current = idx;
+                  }}
                   className={`flex items-center justify-between px-2.5 py-1.5 rounded cursor-pointer transition-colors ${
                     isSelected
                       ? 'bg-surface-raised border-l-2 border-accent-emerald text-text-primary'
