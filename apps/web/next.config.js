@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Integrated single-URL architecture:
-  // All /api/* routes are handled directly inside Next.js App Router route handlers.
+  transpilePackages: ['@envbook/shared'],
 };
 
 module.exports = nextConfig;
