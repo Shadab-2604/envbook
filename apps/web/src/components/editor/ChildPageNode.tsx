@@ -1,32 +1,68 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react';
-import { FileText, ArrowUpRight, FolderTree } from 'lucide-react';
+import { FileText, ArrowUpRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { apiDeleteEntry } from '@/lib/api';
 
-function ChildPageView({ node }: any) {
+function ChildPageView({ node, deleteNode }: any) {
   const pageId = node.attrs.pageId;
   const title = node.attrs.title || 'Untitled Subpage';
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!confirm(`Move subpage "${title}" to Trash? You can restore it later from Trash.`)) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      await apiDeleteEntry(pageId);
+      deleteNode();
+      window.dispatchEvent(new CustomEvent('envbook:subpage-deleted', { detail: { pageId } }));
+      window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
+    } catch (err: any) {
+      console.error('[ChildPageNode] Failed to delete subpage:', err);
+      alert(`Failed to delete subpage: ${err.message || 'Server error'}`);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
-    <NodeViewWrapper className="my-2 select-none">
-      <Link
-        href={`/app/page/${pageId}`}
-        className="group inline-flex items-center gap-2.5 px-3 py-2 rounded-md bg-surface-subtle hover:bg-surface-panel border border-border-subtle hover:border-accent-emerald/40 transition-all text-xs text-text-primary no-underline max-w-md shadow-sm"
-      >
-        <div className="w-5 h-5 rounded bg-surface-panel group-hover:bg-accent-emerald/10 border border-border-subtle flex items-center justify-center shrink-0 transition-colors">
-          <FileText className="w-3.5 h-3.5 text-accent-emerald shrink-0" />
-        </div>
-        <span className="font-medium text-text-primary group-hover:text-accent-emerald truncate max-w-[240px]">
-          {title}
-        </span>
-        <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded bg-surface-raised text-text-muted border border-border-subtle shrink-0">
-          Subpage
-        </span>
-        <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-accent-emerald shrink-0 ml-auto transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-      </Link>
+    <NodeViewWrapper className="my-2 select-none group/subpage-wrapper relative inline-block">
+      <div className="inline-flex items-center gap-1.5">
+        <Link
+          href={`/app/page/${pageId}`}
+          className="group inline-flex items-center gap-2.5 px-3 py-2 rounded-md bg-surface-subtle hover:bg-surface-panel border border-border-subtle hover:border-accent-emerald/40 transition-all text-xs text-text-primary no-underline max-w-md shadow-sm"
+        >
+          <div className="w-5 h-5 rounded bg-surface-panel group-hover:bg-accent-emerald/10 border border-border-subtle flex items-center justify-center shrink-0 transition-colors">
+            <FileText className="w-3.5 h-3.5 text-accent-emerald shrink-0" />
+          </div>
+          <span className="font-medium text-text-primary group-hover:text-accent-emerald truncate max-w-[240px]">
+            {title}
+          </span>
+          <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded bg-surface-raised text-text-muted border border-border-subtle shrink-0">
+            Subpage
+          </span>
+          <ArrowUpRight className="w-3.5 h-3.5 text-text-muted group-hover:text-accent-emerald shrink-0 ml-auto transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </Link>
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={deleting}
+          title={`Delete subpage "${title}"`}
+          aria-label={`Delete subpage "${title}"`}
+          className="opacity-0 group-hover/subpage-wrapper:opacity-100 p-1.5 rounded hover:bg-accent-crimson/15 text-text-muted hover:text-accent-crimson border border-transparent hover:border-accent-crimson/30 transition-all cursor-pointer disabled:opacity-50"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
     </NodeViewWrapper>
   );
 }

@@ -60,6 +60,21 @@
   line-height: 1.7;
 }
 
+/* Notion-Style Block Selection & Highlighting */
+.ProseMirror > [data-block-selected="true"] {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  outline: 2px solid rgba(16, 185, 129, 0.5) !important;
+  outline-offset: 2px;
+  border-radius: 6px;
+  position: relative;
+  transition: background-color 0.1s ease, outline 0.1s ease;
+}
+
+.ProseMirror > [data-block-selected="true"]::selection,
+.ProseMirror > [data-block-selected="true"] *::selection {
+  background-color: rgba(16, 185, 129, 0.35);
+}
+
 .ProseMirror p.is-editor-empty:first-child::before {
   color: #6e7681;
   content: attr(data-placeholder);

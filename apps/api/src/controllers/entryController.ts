@@ -245,6 +245,22 @@ export async function updateEntry(
   }
 }
 
+async function getAllDescendantEntryIds(owner: any, rootEntryId: string): Promise<string[]> {
+  const descendantIds: string[] = [];
+  const queue = [rootEntryId];
+
+  while (queue.length > 0) {
+    const parentId = queue.shift()!;
+    const children = await Entry.find({ owner, parentId }).select('entryId');
+    for (const child of children) {
+      descendantIds.push(child.entryId);
+      queue.push(child.entryId);
+    }
+  }
+
+  return descendantIds;
+}
+
 export async function deleteEntry(
   req: AuthenticatedRequest,
   res: Response,
@@ -264,11 +280,14 @@ export async function deleteEntry(
       return;
     }
 
+    const descendantIds = await getAllDescendantEntryIds(owner, id);
+
     if (permanent) {
-      // Permanently remove from database
+      // Permanently remove entry and all nested descendants
       await Entry.deleteOne({ _id: entry._id });
-      // If folder, also remove or detach descendants
-      await Entry.deleteMany({ owner, parentId: id });
+      if (descendantIds.length > 0) {
+        await Entry.deleteMany({ owner, entryId: { $in: descendantIds } });
+      }
 
       await logSecurityEvent('ENTRY_PERMANENTLY_DELETED', {
         userId: owner,
@@ -282,16 +301,17 @@ export async function deleteEntry(
       return;
     }
 
-    // Soft delete to Trash
+    // Soft delete to Trash and cascade to all nested descendants
     entry.isDeleted = true;
     entry.deletedAt = new Date();
     await entry.save();
 
-    // If folder, cascade soft-delete to children
-    await Entry.updateMany(
-      { owner, parentId: id },
-      { $set: { isDeleted: true, deletedAt: new Date() } }
-    );
+    if (descendantIds.length > 0) {
+      await Entry.updateMany(
+        { owner, entryId: { $in: descendantIds } },
+        { $set: { isDeleted: true, deletedAt: new Date() } }
+      );
+    }
 
     res.status(200).json({
       message: 'Entry moved to Trash',
@@ -333,11 +353,14 @@ export async function restoreEntry(
       }
     }
 
-    // Cascade restore to children
-    await Entry.updateMany(
-      { owner, parentId: id },
-      { $set: { isDeleted: false, deletedAt: null } }
-    );
+    // Cascade restore to all nested descendants
+    const descendantIds = await getAllDescendantEntryIds(owner, id);
+    if (descendantIds.length > 0) {
+      await Entry.updateMany(
+        { owner, entryId: { $in: descendantIds } },
+        { $set: { isDeleted: false, deletedAt: null } }
+      );
+    }
 
     res.status(200).json({
       entry: formatEntry(entry),

@@ -146,8 +146,50 @@ export default function NotePage() {
         rec.entryId
       );
 
+      let initialContent = decrypted.content || '';
+      if (initialContent.includes('data-page-id=')) {
+        try {
+          const parser = new DOMParser();
+          const parsedDoc = parser.parseFromString(initialContent, 'text/html');
+          const childPageEls = Array.from(parsedDoc.querySelectorAll('[data-page-id]'));
+          let hasStaleChild = false;
+
+          for (const el of childPageEls) {
+            const childId = el.getAttribute('data-page-id');
+            if (childId) {
+              try {
+                const childRes = await apiGetEntryById(childId);
+                if (!childRes?.entry || childRes.entry.isDeleted) {
+                  el.remove();
+                  hasStaleChild = true;
+                }
+              } catch {
+                el.remove();
+                hasStaleChild = true;
+              }
+            }
+          }
+
+          if (hasStaleChild) {
+            initialContent = parsedDoc.body.innerHTML;
+            const cleanPayload = {
+              title: decrypted.title || 'Untitled',
+              content: initialContent,
+              tags: decrypted.tags || [],
+              icon: decrypted.icon || rec.icon || undefined,
+              updatedAt: new Date().toISOString(),
+            };
+            const { ciphertext, nonce } = await vault.encrypt(cleanPayload, rec.entryId);
+            await apiUpdateEntry(rec.entryId, { encryptedPayload: ciphertext, nonce, icon: cleanPayload.icon });
+            window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
+          }
+        } catch (cleanErr) {
+          console.error('[NotePage] Error checking subpages:', cleanErr);
+        }
+      }
+
       setTitle(decrypted.title || 'Untitled');
-      setContent(decrypted.content || '');
+      setContent(initialContent);
       setTags(decrypted.tags || []);
       setIcon(decrypted.icon || rec.icon || null);
       isDirtyRef.current = false;
@@ -208,6 +250,45 @@ export default function NotePage() {
     },
     [entry, vault, icon]
   );
+
+  // Synchronized subpage deletion listener
+  useEffect(() => {
+    const handleSubpageDeleted = (e: Event) => {
+      const customEvent = e as CustomEvent<{ pageId: string }>;
+      const deletedPageId = customEvent.detail?.pageId;
+      if (!deletedPageId) return;
+
+      // If the current page itself was deleted, navigate back to workspace
+      if (deletedPageId === pageId) {
+        router.push('/app');
+        return;
+      }
+
+      // If this page contains a reference to the deleted subpage, remove it and save
+      setContent((currentContent) => {
+        if (!currentContent || !currentContent.includes(deletedPageId)) return currentContent;
+        try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(currentContent, 'text/html');
+          const matching = doc.querySelectorAll(`[data-page-id="${deletedPageId}"]`);
+          if (matching.length > 0) {
+            matching.forEach((n) => n.remove());
+            const cleaned = doc.body.innerHTML;
+            triggerSave(title, cleaned, tags, icon);
+            return cleaned;
+          }
+        } catch (err) {
+          console.error('[NotePage] Error removing deleted subpage:', err);
+        }
+        return currentContent;
+      });
+    };
+
+    window.addEventListener('envbook:subpage-deleted', handleSubpageDeleted);
+    return () => {
+      window.removeEventListener('envbook:subpage-deleted', handleSubpageDeleted);
+    };
+  }, [pageId, router, triggerSave, title, tags, icon]);
 
   const queueSave = useCallback(
     (
@@ -408,6 +489,8 @@ export default function NotePage() {
     if (!entry) return;
     if (confirm('Move this note to trash? You can restore it later from Trash.')) {
       await apiDeleteEntry(entry.entryId);
+      window.dispatchEvent(new CustomEvent('envbook:subpage-deleted', { detail: { pageId: entry.entryId } }));
+      window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
       router.push('/app');
     }
   };

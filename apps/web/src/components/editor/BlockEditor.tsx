@@ -35,10 +35,13 @@ import {
   Folder,
   Database,
   BookOpen,
+  GripVertical,
+  Trash2,
 } from 'lucide-react';
 import { SLASH_COMMANDS, SlashCommandItem, WorkspaceItemType } from '@envbook/shared';
 import { CustomCodeBlock } from './CodeBlockView';
 import { ChildPageNode } from './ChildPageNode';
+import { apiDeleteEntry } from '@/lib/api';
 
 interface BlockEditorProps {
   content: string;
@@ -171,6 +174,20 @@ export function BlockEditor({
 
   const slashMenuRef = useRef<HTMLDivElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
+  const articleRef = useRef<HTMLElement>(null);
+
+  // Notion-Style Block Selection State
+  const [selectedBlockIndices, setSelectedBlockIndices] = useState<Set<number>>(new Set());
+  const selectedBlockIndicesRef = useRef<Set<number>>(new Set());
+  selectedBlockIndicesRef.current = selectedBlockIndices;
+
+  const [anchorBlockIndex, setAnchorBlockIndex] = useState<number | null>(null);
+  const anchorBlockIndexRef = useRef<number | null>(null);
+  anchorBlockIndexRef.current = anchorBlockIndex;
+
+  const [hoveredBlock, setHoveredBlock] = useState<{ index: number; top: number } | null>(null);
+  const isDraggingSelectionRef = useRef<boolean>(false);
+  const deleteSelectedBlocksRef = useRef<() => Promise<void>>(() => Promise.resolve());
 
   // Synchronized refs to avoid stale closures in ProseMirror handleKeyDown
   const slashMenuOpenRef = useRef(false);
@@ -262,9 +279,46 @@ export function BlockEditor({
     content: markdownToHtml(content),
     editorProps: {
       attributes: {
-        class: 'focus:outline-none min-h-[480px] p-6 text-sm text-text-primary leading-relaxed',
+        class: 'focus:outline-none min-h-[480px] pl-10 pr-6 py-6 text-sm text-text-primary leading-relaxed',
       },
       handleKeyDown: (_view, event) => {
+        // Intercept block selection keys (Delete, Backspace, Esc, Shift+Arrow)
+        if (selectedBlockIndicesRef.current.size > 0) {
+          if (event.key === 'Backspace' || event.key === 'Delete') {
+            event.preventDefault();
+            deleteSelectedBlocksRef.current();
+            return true;
+          }
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            setSelectedBlockIndices(new Set());
+            setAnchorBlockIndex(null);
+            return true;
+          }
+          if (event.key === 'ArrowDown' && event.shiftKey) {
+            event.preventDefault();
+            const list = Array.from(selectedBlockIndicesRef.current);
+            const maxIdx = Math.max(...list);
+            if (_view.state.doc.childCount > 0 && maxIdx < _view.state.doc.childCount - 1) {
+              const next = new Set(selectedBlockIndicesRef.current);
+              next.add(maxIdx + 1);
+              setSelectedBlockIndices(next);
+            }
+            return true;
+          }
+          if (event.key === 'ArrowUp' && event.shiftKey) {
+            event.preventDefault();
+            const list = Array.from(selectedBlockIndicesRef.current);
+            const minIdx = Math.min(...list);
+            if (minIdx > 0) {
+              const next = new Set(selectedBlockIndicesRef.current);
+              next.add(minIdx - 1);
+              setSelectedBlockIndices(next);
+            }
+            return true;
+          }
+        }
+
         // Intercept keys directly in ProseMirror before default splitBlock / newlines occur
         if (slashMenuOpenRef.current) {
           if (event.key === 'ArrowDown') {
@@ -334,6 +388,11 @@ export function BlockEditor({
     },
     onSelectionUpdate: ({ editor: ed }) => {
       detectSlashCommand(ed);
+      // Clear block selection when user clicks inside text to edit
+      if (!isDraggingSelectionRef.current && selectedBlockIndicesRef.current.size > 0) {
+        setSelectedBlockIndices(new Set());
+        setAnchorBlockIndex(null);
+      }
     },
   });
 
@@ -498,6 +557,312 @@ export function BlockEditor({
     onChange(val);
   };
 
+  // Notion-Style Block Selection & Deletion Logic
+  const deleteSelectedBlocks = useCallback(async () => {
+    if (!editor || editor.isDestroyed || selectedBlockIndicesRef.current.size === 0) return;
+
+    const doc = editor.state.doc;
+    const indices = Array.from(selectedBlockIndicesRef.current).sort((a, b) => a - b);
+
+    // 1. Identify any subpages in the selected blocks
+    const subpagesToDelete: Array<{ pageId: string; title: string }> = [];
+
+    indices.forEach((idx) => {
+      if (idx < doc.childCount) {
+        const child = doc.child(idx);
+        if (child.type.name === 'childPage' && child.attrs.pageId) {
+          subpagesToDelete.push({
+            pageId: child.attrs.pageId,
+            title: child.attrs.title || 'Untitled Subpage',
+          });
+        } else {
+          child.descendants((nested) => {
+            if (nested.type.name === 'childPage' && nested.attrs.pageId) {
+              subpagesToDelete.push({
+                pageId: nested.attrs.pageId,
+                title: nested.attrs.title || 'Untitled Subpage',
+              });
+            }
+          });
+        }
+      }
+    });
+
+    // 2. Prompt confirmation ONLY if subpages are present
+    if (subpagesToDelete.length > 0) {
+      const titles = subpagesToDelete.map((s) => `"${s.title}"`).join(', ');
+      const confirmMsg =
+        subpagesToDelete.length === 1
+          ? `Move subpage ${titles} to Trash? You can restore it later from Trash.`
+          : `Move ${subpagesToDelete.length} subpages (${titles}) to Trash? You can restore them later from Trash.`;
+
+      if (!confirm(confirmMsg)) {
+        return;
+      }
+
+      try {
+        for (const sp of subpagesToDelete) {
+          await apiDeleteEntry(sp.pageId);
+          window.dispatchEvent(
+            new CustomEvent('envbook:subpage-deleted', { detail: { pageId: sp.pageId } })
+          );
+        }
+        window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
+      } catch (err: any) {
+        console.error('[BlockEditor] Error deleting subpages:', err);
+        alert(`Failed to delete subpage record: ${err.message || 'Server error'}`);
+        return;
+      }
+    }
+
+    // 3. Compute ProseMirror block ranges
+    const blockRanges: Array<{ from: number; to: number }> = [];
+    let curPos = 0;
+    for (let i = 0; i < doc.childCount; i++) {
+      const child = doc.child(i);
+      const from = curPos;
+      const to = curPos + child.nodeSize;
+      if (selectedBlockIndicesRef.current.has(i)) {
+        blockRanges.push({ from, to });
+      }
+      curPos += child.nodeSize;
+    }
+
+    if (blockRanges.length === 0) return;
+
+    // 4. Delete blocks safely
+    const isDeletingEntireDoc = selectedBlockIndicesRef.current.size >= doc.childCount;
+    if (isDeletingEntireDoc) {
+      editor.commands.setContent('<p></p>');
+    } else {
+      blockRanges.sort((a, b) => b.from - a.from);
+      const tr = editor.state.tr;
+      for (const range of blockRanges) {
+        tr.delete(range.from, range.to);
+      }
+      editor.view.dispatch(tr);
+    }
+
+    // 5. Clear selection
+    setSelectedBlockIndices(new Set());
+    setAnchorBlockIndex(null);
+    anchorBlockIndexRef.current = null;
+    setHoveredBlock(null);
+
+    // 6. Notify parent of content change
+    onChange(editor.getHTML());
+  }, [editor, onChange]);
+
+  deleteSelectedBlocksRef.current = deleteSelectedBlocks;
+
+  // Update data-block-selected attribute on DOM elements
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return;
+    const dom = editor.view.dom;
+    if (!dom) return;
+
+    const children = Array.from(dom.children);
+    children.forEach((child, idx) => {
+      if (selectedBlockIndices.has(idx)) {
+        child.setAttribute('data-block-selected', 'true');
+      } else {
+        child.removeAttribute('data-block-selected');
+      }
+    });
+  }, [selectedBlockIndices, editor]);
+
+  // Handle dragging selection across blocks
+  const handleDragSelection = useCallback((clientY: number) => {
+    if (!isDraggingSelectionRef.current || anchorBlockIndexRef.current === null) return;
+    if (!editor || editor.isDestroyed) return;
+
+    const dom = editor.view.dom;
+    if (!dom) return;
+    const children = Array.from(dom.children) as HTMLElement[];
+    if (children.length === 0) return;
+
+    let targetIndex = -1;
+    for (let i = 0; i < children.length; i++) {
+      const r = children[i].getBoundingClientRect();
+      if (clientY >= r.top && clientY <= r.bottom) {
+        targetIndex = i;
+        break;
+      }
+    }
+
+    if (targetIndex === -1) {
+      const firstR = children[0].getBoundingClientRect();
+      const lastR = children[children.length - 1].getBoundingClientRect();
+      if (clientY < firstR.top) targetIndex = 0;
+      else if (clientY > lastR.bottom) targetIndex = children.length - 1;
+    }
+
+    if (targetIndex !== -1) {
+      const start = Math.min(anchorBlockIndexRef.current, targetIndex);
+      const end = Math.max(anchorBlockIndexRef.current, targetIndex);
+      const nextSet = new Set<number>();
+      for (let i = start; i <= end; i++) {
+        nextSet.add(i);
+      }
+      setSelectedBlockIndices(nextSet);
+    }
+  }, [editor]);
+
+  // Handle clicking on the block handle
+  const handleHandleMouseDown = (e: React.MouseEvent, blockIndex: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.shiftKey && anchorBlockIndexRef.current !== null) {
+      const start = Math.min(anchorBlockIndexRef.current, blockIndex);
+      const end = Math.max(anchorBlockIndexRef.current, blockIndex);
+      const nextSet = new Set<number>();
+      for (let i = start; i <= end; i++) {
+        nextSet.add(i);
+      }
+      setSelectedBlockIndices(nextSet);
+    } else {
+      setSelectedBlockIndices(new Set([blockIndex]));
+      setAnchorBlockIndex(blockIndex);
+      anchorBlockIndexRef.current = blockIndex;
+    }
+
+    isDraggingSelectionRef.current = true;
+  };
+
+  // Article mouse move to track hover and dragging
+  const handleArticleMouseMove = (e: React.MouseEvent) => {
+    if (isDraggingSelectionRef.current) {
+      handleDragSelection(e.clientY);
+      return;
+    }
+
+    if (!editor || editor.isDestroyed || !articleRef.current) return;
+    const dom = editor.view.dom;
+    if (!dom) return;
+
+    const articleRect = articleRef.current.getBoundingClientRect();
+    const children = Array.from(dom.children) as HTMLElement[];
+    let foundIndex = -1;
+    let foundTop = 0;
+
+    for (let i = 0; i < children.length; i++) {
+      const childRect = children[i].getBoundingClientRect();
+      if (e.clientY >= childRect.top && e.clientY <= childRect.bottom) {
+        foundIndex = i;
+        foundTop = childRect.top - articleRect.top + articleRef.current.scrollTop + 4;
+        break;
+      }
+    }
+
+    if (foundIndex !== -1) {
+      setHoveredBlock({ index: foundIndex, top: foundTop });
+    } else {
+      setHoveredBlock(null);
+    }
+  };
+
+  const handleArticleMouseLeave = () => {
+    if (!isDraggingSelectionRef.current) {
+      setHoveredBlock(null);
+    }
+  };
+
+  // Mouse down in left gutter to start drag selection
+  const handleArticleMouseDown = (e: React.MouseEvent) => {
+    if (!articleRef.current || !editor || editor.isDestroyed) return;
+    const articleRect = articleRef.current.getBoundingClientRect();
+    const relativeX = e.clientX - articleRect.left;
+
+    // If clicked in left gutter (first 38px)
+    if (relativeX <= 38 && relativeX >= 0) {
+      e.preventDefault();
+      const dom = editor.view.dom;
+      if (!dom) return;
+      const children = Array.from(dom.children) as HTMLElement[];
+      for (let i = 0; i < children.length; i++) {
+        const childRect = children[i].getBoundingClientRect();
+        if (e.clientY >= childRect.top && e.clientY <= childRect.bottom) {
+          if (e.shiftKey && anchorBlockIndexRef.current !== null) {
+            const start = Math.min(anchorBlockIndexRef.current, i);
+            const end = Math.max(anchorBlockIndexRef.current, i);
+            const nextSet = new Set<number>();
+            for (let k = start; k <= end; k++) nextSet.add(k);
+            setSelectedBlockIndices(nextSet);
+          } else {
+            setSelectedBlockIndices(new Set([i]));
+            setAnchorBlockIndex(i);
+            anchorBlockIndexRef.current = i;
+          }
+          isDraggingSelectionRef.current = true;
+          break;
+        }
+      }
+    }
+  };
+
+  // Global mouseup to terminate block drag selection
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      isDraggingSelectionRef.current = false;
+    };
+    window.addEventListener('mouseup', handleGlobalMouseUp);
+    return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+  }, []);
+
+  // Global keydown for block deletion and keyboard navigation
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (selectedBlockIndicesRef.current.size === 0) return;
+
+      const activeEl = document.activeElement;
+      const isInput =
+        activeEl &&
+        (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA') &&
+        !activeEl.closest('.ProseMirror');
+      if (isInput) return;
+
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        e.preventDefault();
+        deleteSelectedBlocksRef.current();
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setSelectedBlockIndices(new Set());
+        setAnchorBlockIndex(null);
+        return;
+      }
+
+      if (e.key === 'ArrowDown' && e.shiftKey) {
+        e.preventDefault();
+        if (!editor || editor.isDestroyed) return;
+        const maxIdx = Math.max(...Array.from(selectedBlockIndicesRef.current));
+        if (maxIdx < editor.state.doc.childCount - 1) {
+          const next = new Set(selectedBlockIndicesRef.current);
+          next.add(maxIdx + 1);
+          setSelectedBlockIndices(next);
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowUp' && e.shiftKey) {
+        e.preventDefault();
+        const minIdx = Math.min(...Array.from(selectedBlockIndicesRef.current));
+        if (minIdx > 0) {
+          const next = new Set(selectedBlockIndicesRef.current);
+          next.add(minIdx - 1);
+          setSelectedBlockIndices(next);
+        }
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [editor]);
+
   return (
     <div ref={editorContainerRef} className="relative w-full max-w-[860px] mx-auto flex flex-col gap-3">
       {/* Floating Slash Command Picker anchored near Caret */}
@@ -595,9 +960,68 @@ export function BlockEditor({
           />
         </div>
       ) : (
-        /* Genuine Inline WYSIWYG Block Editor Canvas */
-        <article className="w-full bg-surface-subtle border border-border-subtle rounded-xl shadow-sm min-h-[500px] overflow-hidden focus-within:border-border-muted transition-colors">
+        /* Genuine Inline WYSIWYG Block Editor Canvas with Notion-Style Block Handle & Selection */
+        <article
+          ref={articleRef}
+          onMouseMove={handleArticleMouseMove}
+          onMouseLeave={handleArticleMouseLeave}
+          onMouseDown={handleArticleMouseDown}
+          className="relative w-full bg-surface-subtle border border-border-subtle rounded-xl shadow-sm min-h-[500px] overflow-hidden focus-within:border-border-muted transition-colors"
+        >
+          {/* Notion-style floating block handle */}
+          {hoveredBlock !== null && (
+            <div
+              role="button"
+              aria-label="Select block"
+              title="Click to select block (Shift-click to extend, Drag to select)"
+              style={{ top: `${hoveredBlock.top}px` }}
+              onMouseDown={(e) => handleHandleMouseDown(e, hoveredBlock.index)}
+              className={`absolute left-2.5 w-6 h-6 -mt-0.5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing transition-all z-20 group select-none ${
+                selectedBlockIndices.has(hoveredBlock.index)
+                  ? 'bg-accent-emerald/20 text-accent-emerald border border-accent-emerald/40'
+                  : 'text-text-muted hover:text-text-primary hover:bg-surface-panel/80 border border-transparent hover:border-border-subtle'
+              }`}
+            >
+              <GripVertical className="w-3.5 h-3.5 group-hover:text-accent-emerald transition-colors" />
+            </div>
+          )}
+
+          {/* Editor Content Canvas */}
           <EditorContent editor={editor} />
+
+          {/* Floating Action Pill when blocks are selected */}
+          {selectedBlockIndices.size > 0 && (
+            <div className="sticky bottom-6 mx-auto w-fit px-4 py-2 bg-surface-panel/95 backdrop-blur border border-accent-emerald/40 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.6)] flex items-center gap-3 text-xs z-30 animate-in fade-in slide-in-from-bottom-2 duration-150">
+              <div className="flex items-center gap-1.5 text-accent-emerald font-medium">
+                <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+                <span>
+                  {selectedBlockIndices.size} block{selectedBlockIndices.size > 1 ? 's' : ''} selected
+                </span>
+              </div>
+              <div className="h-3 w-[1px] bg-border-subtle" />
+              <button
+                type="button"
+                onClick={deleteSelectedBlocks}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-accent-crimson/15 hover:bg-accent-crimson/25 text-accent-crimson border border-accent-crimson/30 text-xs font-medium transition-colors"
+                title="Delete selected blocks (Delete or Backspace)"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Delete</span>
+                <kbd className="font-mono text-[9px] bg-surface-subtle px-1 rounded text-text-muted">Del</kbd>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedBlockIndices(new Set());
+                  setAnchorBlockIndex(null);
+                }}
+                className="text-text-muted hover:text-text-primary px-1.5 py-1 text-xs transition-colors"
+                title="Clear selection (Esc)"
+              >
+                Deselect
+              </button>
+            </div>
+          )}
         </article>
       )}
     </div>

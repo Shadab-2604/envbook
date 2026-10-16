@@ -218,4 +218,94 @@ describe('Entries API & Ownership Isolation', () => {
     expect(createDefaultRes.status).toBe(201);
     expect(createDefaultRes.body.entry.icon).toBeNull();
   });
+
+  it('recursively cascades subpage deletion and permanent deletion without leaving orphans', async () => {
+    const cookie = await createTestUser('user_subpage_sync', 'user_subpage_sync@envbook.local');
+    const parentId = randomUUID();
+    const childId = randomUUID();
+    const grandChildId = randomUUID();
+
+    // 1. Create parent page
+    await request(app)
+      .post('/api/v1/entries')
+      .set('Cookie', cookie)
+      .send({
+        entryId: parentId,
+        type: 'notes_page',
+        encryptedPayload: 'PARENT_PAGE_PAYLOAD',
+        nonce: 'NONCE_PARENT',
+      });
+
+    // 2. Create child subpage under parent
+    await request(app)
+      .post('/api/v1/entries')
+      .set('Cookie', cookie)
+      .send({
+        entryId: childId,
+        type: 'notes_page',
+        parentId,
+        encryptedPayload: 'CHILD_PAGE_PAYLOAD',
+        nonce: 'NONCE_CHILD',
+      });
+
+    // 3. Create grandchild subpage under child
+    await request(app)
+      .post('/api/v1/entries')
+      .set('Cookie', cookie)
+      .send({
+        entryId: grandChildId,
+        type: 'notes_page',
+        parentId: childId,
+        encryptedPayload: 'GRANDCHILD_PAGE_PAYLOAD',
+        nonce: 'NONCE_GRANDCHILD',
+      });
+
+    // 4. Soft-delete parent -> should cascade soft-delete to child AND grandchild
+    const softDelRes = await request(app)
+      .delete(`/api/v1/entries/${parentId}`)
+      .set('Cookie', cookie);
+    expect(softDelRes.status).toBe(200);
+
+    const childCheck = await request(app)
+      .get(`/api/v1/entries/${childId}`)
+      .set('Cookie', cookie);
+    expect(childCheck.body.entry.isDeleted).toBe(true);
+
+    const grandChildCheck = await request(app)
+      .get(`/api/v1/entries/${grandChildId}`)
+      .set('Cookie', cookie);
+    expect(grandChildCheck.body.entry.isDeleted).toBe(true);
+
+    // 5. Restore parent -> should cascade restore to child and grandchild
+    const restoreRes = await request(app)
+      .post(`/api/v1/entries/${parentId}/restore`)
+      .set('Cookie', cookie);
+    expect(restoreRes.status).toBe(200);
+
+    const childRestored = await request(app)
+      .get(`/api/v1/entries/${childId}`)
+      .set('Cookie', cookie);
+    expect(childRestored.body.entry.isDeleted).toBe(false);
+
+    const grandChildRestored = await request(app)
+      .get(`/api/v1/entries/${grandChildId}`)
+      .set('Cookie', cookie);
+    expect(grandChildRestored.body.entry.isDeleted).toBe(false);
+
+    // 6. Permanent delete parent -> removes parent, child, and grandchild permanently
+    const permDelRes = await request(app)
+      .delete(`/api/v1/entries/${parentId}?permanent=true`)
+      .set('Cookie', cookie);
+    expect(permDelRes.status).toBe(200);
+
+    const childPerm = await request(app)
+      .get(`/api/v1/entries/${childId}`)
+      .set('Cookie', cookie);
+    expect(childPerm.status).toBe(404);
+
+    const grandChildPerm = await request(app)
+      .get(`/api/v1/entries/${grandChildId}`)
+      .set('Cookie', cookie);
+    expect(grandChildPerm.status).toBe(404);
+  });
 });

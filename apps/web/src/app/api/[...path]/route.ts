@@ -74,6 +74,22 @@ function formatShareRecord(share: any, currentUserId?: string) {
   };
 }
 
+async function getAllDescendantEntryIds(owner: any, rootEntryId: string): Promise<string[]> {
+  const descendantIds: string[] = [];
+  const queue = [rootEntryId];
+
+  while (queue.length > 0) {
+    const parentId = queue.shift()!;
+    const children = await Entry.find({ owner, parentId }).select('entryId');
+    for (const child of children) {
+      descendantIds.push(child.entryId);
+      queue.push(child.entryId);
+    }
+  }
+
+  return descendantIds;
+}
+
 function formatUser(user: any): SafeUser {
   return {
     id: user._id.toString(),
@@ -651,9 +667,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pat
     const entry = await Entry.findOne({ owner: user._id, entryId: id });
     if (!entry) return NextResponse.json({ error: 'Entry not found' }, { status: 404 });
 
+    const descendantIds = await getAllDescendantEntryIds(user._id, id);
     entry.isDeleted = false;
     entry.deletedAt = null;
     await entry.save();
+
+    if (descendantIds.length > 0) {
+      await Entry.updateMany(
+        { owner: user._id, entryId: { $in: descendantIds } },
+        { $set: { isDeleted: false, deletedAt: null } }
+      );
+    }
+
     return NextResponse.json({ entry: formatEntry(entry), message: 'Entry restored' });
   }
 
@@ -1409,10 +1434,13 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ p
 
     const url = new URL(req.url);
     const permanent = url.searchParams.get('permanent') === 'true';
+    const descendantIds = await getAllDescendantEntryIds(user._id, id);
 
     if (permanent) {
       await Entry.deleteOne({ _id: entry._id });
-      await Entry.deleteMany({ owner: user._id, parentId: id });
+      if (descendantIds.length > 0) {
+        await Entry.deleteMany({ owner: user._id, entryId: { $in: descendantIds } });
+      }
       return NextResponse.json({ message: 'Entry permanently deleted', entryId: id });
     }
 
@@ -1420,7 +1448,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ p
     entry.deletedAt = new Date();
     await entry.save();
 
-    await Entry.updateMany({ owner: user._id, parentId: id }, { $set: { isDeleted: true, deletedAt: new Date() } });
+    if (descendantIds.length > 0) {
+      await Entry.updateMany({ owner: user._id, entryId: { $in: descendantIds } }, { $set: { isDeleted: true, deletedAt: new Date() } });
+    }
     return NextResponse.json({ message: 'Entry moved to Trash', entryId: id });
   }
 

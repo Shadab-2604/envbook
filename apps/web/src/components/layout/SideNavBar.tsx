@@ -202,8 +202,23 @@ export function SideNavBar({
 
     try {
       await apiDeleteEntry(entryId);
-      setTreeItems((prev) => prev.filter((i) => i.entry.entryId !== entryId));
+      setTreeItems((prev) => {
+        const toRemove = new Set<string>([entryId]);
+        let added = true;
+        while (added) {
+          added = false;
+          for (const item of prev) {
+            if (item.entry.parentId && toRemove.has(item.entry.parentId) && !toRemove.has(item.entry.entryId)) {
+              toRemove.add(item.entry.entryId);
+              added = true;
+            }
+          }
+        }
+        return prev.filter((i) => !toRemove.has(i.entry.entryId));
+      });
       setActiveMenuId(null);
+      window.dispatchEvent(new CustomEvent('envbook:subpage-deleted', { detail: { pageId: entryId } }));
+      window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
     } catch (err) {
       console.error('[SideNavBar] Delete failed:', err);
     }

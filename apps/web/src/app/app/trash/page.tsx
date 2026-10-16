@@ -81,6 +81,8 @@ export default function TrashPage() {
     try {
       await apiDeleteEntry(id, true); // permanent = true
       setTrashed((prev) => prev.filter((i) => i.record.entryId !== id));
+      window.dispatchEvent(new CustomEvent('envbook:subpage-deleted', { detail: { pageId: id } }));
+      window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
     } catch (err: any) {
       alert(`Permanent delete failed: ${err.message}`);
     }
@@ -99,8 +101,10 @@ export default function TrashPage() {
     try {
       for (const item of trashed) {
         await apiDeleteEntry(item.record.entryId, true);
+        window.dispatchEvent(new CustomEvent('envbook:subpage-deleted', { detail: { pageId: item.record.entryId } }));
       }
       setTrashed([]);
+      window.dispatchEvent(new CustomEvent('envbook:workspace-tree-updated'));
     } catch (err: any) {
       alert(`Failed to empty trash: ${err.message}`);
     }
