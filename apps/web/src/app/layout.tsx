@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { VaultProvider } from '@/contexts/VaultContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -15,6 +16,22 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
   display: 'swap',
 });
+
+const themeInitScript = `
+  (function() {
+    try {
+      var stored = localStorage.getItem('envbook-theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = stored === 'dark' || (!stored && prefersDark) || (stored === 'system' && prefersDark);
+      var theme = isDark ? 'dark' : 'light';
+      var root = document.documentElement;
+      root.classList.remove('dark', 'light');
+      root.classList.add(theme);
+      root.setAttribute('data-theme', theme);
+      root.style.colorScheme = theme;
+    } catch (e) {}
+  })();
+`;
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://envbook.vercel.app'),
@@ -97,13 +114,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="bg-surface-canvas text-text-primary antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container">
-        <AuthProvider>
-          <VaultProvider>
-            {children}
-          </VaultProvider>
-        </AuthProvider>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <meta name="color-scheme" content="light dark" />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="bg-surface-canvas text-text-primary antialiased min-h-screen selection:bg-primary selection:text-surface-canvas">
+        <ThemeProvider>
+          <AuthProvider>
+            <VaultProvider>
+              {children}
+            </VaultProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

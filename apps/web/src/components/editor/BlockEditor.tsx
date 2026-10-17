@@ -876,7 +876,7 @@ export function BlockEditor({
             <span className="font-mono text-text-muted text-[10px] uppercase tracking-wider font-semibold">
               Insert Block
             </span>
-            <span className="font-mono text-accent-emerald text-[10px]">
+            <span className="font-mono text-primary text-[10px]">
               {slashFilter ? `"${slashFilter}"` : 'Type to filter'}
             </span>
           </div>
@@ -899,12 +899,12 @@ export function BlockEditor({
                   }}
                   className={`flex items-center justify-between px-2.5 py-1.5 rounded cursor-pointer transition-colors ${
                     isSelected
-                      ? 'bg-surface-raised border-l-2 border-accent-emerald text-text-primary'
+                      ? 'bg-surface-raised border-l-2 border-primary text-text-primary font-medium'
                       : 'text-text-secondary hover:bg-surface-raised'
                   }`}
                 >
                   <div className="flex items-center gap-2 truncate">
-                    <span className="font-mono text-accent-emerald font-bold text-xs shrink-0">
+                    <span className="font-mono text-primary font-bold text-xs shrink-0">
                       /
                     </span>
                     <div className="flex flex-col truncate">
@@ -947,16 +947,16 @@ export function BlockEditor({
       {/* Primary Notion-Style Inline WYSIWYG Canvas vs Optional Raw Markdown Source */}
       {isRawMarkdown ? (
         <div className="w-full flex flex-col gap-2">
-          <div className="font-mono text-xs text-text-muted px-3 py-1.5 bg-surface-panel rounded border border-border-subtle flex items-center justify-between">
+          <div className="font-mono text-xs text-text-muted px-3 py-1.5 bg-surface-panel rounded border border-border-muted flex items-center justify-between">
             <span>Raw Markdown Source View</span>
-            <span className="text-accent-emerald font-semibold font-mono text-[11px]">Direct Edit</span>
+            <span className="text-primary font-semibold font-mono text-[11px]">Direct Edit</span>
           </div>
           <textarea
             value={rawText}
             onChange={handleRawChange}
             placeholder="Type raw Markdown..."
             rows={24}
-            className="w-full p-4 bg-[#090d13] border border-border-subtle rounded-lg font-mono text-xs text-text-primary placeholder:text-text-muted/60 focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald leading-relaxed custom-scroll"
+            className="w-full p-4 bg-surface-canvas border border-border-muted rounded-lg font-mono text-xs text-text-primary placeholder:text-text-muted/60 focus:border-border-focus focus:ring-1 focus:ring-border-focus leading-relaxed custom-scroll"
           />
         </div>
       ) : (
@@ -966,7 +966,7 @@ export function BlockEditor({
           onMouseMove={handleArticleMouseMove}
           onMouseLeave={handleArticleMouseLeave}
           onMouseDown={handleArticleMouseDown}
-          className="relative w-full bg-surface-subtle border border-border-subtle rounded-xl shadow-sm min-h-[500px] overflow-hidden focus-within:border-border-muted transition-colors"
+          className="relative w-full bg-surface-subtle border border-border-muted rounded-xl shadow-sm min-h-[500px] overflow-hidden focus-within:border-border-focus transition-colors"
         >
           {/* Notion-style floating block handle */}
           {hoveredBlock !== null && (
@@ -978,11 +978,11 @@ export function BlockEditor({
               onMouseDown={(e) => handleHandleMouseDown(e, hoveredBlock.index)}
               className={`absolute left-2.5 w-6 h-6 -mt-0.5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing transition-all z-20 group select-none ${
                 selectedBlockIndices.has(hoveredBlock.index)
-                  ? 'bg-accent-emerald/20 text-accent-emerald border border-accent-emerald/40'
-                  : 'text-text-muted hover:text-text-primary hover:bg-surface-panel/80 border border-transparent hover:border-border-subtle'
+                  ? 'bg-primary text-surface-canvas border border-primary'
+                  : 'text-text-muted hover:text-text-primary hover:bg-surface-panel/80 border border-transparent hover:border-border-muted'
               }`}
             >
-              <GripVertical className="w-3.5 h-3.5 group-hover:text-accent-emerald transition-colors" />
+              <GripVertical className="w-3.5 h-3.5 group-hover:text-text-primary transition-colors" />
             </div>
           )}
 
@@ -991,9 +991,9 @@ export function BlockEditor({
 
           {/* Floating Action Pill when blocks are selected */}
           {selectedBlockIndices.size > 0 && (
-            <div className="sticky bottom-6 mx-auto w-fit px-4 py-2 bg-surface-panel/95 backdrop-blur border border-accent-emerald/40 rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.6)] flex items-center gap-3 text-xs z-30 animate-in fade-in slide-in-from-bottom-2 duration-150">
-              <div className="flex items-center gap-1.5 text-accent-emerald font-medium">
-                <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+            <div className="sticky bottom-6 mx-auto w-fit px-4 py-2 bg-surface-panel/95 backdrop-blur border border-border-muted rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.3)] flex items-center gap-3 text-xs z-30 animate-in fade-in slide-in-from-bottom-2 duration-150">
+              <div className="flex items-center gap-1.5 text-text-primary font-medium">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span>
                   {selectedBlockIndices.size} block{selectedBlockIndices.size > 1 ? 's' : ''} selected
                 </span>
@@ -1002,12 +1002,12 @@ export function BlockEditor({
               <button
                 type="button"
                 onClick={deleteSelectedBlocks}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-accent-crimson/15 hover:bg-accent-crimson/25 text-accent-crimson border border-accent-crimson/30 text-xs font-medium transition-colors"
+                className="btn-destructive flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-colors shadow-sm"
                 title="Delete selected blocks (Delete or Backspace)"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete</span>
-                <kbd className="font-mono text-[9px] bg-surface-subtle px-1 rounded text-text-muted">Del</kbd>
+                <kbd className="font-mono text-[9px] bg-black/20 text-white px-1 rounded">Del</kbd>
               </button>
               <button
                 type="button"

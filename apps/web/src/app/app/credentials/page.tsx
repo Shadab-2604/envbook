@@ -272,9 +272,9 @@ export default function CredentialsPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/app/environments"
-            className="px-3 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary hover:text-text-primary text-xs font-medium flex items-center gap-1.5 transition-colors"
+            className="px-3 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-muted text-text-secondary hover:text-text-primary text-xs font-medium flex items-center gap-1.5 transition-colors"
           >
-            <Database className="w-3.5 h-3.5 text-cyan-400" />
+            <Database className="w-3.5 h-3.5 text-primary" />
             <span>Import / Paste .env</span>
           </Link>
           <button
@@ -282,7 +282,7 @@ export default function CredentialsPage() {
               resetForm();
               setIsAddModalOpen(true);
             }}
-            className="px-3 py-1.5 rounded bg-primary-container text-on-primary-container hover:bg-accent-emerald-bright text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
+            className="px-3 py-1.5 rounded bg-primary text-surface-canvas hover:opacity-90 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>Add Secret</span>
@@ -334,11 +334,11 @@ export default function CredentialsPage() {
       <main className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full mono-scroll">
         {loading ? (
           <div className="text-center py-16 text-xs text-text-muted font-label-mono">
-            <span className="w-2 h-2 rounded-full bg-accent-emerald animate-ping mr-2 inline-block" />
+            <span className="w-2 h-2 rounded-full bg-primary animate-ping mr-2 inline-block" />
             Loading encrypted secrets...
           </div>
         ) : filteredCredentials.length === 0 ? (
-          <div className="text-center py-16 border border-dashed border-border-subtle rounded-lg">
+          <div className="text-center py-16 border border-dashed border-border-muted rounded-lg">
             <Shield className="w-8 h-8 text-primary/60 mx-auto mb-2" />
             <h3 className="text-sm font-semibold text-text-primary mb-1">No credentials found</h3>
             <p className="text-xs text-text-muted font-label-mono mb-4">
@@ -349,7 +349,7 @@ export default function CredentialsPage() {
                 resetForm();
                 setIsAddModalOpen(true);
               }}
-              className="px-3 py-1.5 rounded bg-primary-container text-on-primary-container text-xs font-semibold"
+              className="px-3.5 py-1.5 rounded bg-primary text-surface-canvas hover:opacity-90 text-xs font-semibold shadow-sm"
             >
               Add First Credential
             </button>
@@ -368,12 +368,12 @@ export default function CredentialsPage() {
               return (
                 <div
                   key={record.entryId}
-                  className="p-4 rounded-lg bg-surface-panel border border-border-subtle hover:border-border-muted transition-all flex flex-col justify-between gap-3 group relative"
+                  className="p-4 rounded-lg bg-surface-panel border border-border-muted hover:border-border-focus transition-all flex flex-col justify-between gap-3 group relative"
                 >
                   {/* Card Header */}
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-center gap-2.5 truncate">
-                      <div className="w-7 h-7 rounded bg-surface border border-border-subtle flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded bg-surface border border-border-muted flex items-center justify-center shrink-0">
                         {getTypeIcon(payload.type)}
                       </div>
                       <div className="truncate">
@@ -407,10 +407,10 @@ export default function CredentialsPage() {
                       </button>
                       <button
                         onClick={() => handleDelete(record.entryId)}
-                        className="p-1 text-text-muted hover:text-status-danger rounded hover:bg-surface-raised transition-colors"
+                        className="p-1 text-destructive hover:bg-destructive/15 border border-transparent hover:border-destructive/30 rounded transition-colors"
                         title="Delete secret"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 text-destructive" />
                       </button>
                     </div>
                   </div>
@@ -604,7 +604,7 @@ export default function CredentialsPage() {
               </button>
               <button
                 onClick={handleSaveCredential}
-                className="px-3.5 py-1.5 rounded bg-primary-container text-on-primary-container hover:bg-accent-emerald-bright text-xs font-semibold"
+                className="px-3.5 py-1.5 rounded bg-primary text-surface-canvas hover:opacity-90 text-xs font-semibold shadow-sm transition-colors"
               >
                 {editingItem ? 'Save Changes' : 'Encrypt & Save'}
               </button>

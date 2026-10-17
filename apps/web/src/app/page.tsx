@@ -113,13 +113,13 @@ export default function LandingPage() {
       <header className="border-b border-border-muted/50 backdrop-blur-md sticky top-0 z-50 bg-surface-canvas/90">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-lg bg-surface-panel border border-border-muted flex items-center justify-center text-accent-emerald group-hover:border-accent-emerald transition-colors">
+            <div className="w-8 h-8 rounded-lg bg-surface-panel border border-border-muted flex items-center justify-center text-primary group-hover:border-primary transition-colors">
               <Terminal className="w-4 h-4" />
             </div>
             <div className="flex flex-col">
               <span className="font-bold tracking-tight text-text-primary text-base flex items-center gap-1.5">
                 EnvBook
-                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-primary-container/20 text-accent-emerald border border-accent-emerald/30">
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-raised text-primary border border-border-subtle">
                   v1.0
                 </span>
               </span>
@@ -156,7 +156,7 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/signup"
-              className="px-3.5 py-1.5 rounded text-xs font-semibold bg-accent-emerald text-surface-canvas hover:bg-accent-emerald-bright transition-all shadow-sm flex items-center gap-1.5"
+              className="px-3.5 py-1.5 rounded text-xs font-semibold bg-primary text-primary-fg hover:bg-primary-hover transition-all shadow-sm flex items-center gap-1.5"
             >
               <span>Get Started</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -171,14 +171,14 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
             <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-panel border border-border-muted text-xs font-mono text-accent-emerald mb-6 shadow-inner">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-panel border border-border-muted text-xs font-mono text-primary mb-6 shadow-inner">
                 <Shield className="w-3.5 h-3.5" />
                 <span>AES-256-GCM Zero-Knowledge Encryption</span>
               </div>
 
               {/* H1 - Exactly One Main Semantic H1 */}
               <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-text-primary leading-[1.15] mb-6">
-                The Zero-Knowledge Developer Workspace &amp; <span className="text-accent-emerald">.env</span> Manager
+                The Zero-Knowledge Developer Workspace &amp; <span className="text-primary">.env</span> Manager
               </h1>
 
               {/* Subtitle with targeted keywords */}
@@ -192,7 +192,7 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                 <Link
                   href="/signup"
-                  className="w-full sm:w-auto px-6 py-3 rounded-lg bg-accent-emerald text-surface-canvas hover:bg-accent-emerald-bright font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-accent-emerald/10"
+                  className="w-full sm:w-auto px-6 py-3 rounded-lg bg-primary text-primary-fg hover:bg-primary-hover font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md"
                 >
                   <Lock className="w-4 h-4" />
                   <span>Create Free Encrypted Vault</span>
@@ -209,19 +209,19 @@ export default function LandingPage() {
               {/* Live Feature Checkmarks */}
               <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-8 text-xs text-text-muted font-mono">
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                   No Server-Side Plaintext
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                   Paste Multi-line .env Blocks
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                   Inline Slash Commands (/)
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                   Auto-Masking Secrets
                 </span>
               </div>
@@ -231,14 +231,14 @@ export default function LandingPage() {
             <div className="mt-12 sm:mt-16 max-w-4xl mx-auto rounded-xl border border-border-muted bg-surface-panel shadow-2xl overflow-hidden">
               <div className="px-4 py-3 border-b border-border-muted bg-surface-elevated flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-status-danger/80" />
-                  <div className="w-3 h-3 rounded-full bg-status-warning/80" />
-                  <div className="w-3 h-3 rounded-full bg-accent-emerald/80" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-border-muted" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-border-muted" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-border-muted" />
                   <span className="ml-2 font-mono text-xs text-text-muted">
                     envbook://vault/production.env
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-[11px] font-mono text-accent-emerald bg-surface-canvas px-2.5 py-0.5 rounded border border-border-muted">
+                <div className="flex items-center gap-2 text-[11px] font-mono text-primary bg-surface-canvas px-2.5 py-0.5 rounded border border-border-muted">
                   <Lock className="w-3 h-3" />
                   <span>VAULT_UNLOCKED // ZERO_KNOWLEDGE</span>
                 </div>
@@ -249,7 +249,7 @@ export default function LandingPage() {
                 <div className="flex flex-col gap-3 border-b md:border-b-0 md:border-r border-border-muted pb-6 md:pb-0 md:pr-6">
                   <div className="flex items-center justify-between text-text-muted pb-2 border-b border-border-muted/50">
                     <span className="font-semibold text-text-primary flex items-center gap-1.5">
-                      <FileCode className="w-3.5 h-3.5 text-accent-emerald" />
+                      <FileCode className="w-3.5 h-3.5 text-primary" />
                       Block Editor
                     </span>
                     <span className="text-[10px]">Autosave: Active</span>
@@ -259,7 +259,7 @@ export default function LandingPage() {
                     <p className="text-text-muted">
                       Configured with client-side zero-knowledge encryption and rotating keys.
                     </p>
-                    <div className="p-2 rounded bg-surface-canvas border border-border-muted/60 text-[11px] text-accent-emerald">
+                    <div className="p-2 rounded bg-surface-canvas border border-border-muted/60 text-[11px] text-primary">
                       <code>/section Kubernetes Pods</code>
                     </div>
                     <ul className="list-disc pl-4 space-y-1 text-text-muted text-[11px]">
@@ -273,10 +273,10 @@ export default function LandingPage() {
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between text-text-muted pb-2 border-b border-border-muted/50">
                     <span className="font-semibold text-text-primary flex items-center gap-1.5">
-                      <Key className="w-3.5 h-3.5 text-accent-emerald" />
+                      <Key className="w-3.5 h-3.5 text-primary" />
                       Bulk .env Parsed Variables
                     </span>
-                    <span className="text-[10px] text-accent-emerald">3 Synced</span>
+                    <span className="text-[10px] text-primary font-semibold">3 Synced</span>
                   </div>
 
                   <div className="space-y-2">
@@ -305,7 +305,7 @@ export default function LandingPage() {
                     <div className="p-2 rounded bg-surface-canvas border border-border-muted flex items-center justify-between">
                       <div className="flex flex-col">
                         <span className="text-text-primary font-semibold">PORT</span>
-                        <span className="text-accent-emerald font-mono">3000</span>
+                        <span className="text-primary font-mono font-semibold">3000</span>
                       </div>
                       <div className="flex items-center gap-1.5 text-text-muted">
                         <Copy className="w-3.5 h-3.5 hover:text-text-primary cursor-pointer" />
@@ -333,7 +333,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Feature 1 */}
               <div className="p-6 rounded-xl border border-border-muted bg-surface-panel flex flex-col gap-3">
-                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-accent-emerald">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-primary">
                   <FileCode className="w-5 h-5" />
                 </div>
                 <h3 className="text-base font-bold text-text-primary">Notion-Style Block Canvas</h3>
@@ -344,7 +344,7 @@ export default function LandingPage() {
 
               {/* Feature 2 */}
               <div className="p-6 rounded-xl border border-border-muted bg-surface-panel flex flex-col gap-3">
-                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-accent-emerald">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-primary">
                   <Zap className="w-5 h-5" />
                 </div>
                 <h3 className="text-base font-bold text-text-primary">Bulk .env Parser &amp; Importer</h3>
@@ -355,7 +355,7 @@ export default function LandingPage() {
 
               {/* Feature 3 */}
               <div className="p-6 rounded-xl border border-border-muted bg-surface-panel flex flex-col gap-3">
-                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-accent-emerald">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-primary">
                   <Shield className="w-5 h-5" />
                 </div>
                 <h3 className="text-base font-bold text-text-primary">Client-Side Zero-Knowledge</h3>
@@ -366,7 +366,7 @@ export default function LandingPage() {
 
               {/* Feature 4 */}
               <div className="p-6 rounded-xl border border-border-muted bg-surface-panel flex flex-col gap-3">
-                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-accent-emerald">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-primary">
                   <Layers className="w-5 h-5" />
                 </div>
                 <h3 className="text-base font-bold text-text-primary">Custom Dynamic Hierarchy</h3>
@@ -377,7 +377,7 @@ export default function LandingPage() {
 
               {/* Feature 5 */}
               <div className="p-6 rounded-xl border border-border-muted bg-surface-panel flex flex-col gap-3">
-                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-accent-emerald">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-primary">
                   <Eye className="w-5 h-5" />
                 </div>
                 <h3 className="text-base font-bold text-text-primary">Per-Secret Reveal &amp; Copy</h3>
@@ -388,7 +388,7 @@ export default function LandingPage() {
 
               {/* Feature 6 */}
               <div className="p-6 rounded-xl border border-border-muted bg-surface-panel flex flex-col gap-3">
-                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-accent-emerald">
+                <div className="w-10 h-10 rounded-lg bg-surface-elevated border border-border-muted flex items-center justify-center text-primary">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <h3 className="text-base font-bold text-text-primary">Environment Parity Matrix</h3>
@@ -414,7 +414,7 @@ export default function LandingPage() {
 
             <div className="p-6 rounded-xl border border-border-muted bg-surface-canvas space-y-4 font-mono text-xs">
               <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-surface-panel border border-border-muted text-accent-emerald font-bold">
+                <span className="px-2 py-0.5 rounded bg-surface-panel border border-border-muted text-primary font-bold">
                   01
                 </span>
                 <div>
@@ -428,7 +428,7 @@ export default function LandingPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-surface-panel border border-border-muted text-accent-emerald font-bold">
+                <span className="px-2 py-0.5 rounded bg-surface-panel border border-border-muted text-primary font-bold">
                   02
                 </span>
                 <div>
@@ -442,7 +442,7 @@ export default function LandingPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-surface-panel border border-border-muted text-accent-emerald font-bold">
+                <span className="px-2 py-0.5 rounded bg-surface-panel border border-border-muted text-primary font-bold">
                   03
                 </span>
                 <div>
@@ -502,7 +502,7 @@ export default function LandingPage() {
         </section>
 
         {/* Bottom CTA Banner */}
-        <section className="py-16 sm:py-20 bg-gradient-to-b from-surface-canvas to-surface-panel">
+        <section className="py-16 sm:py-20 bg-surface-subtle border-t border-border-muted/30">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <h2 className="text-2xl sm:text-4xl font-extrabold text-text-primary tracking-tight mb-4">
               Secure Your Development Stack with EnvBook
@@ -513,7 +513,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link
                 href="/signup"
-                className="w-full sm:w-auto px-6 py-3 rounded-lg bg-accent-emerald text-surface-canvas hover:bg-accent-emerald-bright font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-lg"
+                className="w-full sm:w-auto px-6 py-3 rounded-lg bg-primary text-primary-fg hover:bg-primary-hover font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-md"
               >
                 <span>Get Started Now</span>
                 <ArrowRight className="w-4 h-4" />
@@ -533,7 +533,7 @@ export default function LandingPage() {
       <footer className="border-t border-border-muted/60 py-8 bg-surface-canvas">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-muted">
           <div className="flex items-center gap-2">
-            <Terminal className="w-4 h-4 text-accent-emerald" />
+            <Terminal className="w-4 h-4 text-primary" />
             <span className="font-semibold text-text-primary">EnvBook</span>
             <span>— The Zero-Knowledge Developer Workspace</span>
           </div>

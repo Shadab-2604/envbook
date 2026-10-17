@@ -72,9 +72,9 @@ export function TopNavBar({
           <span
             className={`w-1.5 h-1.5 rounded-full ${
               saveStatus === 'saved'
-                ? 'bg-accent-emerald'
+                ? 'bg-primary'
                 : saveStatus === 'saving'
-                ? 'bg-status-warning animate-pulse'
+                ? 'bg-text-secondary animate-pulse'
                 : 'bg-status-danger'
             }`}
           />
@@ -92,13 +92,13 @@ export function TopNavBar({
       <div className="flex items-center gap-2 shrink-0">
         {/* Rendered vs Raw Segmented Toggle */}
         {onToggleRawMarkdown && (
-          <div className="flex items-center bg-surface-subtle p-0.5 rounded border border-border-subtle">
+          <div className="flex items-center bg-surface-panel p-0.5 rounded border border-border-subtle">
             <button
               type="button"
               onClick={() => isRawMarkdown && onToggleRawMarkdown()}
               className={`px-2 py-0.5 text-xs font-medium rounded transition-all flex items-center gap-1 ${
                 !isRawMarkdown
-                  ? 'bg-surface-raised text-text-primary shadow-sm border border-border-muted'
+                  ? 'bg-surface-raised text-text-primary shadow-xs border border-border-muted font-semibold'
                   : 'text-text-muted hover:text-text-primary'
               }`}
             >
@@ -110,7 +110,7 @@ export function TopNavBar({
               onClick={() => !isRawMarkdown && onToggleRawMarkdown()}
               className={`px-2 py-0.5 text-xs font-medium rounded transition-all flex items-center gap-1 ${
                 isRawMarkdown
-                  ? 'bg-surface-raised text-text-primary shadow-sm border border-border-muted'
+                  ? 'bg-surface-raised text-text-primary shadow-xs border border-border-muted font-semibold'
                   : 'text-text-muted hover:text-text-primary'
               }`}
             >
@@ -151,7 +151,7 @@ export function TopNavBar({
           <button
             type="button"
             onClick={onExport}
-            className="px-2.5 py-1 text-xs font-semibold bg-accent-emerald text-surface-canvas hover:bg-accent-emerald-bright rounded transition-all flex items-center gap-1 shadow-[0_0_12px_rgba(16,185,129,0.25)]"
+            className="px-2.5 py-1 text-xs font-semibold bg-primary text-surface-canvas hover:opacity-90 rounded transition-all flex items-center gap-1 shadow-xs"
           >
             <Download className="w-3.5 h-3.5" />
             <span>Export</span>

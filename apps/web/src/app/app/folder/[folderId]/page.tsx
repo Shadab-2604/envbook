@@ -133,27 +133,25 @@ export default function FolderPage() {
       return `/app/environments?id=${rec.entryId}`;
     }
     return `/app/page/${rec.entryId}`;
-  };
-
-  const getChildIcon = (type: string) => {
+  };  const getChildIcon = (type: string) => {
     switch (type) {
       case 'section':
       case 'folder':
-        return <Folder className="w-4 h-4 text-amber-400 shrink-0" />;
+        return <Folder className="w-4 h-4 text-secondary shrink-0" />;
       case 'notes_section':
-        return <BookOpen className="w-4 h-4 text-indigo-400 shrink-0" />;
+        return <BookOpen className="w-4 h-4 text-secondary shrink-0" />;
       case 'environment_page':
       case 'environment':
-        return <Database className="w-4 h-4 text-cyan-400 shrink-0" />;
+        return <Database className="w-4 h-4 text-secondary shrink-0" />;
       default:
-        return <FileText className="w-4 h-4 text-accent-emerald shrink-0" />;
+        return <FileText className="w-4 h-4 text-primary shrink-0" />;
     }
   };
 
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center h-full bg-surface-canvas text-text-muted font-mono text-xs">
-        <span className="w-2 h-2 rounded-full bg-accent-emerald animate-ping mr-2" />
+        <span className="w-2 h-2 rounded-full bg-primary animate-ping mr-2" />
         Loading section contents...
       </div>
     );
@@ -182,7 +180,7 @@ export default function FolderPage() {
           <span className="text-text-secondary text-xs font-mono">Sections</span>
           <span className="text-text-muted font-mono text-xs">/</span>
           <span className="text-text-primary text-xs font-medium flex items-center gap-1.5">
-            <Folder className="w-3.5 h-3.5 text-amber-400" />
+            <Folder className="w-3.5 h-3.5 text-secondary" />
             {folderTitle}
           </span>
         </div>
@@ -193,14 +191,15 @@ export default function FolderPage() {
               setCreateModalType('notes_page');
               setCreateModalOpen(true);
             }}
-            className="px-2.5 py-1 rounded bg-accent-emerald text-black hover:bg-emerald-400 text-xs font-semibold flex items-center gap-1 transition-colors"
+            className="px-2.5 py-1 rounded bg-primary text-primary-fg hover:bg-primary-hover text-xs font-semibold flex items-center gap-1 transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Item
           </button>
+          {/* Delete to Trash - Explicitly Styled in Red */}
           <button
             onClick={handleDeleteFolder}
-            className="p-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-muted hover:text-red-400 transition-colors"
+            className="p-1.5 rounded border border-destructive/40 text-destructive bg-destructive/10 hover:bg-destructive hover:text-white transition-colors"
             title="Delete Section"
           >
             <Trash2 className="w-4 h-4" />
@@ -213,7 +212,7 @@ export default function FolderPage() {
         {/* Section Header Banner */}
         <div className="flex items-center justify-between pb-6 mb-6 border-b border-border-subtle">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-surface-panel border border-border-subtle flex items-center justify-center text-amber-400">
+            <div className="w-10 h-10 rounded-lg bg-surface-panel border border-border-subtle flex items-center justify-center text-secondary">
               <Folder className="w-6 h-6" />
             </div>
             {isEditingTitle ? (
@@ -222,12 +221,12 @@ export default function FolderPage() {
                   type="text"
                   value={editTitleValue}
                   onChange={(e) => setEditTitleValue(e.target.value)}
-                  className="bg-surface-panel border border-accent-emerald rounded px-2.5 py-1 text-xl font-bold text-text-primary focus:outline-none"
+                  className="bg-surface-panel border border-border-accent rounded px-2.5 py-1 text-xl font-bold text-text-primary focus:outline-none"
                   autoFocus
                 />
                 <button
                   onClick={handleSaveTitle}
-                  className="p-1.5 rounded bg-accent-emerald/20 text-accent-emerald hover:bg-accent-emerald/30"
+                  className="p-1.5 rounded bg-primary text-primary-fg hover:bg-primary-hover"
                 >
                   <Check className="w-4 h-4" />
                 </button>
@@ -267,7 +266,7 @@ export default function FolderPage() {
                   setCreateModalType('notes_page');
                   setCreateModalOpen(true);
                 }}
-                className="px-3.5 py-1.5 rounded bg-accent-emerald text-black font-semibold text-xs flex items-center gap-1.5 hover:bg-emerald-400 transition-colors shadow-sm"
+                className="px-3.5 py-1.5 rounded bg-primary text-primary-fg font-semibold text-xs flex items-center gap-1.5 hover:bg-primary-hover transition-colors shadow-sm"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Page
@@ -277,9 +276,9 @@ export default function FolderPage() {
                   setCreateModalType('section');
                   setCreateModalOpen(true);
                 }}
-                className="px-3 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-xs text-text-secondary flex items-center gap-1.5 transition-colors"
+                className="px-3.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-xs text-text-secondary flex items-center gap-1.5 transition-colors"
               >
-                <FolderPlus className="w-3.5 h-3.5 text-amber-400" />
+                <FolderPlus className="w-3.5 h-3.5 text-secondary" />
                 Add Nested Section
               </button>
             </div>
@@ -294,7 +293,7 @@ export default function FolderPage() {
               >
                 <div className="flex items-center gap-2.5 truncate">
                   {getChildIcon(record.type)}
-                  <span className="text-xs font-medium text-text-primary group-hover:text-accent-emerald transition-colors truncate">
+                  <span className="text-xs font-medium text-text-primary group-hover:text-primary transition-colors truncate">
                     {title}
                   </span>
                 </div>

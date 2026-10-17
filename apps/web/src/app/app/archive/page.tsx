@@ -130,7 +130,7 @@ export default function ArchivePage() {
                   </button>
                   <button
                     onClick={() => handleDelete(record.entryId)}
-                    className="p-1 text-text-muted hover:text-status-danger"
+                    className="p-1.5 rounded border border-destructive/40 text-destructive bg-destructive/10 hover:bg-destructive hover:text-white transition-colors"
                     title="Move to Trash"
                   >
                     <Trash2 className="w-3.5 h-3.5" />

@@ -20,9 +20,14 @@ import {
   EyeOff,
   Trash2,
   RefreshCw,
+  Sun,
+  Moon,
+  Monitor,
+  Palette,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useVault } from '@/contexts/VaultContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import {
   apiChangePassword,
   apiExportBackup,
@@ -43,6 +48,7 @@ import { PasswordInput } from '@/components/ui/PasswordInput';
 export default function SettingsPage() {
   const { user, refreshUser } = useAuth();
   const vault = useVault();
+  const { theme, setTheme } = useTheme();
 
   // envAi state
   const [aiStatus, setAiStatus] = useState<EnvAiConfigStatus | null>(null);
@@ -301,8 +307,69 @@ export default function SettingsPage() {
       </header>
 
       <main className="flex-1 overflow-y-auto p-6 max-w-4xl mx-auto w-full mono-scroll space-y-6">
+        {/* 0. Appearance & Theme Settings Card */}
+        <section className="p-5 rounded-lg bg-surface-panel border border-border-muted space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-border-muted">
+            <div className="flex items-center gap-2.5">
+              <Palette className="w-4 h-4 text-primary" />
+              <h3 className="text-sm font-semibold text-text-primary">Appearance &amp; Theme System</h3>
+            </div>
+            <span className="text-[10px] font-mono text-text-muted uppercase tracking-wider">
+              Current: {theme}
+            </span>
+          </div>
+
+          <p className="text-xs text-text-muted leading-relaxed">
+            Customize how EnvBook looks on your display. Choose between Light (#F7F7F7 canvas), Dark (#393E46 canvas), or automatic system preference synchronization.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <button
+              type="button"
+              onClick={() => setTheme('light')}
+              className={`p-3.5 rounded-lg border flex flex-col items-center gap-2 text-xs transition-all ${
+                theme === 'light'
+                  ? 'bg-primary text-surface-canvas border-primary font-semibold shadow-sm'
+                  : 'bg-surface-subtle hover:bg-surface-raised border-border-muted text-text-primary font-medium'
+              }`}
+            >
+              <Sun className="w-5 h-5" />
+              <span>Light Mode</span>
+              <span className="text-[10px] opacity-75 font-mono">#F7F7F7 Canvas</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTheme('dark')}
+              className={`p-3.5 rounded-lg border flex flex-col items-center gap-2 text-xs transition-all ${
+                theme === 'dark'
+                  ? 'bg-primary text-surface-canvas border-primary font-semibold shadow-sm'
+                  : 'bg-surface-subtle hover:bg-surface-raised border-border-muted text-text-primary font-medium'
+              }`}
+            >
+              <Moon className="w-5 h-5" />
+              <span>Dark Mode</span>
+              <span className="text-[10px] opacity-75 font-mono">#393E46 Canvas</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setTheme('system')}
+              className={`p-3.5 rounded-lg border flex flex-col items-center gap-2 text-xs transition-all ${
+                theme === 'system'
+                  ? 'bg-primary text-surface-canvas border-primary font-semibold shadow-sm'
+                  : 'bg-surface-subtle hover:bg-surface-raised border-border-muted text-text-primary font-medium'
+              }`}
+            >
+              <Monitor className="w-5 h-5" />
+              <span>System Sync</span>
+              <span className="text-[10px] opacity-75 font-mono">OS Auto-Detect</span>
+            </button>
+          </div>
+        </section>
+
         {/* 1. Account Profile Card */}
-        <section className="p-5 rounded-lg bg-surface-panel border border-border-subtle space-y-4">
+        <section className="p-5 rounded-lg bg-surface-panel border border-border-muted space-y-4">
           <div className="flex items-center gap-2.5 pb-3 border-b border-border-subtle">
             <User className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-semibold text-text-primary">Developer Account Details</h3>
@@ -447,7 +514,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={rekeyLoading}
-              className="px-3.5 py-1.5 rounded bg-primary-container text-on-primary-container hover:bg-accent-emerald-bright text-xs font-semibold transition-colors disabled:opacity-50"
+              className="px-3.5 py-1.5 rounded bg-primary text-surface-canvas hover:opacity-90 text-xs font-semibold transition-colors disabled:opacity-50"
             >
               {rekeyLoading ? 'Re-keying...' : 'Re-Key Vault'}
             </button>
@@ -600,9 +667,9 @@ export default function SettingsPage() {
                   type="button"
                   onClick={handleDeleteAiConfig}
                   disabled={aiDeleting}
-                  className="px-3 py-1 rounded bg-status-danger/10 hover:bg-status-danger/20 border border-status-danger/30 text-status-danger text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                  className="btn-destructive px-3 py-1 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm disabled:opacity-50"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-3.5 h-3.5 text-white" />
                   <span>{aiDeleting ? 'Removing...' : 'Remove Key'}</span>
                 </button>
               </div>
@@ -686,7 +753,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={aiLoading}
-              className="px-4 py-2 rounded bg-primary text-black hover:bg-accent-emerald-bright text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded bg-primary text-surface-canvas hover:opacity-90 text-xs font-semibold flex items-center gap-1.5 transition-colors disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>{aiLoading ? 'Verifying & Saving...' : 'Save & Verify Key'}</span>

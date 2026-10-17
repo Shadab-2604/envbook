@@ -27,9 +27,13 @@ import {
   X,
   Loader2,
   Smile,
+  Sun,
+  Moon,
+  Monitor,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useVault } from '@/contexts/VaultContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { EntryRecord, WorkspaceItemType } from '@envbook/shared';
 import { apiGetEntries, apiUpdateEntry, apiDeleteEntry, apiArchiveEntry } from '@/lib/api';
 import { useRealTimeEvents } from '@/lib/socket';
@@ -57,6 +61,7 @@ export function SideNavBar({
   const router = useRouter();
   const { user, logout } = useAuth();
   const { lock, isUnlocked, decrypt, encrypt } = useVault();
+  const { theme, setTheme } = useTheme();
 
   // Workspace Tree State
   const [treeItems, setTreeItems] = useState<DecryptedTreeItem[]>([]);
@@ -291,7 +296,7 @@ export function SideNavBar({
         <div
           className={`group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
             isActive
-              ? 'bg-surface-raised text-accent-emerald border border-accent-emerald/30'
+              ? 'bg-surface-panel text-primary border border-border-subtle font-semibold'
               : 'text-text-secondary hover:bg-surface-panel hover:text-text-primary'
           }`}
           style={{ paddingLeft: `${Math.max(8, depth * 14 + 8)}px` }}
@@ -302,7 +307,7 @@ export function SideNavBar({
                 <button
                   type="button"
                   onClick={(e) => toggleContainer(item.entry.entryId, e)}
-                  className="p-0.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised shrink-0 transition-transform"
+                  className="p-0.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel shrink-0 transition-transform"
                   aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
                 >
                   {isExpanded ? (
@@ -336,17 +341,7 @@ export function SideNavBar({
                   {item.icon}
                 </button>
               ) : (
-                <IconComponent
-                  className={`w-3.5 h-3.5 shrink-0 ${
-                    item.entry.type === 'environment_page' || item.entry.type === 'environment'
-                      ? 'text-cyan-400'
-                      : item.entry.type === 'notes_section'
-                      ? 'text-indigo-400'
-                      : item.entry.type === 'section' || item.entry.type === 'folder'
-                      ? 'text-amber-400'
-                      : 'text-text-muted group-hover:text-accent-emerald'
-                  }`}
-                />
+                <IconComponent className="w-3.5 h-3.5 shrink-0 text-text-muted group-hover:text-primary transition-colors" />
               )}
 
               <Link
@@ -367,7 +362,7 @@ export function SideNavBar({
                   type="button"
                   title="Add inside this section"
                   onClick={(e) => handleOpenCreateModal('notes_page', item.entry.entryId, e)}
-                  className="p-1 rounded text-text-muted hover:text-accent-emerald hover:bg-surface-raised transition-colors"
+                  className="p-1 rounded text-text-muted hover:text-primary hover:bg-surface-panel transition-colors"
                   aria-label="Add child item"
                 >
                   <Plus className="w-3 h-3" />
@@ -381,7 +376,7 @@ export function SideNavBar({
                     e.stopPropagation();
                     setActiveMenuId(activeMenuId === item.entry.entryId ? null : item.entry.entryId);
                   }}
-                  className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors"
+                  className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel transition-colors"
                   aria-label="Item options"
                 >
                   <MoreVertical className="w-3 h-3" />
@@ -390,7 +385,7 @@ export function SideNavBar({
                 {/* Context Dropdown */}
                 {activeMenuId === item.entry.entryId && (
                   <div
-                    className="absolute right-0 top-full mt-1 w-36 bg-surface-raised border border-border-muted rounded-md shadow-xl z-50 py-1 flex flex-col text-[11px] font-sans"
+                    className="absolute right-0 top-full mt-1 w-36 bg-surface-panel border border-border-muted rounded-md shadow-xl z-50 py-1 flex flex-col text-[11px] font-sans"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
@@ -405,7 +400,7 @@ export function SideNavBar({
                         setEmojiPickerItem(item);
                         setActiveMenuId(null);
                       }}
-                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-panel text-left"
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-raised text-left"
                     >
                       <Smile className="w-3 h-3 text-primary" />
                       <span>{item.icon ? 'Change Icon' : 'Add Icon'}</span>
@@ -420,7 +415,7 @@ export function SideNavBar({
                         }}
                         className="flex items-center gap-2 px-2.5 py-1.5 text-status-danger hover:bg-status-danger/10 text-left"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="w-3 h-3 text-status-danger" />
                         <span>Remove Icon</span>
                       </button>
                     )}
@@ -431,7 +426,7 @@ export function SideNavBar({
                         setRenameValue(item.title);
                         setActiveMenuId(null);
                       }}
-                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-panel text-left border-t border-border-subtle/60"
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-raised text-left border-t border-border-subtle/60"
                     >
                       <Edit2 className="w-3 h-3" />
                       <span>Rename</span>
@@ -439,7 +434,7 @@ export function SideNavBar({
                     <button
                       type="button"
                       onClick={(e) => handleArchiveItem(item.entry.entryId, e)}
-                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-panel text-left"
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-raised text-left"
                     >
                       <Archive className="w-3 h-3" />
                       <span>Archive</span>
@@ -447,9 +442,9 @@ export function SideNavBar({
                     <button
                       type="button"
                       onClick={(e) => handleDeleteItem(item.entry.entryId, e)}
-                      className="flex items-center gap-2 px-2.5 py-1.5 text-red-400 hover:text-red-300 hover:bg-red-950/30 text-left border-t border-border-subtle mt-0.5"
+                      className="flex items-center gap-2 px-2.5 py-1.5 text-status-danger hover:text-destructive hover:bg-status-danger/10 text-left border-t border-border-subtle mt-0.5 font-medium"
                     >
-                      <Trash2 className="w-3 h-3" />
+                      <Trash2 className="w-3 h-3 text-status-danger" />
                       <span>Move to Trash</span>
                     </button>
                   </div>
@@ -503,11 +498,11 @@ export function SideNavBar({
         }`}
       >
         <div className="flex flex-col gap-2 min-h-0 overflow-hidden flex-1">
-          {/* Header & Vault Status */}
+          {/* Header & Vault Status & Mobile Close */}
           <div className="flex items-center justify-between px-1 py-1">
             <Link href="/app" className="flex items-center gap-2 group">
-              <div className="w-7 h-7 rounded bg-surface-panel flex items-center justify-center border border-border-muted text-primary group-hover:border-accent-emerald transition-colors">
-                <Terminal className="w-4 h-4 text-accent-emerald" />
+              <div className="w-7 h-7 rounded bg-surface-panel flex items-center justify-center border border-border-subtle text-primary group-hover:border-primary transition-colors">
+                <Terminal className="w-4 h-4 text-primary" />
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-bold text-text-primary tracking-tight leading-none">
@@ -519,10 +514,22 @@ export function SideNavBar({
               </div>
             </Link>
 
-            <span className="flex h-2 w-2 relative" title="Vault Active">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-emerald opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-emerald" />
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="flex h-2 w-2 relative" title="Vault Active">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+              </span>
+              {mobileOpen && (
+                <button
+                  type="button"
+                  onClick={onCloseMobile}
+                  className="md:hidden p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel ml-1"
+                  aria-label="Close navigation drawer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Quick Switcher Trigger */}
@@ -551,11 +558,11 @@ export function SideNavBar({
               }}
               className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 pathname === '/app'
-                  ? 'bg-surface-raised text-accent-emerald border border-accent-emerald/30 font-semibold'
+                  ? 'bg-surface-panel text-primary border border-border-subtle font-semibold'
                   : 'text-text-secondary hover:bg-surface-panel hover:text-text-primary'
               }`}
             >
-              <Home className="w-4 h-4 text-accent-emerald" />
+              <Home className="w-4 h-4 text-primary" />
               <span>Home Dashboard</span>
             </Link>
 
@@ -566,7 +573,7 @@ export function SideNavBar({
               }}
               className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
                 pathname === '/app/entries'
-                  ? 'bg-surface-raised text-accent-emerald border border-accent-emerald/30 font-semibold'
+                  ? 'bg-surface-panel text-primary border border-border-subtle font-semibold'
                   : 'text-text-secondary hover:bg-surface-panel hover:text-text-primary'
               }`}
             >
@@ -583,7 +590,7 @@ export function SideNavBar({
             <button
               type="button"
               onClick={() => handleOpenCreateModal('notes_page', null)}
-              className="flex items-center gap-1 px-2 py-0.5 rounded bg-surface-raised border border-border-muted text-[11px] font-mono text-accent-emerald hover:border-accent-emerald hover:bg-surface-panel transition-colors"
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-surface-panel border border-border-subtle text-[11px] font-mono text-primary hover:bg-surface-raised transition-colors"
               title="Create new page, section, or environment"
             >
               <Plus className="w-3 h-3" />
@@ -595,7 +602,7 @@ export function SideNavBar({
           <div className="flex-1 overflow-y-auto custom-scroll px-1 flex flex-col gap-0.5 min-h-0">
             {loadingTree && treeItems.length === 0 ? (
               <div className="py-6 flex items-center justify-center gap-2 text-text-muted text-xs font-mono">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-emerald" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
                 <span>Loading workspace...</span>
               </div>
             ) : rootItems.length === 0 ? (
@@ -611,7 +618,7 @@ export function SideNavBar({
                 <button
                   type="button"
                   onClick={() => handleOpenCreateModal('notes_page', null)}
-                  className="px-3 py-1.5 rounded bg-accent-emerald text-black text-xs font-semibold hover:bg-emerald-400 transition-colors flex items-center gap-1.5 shadow-sm mt-1"
+                  className="px-3 py-1.5 rounded bg-primary text-surface-canvas text-xs font-semibold hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-sm mt-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Create first page</span>
@@ -623,7 +630,7 @@ export function SideNavBar({
           </div>
         </div>
 
-        {/* Global Utilities (Separated clearly at bottom) */}
+        {/* Global Utilities + Theme Toggle + User Status */}
         <div className="flex flex-col gap-0.5 border-t border-border-subtle pt-2 px-1 shrink-0 mt-2">
           {bottomItems.map((item) => {
             const Icon = item.icon;
@@ -637,7 +644,7 @@ export function SideNavBar({
                 }}
                 className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-surface-panel text-accent-emerald font-semibold'
+                    ? 'bg-surface-panel text-primary font-semibold border border-border-subtle'
                     : 'text-text-muted hover:bg-surface-panel hover:text-text-primary'
                 }`}
               >
@@ -646,6 +653,54 @@ export function SideNavBar({
               </Link>
             );
           })}
+
+          {/* Theme Mode Segmented Toggle */}
+          <div className="mt-2 pt-2 border-t border-border-subtle px-1">
+            <div className="flex items-center justify-between bg-surface-panel p-1 rounded border border-border-subtle text-xs">
+              <span className="text-[10px] font-mono text-text-muted px-1 uppercase tracking-wider">Theme</span>
+              <div className="flex items-center gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  title="Light Mode"
+                  className={`p-1 rounded transition-colors ${
+                    theme === 'light'
+                      ? 'bg-primary text-surface-canvas font-semibold shadow-xs'
+                      : 'text-text-muted hover:text-text-primary'
+                  }`}
+                  aria-label="Light mode"
+                >
+                  <Sun className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  title="Dark Mode"
+                  className={`p-1 rounded transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-primary text-surface-canvas font-semibold shadow-xs'
+                      : 'text-text-muted hover:text-text-primary'
+                  }`}
+                  aria-label="Dark mode"
+                >
+                  <Moon className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('system')}
+                  title="System Preference"
+                  className={`p-1 rounded transition-colors ${
+                    theme === 'system'
+                      ? 'bg-primary text-surface-canvas font-semibold shadow-xs'
+                      : 'text-text-muted hover:text-text-primary'
+                  }`}
+                  aria-label="System preference"
+                >
+                  <Monitor className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* User Vault Status & Lock / Signout */}
           <div className="mt-2 pt-2 border-t border-border-subtle flex items-center justify-between">
@@ -660,7 +715,7 @@ export function SideNavBar({
                 onClick={lock}
                 title="Lock Vault"
                 aria-label="Lock Vault"
-                className="p-1.5 rounded text-text-muted hover:text-amber-400 hover:bg-surface-panel transition-colors"
+                className="p-1.5 rounded text-text-muted hover:text-primary hover:bg-surface-panel transition-colors"
               >
                 <Lock className="w-3.5 h-3.5" />
               </button>
@@ -669,7 +724,7 @@ export function SideNavBar({
                 onClick={logout}
                 title="Sign Out"
                 aria-label="Sign Out"
-                className="p-1.5 rounded text-text-muted hover:text-red-400 hover:bg-surface-panel transition-colors"
+                className="p-1.5 rounded text-text-muted hover:text-status-danger hover:bg-status-danger/10 transition-colors"
               >
                 <LogOut className="w-3.5 h-3.5" />
               </button>
@@ -696,7 +751,7 @@ export function SideNavBar({
                   setRenamingItem(null);
                 }
               }}
-              className="w-full px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs text-text-primary focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald"
+              className="w-full px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs text-text-primary focus:border-primary focus:ring-1 focus:ring-primary"
             />
             <div className="flex items-center justify-end gap-2">
               <button
@@ -712,7 +767,7 @@ export function SideNavBar({
                   const it = treeItems.find((i) => i.entry.entryId === renamingItem.id);
                   if (it) handleRenameSubmit(it);
                 }}
-                className="px-3 py-1 text-xs font-semibold bg-accent-emerald text-black rounded hover:bg-emerald-400"
+                className="px-3 py-1 text-xs font-semibold bg-primary text-surface-canvas rounded hover:opacity-90"
               >
                 Save
               </button>

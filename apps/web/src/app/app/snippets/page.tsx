@@ -205,7 +205,7 @@ export default function SnippetsPage() {
               setFormData({ title: '', language: 'bash', code: '', description: '', tags: [] });
               setIsModalOpen(true);
             }}
-            className="px-3 py-1.5 rounded bg-primary-container text-on-primary-container hover:bg-accent-emerald-bright text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
+            className="px-3 py-1.5 rounded bg-primary text-primary-fg hover:bg-primary-hover text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>New Snippet</span>
@@ -258,7 +258,7 @@ export default function SnippetsPage() {
             </p>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="px-3 py-1.5 rounded bg-primary-container text-on-primary-container text-xs font-semibold"
+              className="px-3 py-1.5 rounded bg-primary text-primary-fg hover:bg-primary-hover text-xs font-semibold"
             >
               Add First Snippet
             </button>
@@ -289,7 +289,7 @@ export default function SnippetsPage() {
                         title="Copy code"
                       >
                         {isCopied ? (
-                          <Check className="w-3.5 h-3.5 text-accent-emerald" />
+                          <Check className="w-3.5 h-3.5 text-primary" />
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
                         )}
@@ -301,9 +301,10 @@ export default function SnippetsPage() {
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
+                      {/* Delete to Trash - Explicitly Styled in Red */}
                       <button
                         onClick={() => handleDelete(record.entryId)}
-                        className="p-1 text-text-muted hover:text-status-danger rounded hover:bg-surface-raised"
+                        className="p-1 rounded border border-destructive/40 text-destructive bg-destructive/10 hover:bg-destructive hover:text-white transition-colors"
                         title="Delete snippet"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -455,7 +456,7 @@ export default function SnippetsPage() {
               <button
                 onClick={handleSaveSnippet}
                 disabled={!formData.title.trim() || !formData.code.trim()}
-                className="px-3.5 py-1.5 rounded bg-primary-container text-on-primary-container hover:bg-accent-emerald-bright text-xs font-semibold disabled:opacity-50"
+                className="px-3.5 py-1.5 rounded bg-primary text-primary-fg hover:bg-primary-hover text-xs font-semibold disabled:opacity-50"
               >
                 {editingItem ? 'Save Changes' : 'Encrypt & Save'}
               </button>

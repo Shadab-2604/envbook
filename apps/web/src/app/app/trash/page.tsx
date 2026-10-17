@@ -119,7 +119,7 @@ export default function TrashPage() {
           </Link>
           <span className="text-mask-glyph font-label-mono text-xs">/</span>
           <h1 className="text-text-primary text-xs font-medium flex items-center gap-1.5 inline-flex">
-            <Trash2 className="w-3.5 h-3.5 text-status-danger" />
+            <Trash2 className="w-3.5 h-3.5 text-destructive" />
             Workspace Trash
           </h1>
           <span className="ml-1 text-[10px] font-label-mono text-text-muted bg-surface-panel border border-border-subtle px-1.5 py-0.2 rounded">
@@ -130,7 +130,7 @@ export default function TrashPage() {
         {trashed.length > 0 && (
           <button
             onClick={handleEmptyTrash}
-            className="px-2.5 py-1 rounded bg-status-danger/10 hover:bg-status-danger/20 border border-status-danger/30 text-status-danger text-xs font-label-ui transition-colors flex items-center gap-1"
+            className="btn-destructive px-3 py-1.5 rounded text-xs font-medium flex items-center gap-1.5 shadow-sm"
           >
             <AlertTriangle className="w-3.5 h-3.5" />
             <span>Empty Trash</span>
@@ -159,7 +159,7 @@ export default function TrashPage() {
                 className="p-3.5 rounded-lg bg-surface-panel border border-border-subtle flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-3 truncate">
-                  <Trash2 className="w-4 h-4 text-status-danger/70 shrink-0" />
+                  <Trash2 className="w-4 h-4 text-destructive shrink-0" />
                   <span className="text-xs font-semibold text-text-primary truncate">{title}</span>
                   <span className="text-[10px] font-label-mono uppercase px-1.5 py-0.2 rounded bg-surface border border-border-subtle text-text-muted">
                     {record.type}
@@ -169,17 +169,17 @@ export default function TrashPage() {
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleRestore(record.entryId)}
-                    className="px-2.5 py-1 rounded bg-surface hover:bg-surface-raised border border-border-subtle text-xs text-text-primary hover:text-primary flex items-center gap-1 transition-colors"
+                    className="px-2.5 py-1 rounded bg-surface hover:bg-surface-raised border border-border-subtle text-xs text-text-primary hover:text-primary flex items-center gap-1 transition-colors font-medium"
                   >
                     <RotateCcw className="w-3 h-3 text-primary" />
                     <span>Restore</span>
                   </button>
                   <button
                     onClick={() => handlePermanentDelete(record.entryId)}
-                    className="px-2.5 py-1 rounded bg-status-danger/10 hover:bg-status-danger/20 border border-status-danger/30 text-xs text-status-danger transition-colors"
-                    title="Permanent Delete"
+                    className="btn-destructive px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 shadow-sm"
+                    title="Permanently erase from database"
                   >
-                    Erase
+                    <span>Delete Permanently</span>
                   </button>
                 </div>
               </div>

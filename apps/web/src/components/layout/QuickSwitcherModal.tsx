@@ -222,7 +222,7 @@ export function QuickSwitcherModal({ isOpen, onClose }: QuickSwitcherProps) {
       >
         {/* Search Input Bar */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border-subtle bg-surface-subtle">
-          <Search className="w-5 h-5 text-accent-emerald shrink-0" />
+          <Search className="w-5 h-5 text-primary shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -252,14 +252,14 @@ export function QuickSwitcherModal({ isOpen, onClose }: QuickSwitcherProps) {
                 onMouseEnter={() => setSelectedIndex(idx)}
                 className={`flex items-center justify-between px-3 py-2 rounded text-xs cursor-pointer transition-colors ${
                   isSelected
-                    ? 'bg-surface-raised text-text-primary border-l-2 border-accent-emerald'
+                    ? 'bg-surface-raised text-text-primary border-l-2 border-primary font-medium'
                     : 'text-text-secondary hover:bg-surface-panel'
                 }`}
               >
                 <div className="flex items-center gap-2.5 truncate">
                   <Icon
                     className={`w-4 h-4 shrink-0 ${
-                      isSelected ? 'text-accent-emerald' : 'text-text-muted'
+                      isSelected ? 'text-primary' : 'text-text-muted'
                     }`}
                   />
                   <div className="flex flex-col truncate">
@@ -270,7 +270,7 @@ export function QuickSwitcherModal({ isOpen, onClose }: QuickSwitcherProps) {
                   </div>
                 </div>
                 {isSelected && (
-                  <ArrowRight className="w-3.5 h-3.5 text-accent-emerald shrink-0 ml-2" />
+                  <ArrowRight className="w-3.5 h-3.5 text-primary shrink-0 ml-2" />
                 )}
               </div>
             );
@@ -296,7 +296,7 @@ export function QuickSwitcherModal({ isOpen, onClose }: QuickSwitcherProps) {
               Close <strong className="text-text-primary">Esc</strong>
             </span>
           </div>
-          <span className="text-accent-emerald">Zero-Knowledge In-Memory Index</span>
+          <span className="text-primary font-mono">Zero-Knowledge In-Memory Index</span>
         </div>
       </div>
     </div>

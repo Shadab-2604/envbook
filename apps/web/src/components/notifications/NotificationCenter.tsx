@@ -120,16 +120,16 @@ export function NotificationCenter() {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'share_invite':
-        return <Users className="w-3.5 h-3.5 text-accent-emerald shrink-0" />;
+        return <Users className="w-3.5 h-3.5 text-primary shrink-0" />;
       case 'permission_change':
-        return <Share2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />;
+        return <Share2 className="w-3.5 h-3.5 text-primary shrink-0" />;
       case 'access_revoked':
-        return <Lock className="w-3.5 h-3.5 text-red-400 shrink-0" />;
+        return <Lock className="w-3.5 h-3.5 text-destructive shrink-0" />;
       case 'page_published':
       case 'page_unpublished':
-        return <Globe className="w-3.5 h-3.5 text-indigo-400 shrink-0" />;
+        return <Globe className="w-3.5 h-3.5 text-primary shrink-0" />;
       default:
-        return <Bell className="w-3.5 h-3.5 text-accent-emerald shrink-0" />;
+        return <Bell className="w-3.5 h-3.5 text-primary shrink-0" />;
     }
   };
 
@@ -142,13 +142,13 @@ export function NotificationCenter() {
           setIsOpen((prev) => !prev);
           if (!isOpen) loadNotifications();
         }}
-        className="relative p-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-muted hover:text-text-primary transition-colors"
+        className="relative p-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-muted text-text-muted hover:text-text-primary transition-colors"
         title="Notifications"
         aria-label="Open notifications"
       >
         <Bell className="w-4 h-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent-emerald text-[9px] font-mono font-bold text-black animate-scale-in">
+          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[9px] font-mono font-bold text-surface-canvas shadow-sm">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -162,7 +162,7 @@ export function NotificationCenter() {
             <div className="flex items-center gap-2">
               <span className="font-semibold text-text-primary">Notifications</span>
               {unreadCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full bg-accent-emerald/20 text-accent-emerald text-[10px] font-mono font-semibold">
+                <span className="px-1.5 py-0.2 rounded-full bg-primary/20 text-primary text-[10px] font-mono font-semibold">
                   {unreadCount} new
                 </span>
               )}
@@ -172,7 +172,7 @@ export function NotificationCenter() {
               <button
                 type="button"
                 onClick={handleMarkAllRead}
-                className="text-[11px] text-accent-emerald hover:underline flex items-center gap-1 font-mono"
+                className="text-[11px] text-primary hover:underline flex items-center gap-1 font-mono"
               >
                 <CheckCheck className="w-3 h-3" />
                 <span>Mark all read</span>
@@ -219,9 +219,9 @@ export function NotificationCenter() {
                     </p>
 
                     <div className="flex items-center gap-2 text-[10px] text-text-muted">
-                      <span className="text-accent-emerald font-mono">@{n.actorName}</span>
+                      <span className="text-primary font-mono font-medium">@{n.actorName}</span>
                       {!n.isRead && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald ml-auto" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary ml-auto" />
                       )}
                     </div>
                   </div>

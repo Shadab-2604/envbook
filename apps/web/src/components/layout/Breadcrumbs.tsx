@@ -26,7 +26,7 @@ export function Breadcrumbs({ items, className = '' }: BreadcrumbsProps) {
     >
       <Link
         href="/app"
-        className="flex items-center gap-1 hover:text-accent-emerald transition-colors"
+        className="flex items-center gap-1 hover:text-primary transition-colors"
         title="Workspace Dashboard"
       >
         <Home className="w-3.5 h-3.5" />

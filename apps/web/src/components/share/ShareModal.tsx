@@ -268,7 +268,7 @@ export function ShareModal({
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-panel/80">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded bg-surface-raised border border-border-muted flex items-center justify-center">
-              <Share2 className="w-4 h-4 text-accent-emerald" />
+              <Share2 className="w-4 h-4 text-primary" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-text-primary">Share & Collaboration</h2>
@@ -291,7 +291,7 @@ export function ShareModal({
             onClick={() => setActiveTab('link')}
             className={`pb-2.5 flex items-center gap-1.5 transition-colors border-b-2 ${
               activeTab === 'link'
-                ? 'border-accent-emerald text-accent-emerald font-semibold'
+                ? 'border-primary text-text-primary font-semibold'
                 : 'border-transparent text-text-secondary hover:text-text-primary'
             }`}
           >
@@ -304,7 +304,7 @@ export function ShareModal({
             onClick={() => setActiveTab('collab')}
             className={`pb-2.5 flex items-center gap-1.5 transition-colors border-b-2 ${
               activeTab === 'collab'
-                ? 'border-accent-emerald text-accent-emerald font-semibold'
+                ? 'border-primary text-text-primary font-semibold'
                 : 'border-transparent text-text-secondary hover:text-text-primary'
             }`}
           >
@@ -322,14 +322,14 @@ export function ShareModal({
             onClick={() => setActiveTab('publish')}
             className={`pb-2.5 flex items-center gap-1.5 transition-colors border-b-2 ${
               activeTab === 'publish'
-                ? 'border-accent-emerald text-accent-emerald font-semibold'
+                ? 'border-primary text-text-primary font-semibold'
                 : 'border-transparent text-text-secondary hover:text-text-primary'
             }`}
           >
             <Globe className="w-3.5 h-3.5" />
             <span>Publish to Web</span>
             {share?.isPublished && (
-              <span className="w-2 h-2 rounded-full bg-accent-emerald ml-1" />
+              <span className="w-2 h-2 rounded-full bg-primary ml-1" />
             )}
           </button>
         </div>
@@ -337,15 +337,15 @@ export function ShareModal({
         {/* Modal Body */}
         <div className="p-5 flex-1 min-h-[300px] overflow-y-auto">
           {error && (
-            <div className="mb-4 p-3 rounded bg-red-950/40 border border-red-800 text-red-200 text-xs flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
+            <div className="mb-4 p-3 rounded bg-destructive/15 border border-destructive/30 text-destructive text-xs flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-destructive shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {successMsg && (
-            <div className="mb-4 p-3 rounded bg-emerald-950/40 border border-emerald-800 text-emerald-200 text-xs flex items-center gap-2">
-              <Check className="w-4 h-4 text-accent-emerald shrink-0" />
+            <div className="mb-4 p-3 rounded bg-surface-raised border border-border-muted text-text-primary text-xs flex items-center gap-2">
+              <Check className="w-4 h-4 text-primary shrink-0" />
               <span>{successMsg}</span>
             </div>
           )}
@@ -359,7 +359,7 @@ export function ShareModal({
               {/* TAB 1: PUBLIC LINK */}
               {activeTab === 'link' && (
                 <div className="flex flex-col gap-4 text-xs">
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-surface-panel border border-border-subtle">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-surface-panel border border-border-muted">
                     <div>
                       <span className="font-semibold text-text-primary block mb-0.5">
                         Share with anyone with link
@@ -376,7 +376,7 @@ export function ShareModal({
                         onChange={(e) => handleTogglePublicLink(e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-9 h-5 bg-surface-raised peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-accent-emerald"></div>
+                      <div className="w-9 h-5 bg-surface-raised peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
                     </label>
                   </div>
 
@@ -391,14 +391,14 @@ export function ShareModal({
                               ? `${window.location.origin}/s/${share.publicShareToken}`
                               : `/s/${share.publicShareToken}`
                           }
-                          className="flex-1 px-3 py-1.5 bg-surface-canvas border border-border-subtle rounded text-xs font-mono text-text-secondary select-all"
+                          className="flex-1 px-3 py-1.5 bg-surface-canvas border border-border-muted rounded text-xs font-mono text-text-secondary select-all"
                         />
                         <button
                           type="button"
                           onClick={() => handleCopyLink(`/s/${share.publicShareToken}`)}
-                          className="px-3 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-primary flex items-center gap-1.5 transition-colors"
+                          className="px-3 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-muted text-text-primary flex items-center gap-1.5 transition-colors"
                         >
-                          {copiedLink ? <Check className="w-3.5 h-3.5 text-accent-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+                          {copiedLink ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
                           <span>{copiedLink ? 'Copied' : 'Copy'}</span>
                         </button>
                       </div>
@@ -423,9 +423,9 @@ export function ShareModal({
                         <button
                           type="button"
                           onClick={handleRevokePublicLink}
-                          className="text-red-400 hover:text-red-300 transition-colors flex items-center gap-1"
+                          className="btn-destructive-outline px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
                           <span>Revoke Link</span>
                         </button>
                       </div>
@@ -433,8 +433,8 @@ export function ShareModal({
                   )}
 
                   {/* Security Boundary Notice */}
-                  <div className="p-3 rounded-lg bg-surface-panel/60 border border-border-subtle text-[11px] text-text-muted flex items-start gap-2.5">
-                    <ShieldCheck className="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" />
+                  <div className="p-3 rounded-lg bg-surface-panel/60 border border-border-muted text-[11px] text-text-muted flex items-start gap-2.5">
+                    <ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <div>
                       <span className="font-semibold text-text-primary block mb-0.5">Zero-Leakage Privacy Boundary</span>
                       Public link sharing grants access exclusively to this individual page. Environment variables, credential items, secret-bearing vaults, and unpublished subpages are never exposed.
@@ -476,7 +476,7 @@ export function ShareModal({
                         type="button"
                         disabled={!selectedUser || inviting}
                         onClick={handleAddCollaborator}
-                        className="px-3 py-1.5 rounded bg-accent-emerald text-black font-semibold hover:bg-emerald-400 disabled:opacity-40 transition-colors shrink-0"
+                        className="px-3 py-1.5 rounded bg-primary text-surface-canvas font-semibold hover:opacity-90 disabled:opacity-40 transition-colors shrink-0 shadow-sm"
                       >
                         {inviting ? 'Inviting...' : 'Invite'}
                       </button>
@@ -496,21 +496,21 @@ export function ShareModal({
                             className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-surface-panel transition-colors"
                           >
                             <div className="flex items-center gap-2">
-                              <div className="w-5 h-5 rounded-full bg-accent-emerald/20 text-accent-emerald font-mono text-[10px] flex items-center justify-center font-bold">
+                              <div className="w-5 h-5 rounded-full bg-primary/20 text-primary font-mono text-[10px] flex items-center justify-center font-bold">
                                 {u.username.slice(0, 1).toUpperCase()}
                               </div>
                               <span className="font-semibold text-text-primary">@{u.username}</span>
                               <span className="text-[11px] text-text-muted truncate max-w-[140px]">{u.email}</span>
                             </div>
-                            <span className="text-[10px] text-accent-emerald font-mono">Select</span>
+                            <span className="text-[10px] text-primary font-mono">Select</span>
                           </button>
                         ))}
                       </div>
                     )}
 
                     {selectedUser && (
-                      <div className="flex items-center gap-2 p-2 rounded bg-surface-subtle border border-accent-emerald/30 text-xs">
-                        <UserCheck className="w-3.5 h-3.5 text-accent-emerald" />
+                      <div className="flex items-center gap-2 p-2 rounded bg-surface-subtle border border-primary/30 text-xs">
+                        <UserCheck className="w-3.5 h-3.5 text-primary" />
                         <span className="text-text-primary font-medium">Selected: @{selectedUser.username}</span>
                         <span className="text-text-muted">({selectedUser.email})</span>
                         <button
@@ -533,7 +533,7 @@ export function ShareModal({
                     {/* Owner row */}
                     <div className="flex items-center justify-between p-2 rounded bg-surface-panel/50 border border-border-subtle">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-surface-raised border border-border-muted flex items-center justify-center font-mono text-xs font-bold text-accent-emerald">
+                        <div className="w-6 h-6 rounded-full bg-surface-raised border border-border-muted flex items-center justify-center font-mono text-xs font-bold text-primary">
                           O
                         </div>
                         <div>
@@ -541,7 +541,7 @@ export function ShareModal({
                           <span className="text-[10px] text-text-muted">Workspace Owner</span>
                         </div>
                       </div>
-                      <span className="text-[10px] font-mono text-accent-emerald uppercase bg-accent-emerald/10 px-2 py-0.5 rounded border border-accent-emerald/20">
+                      <span className="text-[10px] font-mono text-primary uppercase bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
                         Owner
                       </span>
                     </div>
@@ -577,9 +577,9 @@ export function ShareModal({
                             type="button"
                             title="Remove collaborator"
                             onClick={() => handleRemoveCollaborator(c.userId, c.username)}
-                            className="p-1 rounded text-text-muted hover:text-red-400 hover:bg-surface-raised transition-colors"
+                            className="p-1 rounded text-destructive hover:bg-destructive/15 border border-transparent hover:border-destructive/30 transition-colors"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3.5 h-3.5 text-destructive" />
                           </button>
                         </div>
                       </div>
@@ -591,7 +591,7 @@ export function ShareModal({
               {/* TAB 3: PUBLISH TO WEB */}
               {activeTab === 'publish' && (
                 <div className="flex flex-col gap-4 text-xs">
-                  <div className="flex items-center justify-between p-3 rounded-lg bg-surface-panel border border-border-subtle">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-surface-panel border border-border-muted">
                     <div>
                       <span className="font-semibold text-text-primary block mb-0.5">
                         Publish to Public Web
@@ -606,7 +606,7 @@ export function ShareModal({
                         type="button"
                         onClick={handleUnpublish}
                         disabled={publishing}
-                        className="px-3 py-1.5 rounded bg-surface-raised border border-border-muted hover:border-red-500/50 hover:text-red-400 text-xs text-text-secondary transition-colors"
+                        className="btn-destructive-outline px-3 py-1.5 rounded text-xs transition-colors"
                       >
                         {publishing ? 'Updating...' : 'Unpublish'}
                       </button>
@@ -615,7 +615,7 @@ export function ShareModal({
                         type="button"
                         onClick={handlePublish}
                         disabled={publishing}
-                        className="px-3.5 py-1.5 rounded bg-accent-emerald text-black font-semibold hover:bg-emerald-400 transition-colors"
+                        className="px-3.5 py-1.5 rounded bg-primary text-surface-canvas font-semibold hover:opacity-90 transition-colors shadow-sm"
                       >
                         {publishing ? 'Publishing...' : 'Publish to Web'}
                       </button>
@@ -628,7 +628,7 @@ export function ShareModal({
                       Custom Web Slug
                     </label>
                     <div className="flex items-center gap-1.5">
-                      <span className="font-mono text-text-muted text-xs bg-surface-panel px-2.5 py-1.5 rounded border border-border-subtle shrink-0">
+                      <span className="font-mono text-text-muted text-xs bg-surface-panel px-2.5 py-1.5 rounded border border-border-muted shrink-0">
                         /p/
                       </span>
                       <input
@@ -637,18 +637,18 @@ export function ShareModal({
                         value={customSlug}
                         onChange={(e) => setCustomSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-_]/g, ''))}
                         placeholder="clean-url-slug"
-                        className="flex-1 px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs font-mono text-text-primary focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald disabled:opacity-50"
+                        className="flex-1 px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs font-mono text-text-primary focus:border-border-focus focus:ring-1 focus:ring-border-focus disabled:opacity-50"
                       />
                     </div>
                   </div>
 
                   {/* Published URL details */}
                   {share?.isPublished && share?.publishedSlug && (
-                    <div className="flex flex-col gap-3 p-3 rounded-lg bg-surface-subtle border border-emerald-900/40">
+                    <div className="flex flex-col gap-3 p-3 rounded-lg bg-surface-subtle border border-border-muted">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
-                          <span className="font-semibold text-accent-emerald text-xs">Live on Web</span>
+                          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                          <span className="font-semibold text-text-primary text-xs">Live on Web</span>
                         </div>
                         {share.publishedAt && (
                           <span className="text-[10px] text-text-muted font-mono">
@@ -666,23 +666,23 @@ export function ShareModal({
                               ? `${window.location.origin}/p/${share.publishedSlug}`
                               : `/p/${share.publishedSlug}`
                           }
-                          className="flex-1 px-3 py-1.5 bg-surface-canvas border border-border-subtle rounded text-xs font-mono text-text-secondary select-all"
+                          className="flex-1 px-3 py-1.5 bg-surface-canvas border border-border-muted rounded text-xs font-mono text-text-secondary select-all"
                         />
                         <button
                           type="button"
                           onClick={() => handleCopyLink(`/p/${share.publishedSlug}`)}
-                          className="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-primary flex items-center gap-1 transition-colors"
+                          className="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-muted text-text-primary flex items-center gap-1 transition-colors"
                         >
-                          {copiedLink ? <Check className="w-3.5 h-3.5 text-accent-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+                          {copiedLink ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
                           <span>{copiedLink ? 'Copied' : 'Copy'}</span>
                         </button>
                         <a
                           href={`/p/${share.publishedSlug}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-primary flex items-center gap-1 transition-colors"
+                          className="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-muted text-text-primary flex items-center gap-1 transition-colors"
                         >
-                          <ExternalLink className="w-3.5 h-3.5 text-accent-emerald" />
+                          <ExternalLink className="w-3.5 h-3.5 text-primary" />
                           <span>Preview</span>
                         </a>
                       </div>
@@ -692,7 +692,7 @@ export function ShareModal({
                           type="button"
                           onClick={handlePublish}
                           disabled={publishing}
-                          className="text-[11px] text-accent-emerald hover:underline font-mono"
+                          className="text-[11px] text-primary hover:underline font-mono"
                         >
                           {publishing ? 'Updating...' : 'Republish latest changes'}
                         </button>

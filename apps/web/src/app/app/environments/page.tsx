@@ -377,7 +377,7 @@ export default function EnvironmentsPage() {
       {/* Top Header */}
       <header className="h-14 border-b border-border-subtle bg-surface/90 backdrop-blur px-5 flex items-center justify-between shrink-0 z-10">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center text-cyan-400">
+          <div className="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center text-primary">
             <Database className="w-4 h-4" />
           </div>
           <div>
@@ -393,7 +393,7 @@ export default function EnvironmentsPage() {
         {/* Action Buttons */}
         <div className="flex items-center gap-2">
           {importFeedback && (
-            <span className="text-xs font-mono text-accent-emerald bg-accent-emerald/10 border border-accent-emerald/30 px-2.5 py-1 rounded">
+            <span className="text-xs font-mono text-text-primary bg-surface-raised border border-border-muted px-2.5 py-1 rounded">
               {importFeedback}
             </span>
           )}
@@ -405,7 +405,7 @@ export default function EnvironmentsPage() {
               setParseResult(null);
               setIsImportModalOpen(true);
             }}
-            className="px-3 py-1.5 rounded bg-accent-emerald text-black hover:bg-emerald-400 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
+            className="px-3 py-1.5 rounded bg-primary text-surface-canvas hover:opacity-90 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm"
           >
             <Upload className="w-3.5 h-3.5" />
             <span>Import / Paste .env</span>
@@ -447,7 +447,7 @@ export default function EnvironmentsPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search variables by key name..."
-              className="w-full bg-surface-panel border border-border-muted rounded pl-8 pr-3 py-1 text-xs text-text-primary placeholder:text-text-muted/60 focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald"
+              className="w-full bg-surface-panel border border-border-muted rounded pl-8 pr-3 py-1 text-xs text-text-primary placeholder:text-text-muted/60 focus:border-border-focus focus:ring-1 focus:ring-border-focus"
             />
           </div>
 
@@ -457,7 +457,7 @@ export default function EnvironmentsPage() {
               type="button"
               onClick={() => setViewMode('variables')}
               className={`px-2.5 py-1 rounded transition-colors ${
-                viewMode === 'variables' ? 'bg-surface-raised text-accent-emerald font-semibold' : 'text-text-muted hover:text-text-primary'
+                viewMode === 'variables' ? 'bg-primary text-surface-canvas font-semibold shadow-sm' : 'text-text-muted hover:text-text-primary'
               }`}
             >
               Variables
@@ -466,7 +466,7 @@ export default function EnvironmentsPage() {
               type="button"
               onClick={() => setViewMode('diff')}
               className={`px-2.5 py-1 rounded transition-colors ${
-                viewMode === 'diff' ? 'bg-surface-raised text-accent-emerald font-semibold' : 'text-text-muted hover:text-text-primary'
+                viewMode === 'diff' ? 'bg-primary text-surface-canvas font-semibold shadow-sm' : 'text-text-muted hover:text-text-primary'
               }`}
             >
               Diff View
@@ -483,14 +483,14 @@ export default function EnvironmentsPage() {
       <main className="flex-1 overflow-y-auto p-5 max-w-5xl mx-auto w-full custom-scroll">
         {loading ? (
           <div className="py-20 text-center flex flex-col items-center justify-center gap-2 text-text-muted font-mono text-xs">
-            <Loader2 className="w-4 h-4 animate-spin text-accent-emerald" />
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
             <span>Decrypting environment variables...</span>
           </div>
         ) : viewMode === 'diff' ? (
           /* Parity Matrix Diff View */
           <div className="bg-surface-subtle border border-border-subtle rounded-xl p-5 shadow-sm flex flex-col gap-4">
             <div className="flex items-center gap-2 pb-3 border-b border-border-subtle font-semibold text-text-primary text-sm">
-              <Layers className="w-4 h-4 text-cyan-400" />
+              <Layers className="w-4 h-4 text-primary" />
               <span>Environment Variables Parity Matrix</span>
             </div>
             <div className="overflow-x-auto">
@@ -506,7 +506,7 @@ export default function EnvironmentsPage() {
                     <tr key={v.key} className="hover:bg-surface-panel/30">
                       <td className="py-2.5 px-3 font-semibold text-text-primary">{v.key}</td>
                       <td className="py-2.5 px-3">
-                        <span className="px-2 py-0.5 rounded bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/30 font-bold text-[10px]">
+                        <span className="px-2 py-0.5 rounded bg-surface-raised text-text-primary border border-border-muted font-bold text-[10px]">
                           SET
                         </span>
                       </td>
@@ -519,7 +519,7 @@ export default function EnvironmentsPage() {
         ) : filteredVariables.length === 0 ? (
           /* Empty State */
           <div className="py-16 px-4 text-center border border-dashed border-border-muted rounded-xl bg-surface-panel/40 flex flex-col items-center gap-3">
-            <div className="p-3 rounded-full bg-surface-raised border border-border-muted text-cyan-400">
+            <div className="p-3 rounded-full bg-surface-raised border border-border-muted text-primary">
               <Terminal className="w-6 h-6" />
             </div>
             <div>
@@ -536,7 +536,7 @@ export default function EnvironmentsPage() {
                   setParseResult(null);
                   setIsImportModalOpen(true);
                 }}
-                className="px-4 py-2 rounded bg-accent-emerald text-black font-semibold text-xs flex items-center gap-1.5 hover:bg-emerald-400 shadow-sm"
+                className="px-4 py-2 rounded bg-primary text-surface-canvas font-semibold text-xs flex items-center gap-1.5 hover:opacity-90 shadow-sm"
               >
                 <Upload className="w-3.5 h-3.5" />
                 <span>Paste .env Block</span>
@@ -586,9 +586,9 @@ export default function EnvironmentsPage() {
                     {/* Value */}
                     <div className="col-span-5 flex items-center gap-2 min-w-0 font-mono text-xs">
                       {isRevealed ? (
-                        <div className="flex items-center gap-1.5 text-cyan-300 bg-cyan-950/30 border border-cyan-800/40 px-2 py-0.5 rounded truncate select-all">
+                        <div className="flex items-center gap-1.5 text-text-primary bg-surface-raised border border-border-muted px-2 py-0.5 rounded truncate select-all">
                           <span className="truncate">{v.value}</span>
-                          <span className="text-[10px] text-accent-emerald ml-1 shrink-0 font-semibold">15s</span>
+                          <span className="text-[10px] text-text-muted ml-1 shrink-0 font-semibold font-mono">15s</span>
                         </div>
                       ) : (
                         <span className="text-text-muted tracking-widest font-mono select-none">
@@ -607,7 +607,7 @@ export default function EnvironmentsPage() {
                         aria-label={isRevealed ? 'Hide value' : 'Reveal value'}
                         className={`p-1.5 rounded transition-colors ${
                           isRevealed
-                            ? 'text-accent-emerald bg-accent-emerald/10'
+                            ? 'text-primary bg-primary/10'
                             : 'text-text-muted hover:text-text-primary hover:bg-surface-raised'
                         }`}
                       >
@@ -622,7 +622,7 @@ export default function EnvironmentsPage() {
                         aria-label="Copy variable value"
                         className="p-1.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-raised transition-colors"
                       >
-                        {isCopied ? <Check className="w-3.5 h-3.5 text-accent-emerald" /> : <Copy className="w-3.5 h-3.5" />}
+                        {isCopied ? <Check className="w-3.5 h-3.5 text-primary" /> : <Copy className="w-3.5 h-3.5" />}
                       </button>
 
                       {/* Edit */}
@@ -643,15 +643,15 @@ export default function EnvironmentsPage() {
                         <Edit2 className="w-3.5 h-3.5" />
                       </button>
 
-                      {/* Delete */}
+                      {/* Delete - MUST BE RED */}
                       <button
                         type="button"
                         onClick={() => handleDeleteVariable(v.key)}
                         title="Delete variable"
                         aria-label="Delete variable"
-                        className="p-1.5 rounded text-text-muted hover:text-red-400 hover:bg-red-950/30 transition-colors"
+                        className="p-1.5 rounded text-destructive hover:bg-destructive/15 border border-transparent hover:border-destructive/30 transition-colors"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5 text-destructive" />
                       </button>
                     </div>
                   </div>
@@ -711,7 +711,7 @@ export default function EnvironmentsPage() {
                   value={importText}
                   onChange={(e) => runParser(e.target.value)}
                   placeholder={`# Paste .env contents\nMONGODB_URI=mongodb://localhost:27017/envbook_dev\nPORT=3000\nJWT_SECRET=replace-with-a-long-random-secret`}
-                  className="w-full p-3 bg-[#090d13] border border-border-muted rounded-lg font-mono text-xs text-text-primary placeholder:text-text-muted/50 focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald custom-scroll leading-relaxed"
+                  className="w-full p-3 bg-surface-canvas border border-border-muted rounded-lg font-mono text-xs text-text-primary placeholder:text-text-muted/50 focus:border-border-focus focus:ring-1 focus:ring-border-focus custom-scroll leading-relaxed"
                 />
               </div>
 
@@ -721,7 +721,7 @@ export default function EnvironmentsPage() {
                   {/* Summary Badges */}
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="px-2 py-0.5 rounded bg-surface-raised border border-border-muted text-xs font-mono text-text-primary">
-                      Valid: <strong className="text-accent-emerald">{parseResult.validCount}</strong>
+                      Valid: <strong className="text-primary">{parseResult.validCount}</strong>
                     </span>
                     {parseResult.errorCount > 0 && (
                       <span className="px-2 py-0.5 rounded bg-red-950/40 border border-red-500/40 text-xs font-mono text-red-300">
@@ -850,7 +850,7 @@ export default function EnvironmentsPage() {
                   type="button"
                   onClick={handleSaveBulkImport}
                   disabled={isImportSaving || !parseResult || parseResult.validCount === 0}
-                  className="px-4 py-1.5 rounded bg-accent-emerald text-black font-semibold text-xs flex items-center gap-1.5 hover:bg-emerald-400 disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-sm"
+                  className="px-4 py-1.5 rounded bg-primary text-surface-canvas font-semibold text-xs flex items-center gap-1.5 hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-sm"
                 >
                   {isImportSaving ? (
                     <>
@@ -901,7 +901,7 @@ export default function EnvironmentsPage() {
               className="p-5 flex flex-col gap-3.5"
             >
               {varFormError && (
-                <div className="p-2.5 bg-red-950/40 border border-red-500/40 rounded text-red-300 text-xs font-mono">
+                <div className="p-2.5 bg-destructive/15 border border-destructive/30 rounded text-destructive text-xs font-mono">
                   {varFormError}
                 </div>
               )}
@@ -916,7 +916,7 @@ export default function EnvironmentsPage() {
                   value={varKey}
                   onChange={(e) => setVarKey(e.target.value.toUpperCase())}
                   placeholder="KEY_NAME"
-                  className="w-full px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs font-mono text-text-primary focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald"
+                  className="w-full px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs font-mono text-text-primary focus:border-border-focus focus:ring-1 focus:ring-border-focus"
                 />
               </div>
 
@@ -930,7 +930,7 @@ export default function EnvironmentsPage() {
                   value={varValue}
                   onChange={(e) => setVarValue(e.target.value)}
                   placeholder="Variable value..."
-                  className="w-full px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs font-mono text-text-primary focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald"
+                  className="w-full px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs font-mono text-text-primary focus:border-border-focus focus:ring-1 focus:ring-border-focus"
                 />
               </div>
 
@@ -943,7 +943,7 @@ export default function EnvironmentsPage() {
                   value={varComment}
                   onChange={(e) => setVarComment(e.target.value)}
                   placeholder="e.g. Primary production cluster"
-                  className="w-full px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs text-text-primary focus:border-accent-emerald"
+                  className="w-full px-3 py-1.5 bg-surface-panel border border-border-muted rounded text-xs text-text-primary focus:border-border-focus focus:ring-1 focus:ring-border-focus"
                 />
               </div>
 
@@ -957,7 +957,7 @@ export default function EnvironmentsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 rounded bg-accent-emerald text-black font-semibold text-xs hover:bg-emerald-400"
+                  className="px-4 py-1.5 rounded bg-primary text-surface-canvas font-semibold text-xs hover:opacity-90 shadow-sm"
                 >
                   Save Variable
                 </button>

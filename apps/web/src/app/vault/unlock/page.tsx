@@ -51,7 +51,7 @@ export default function VaultUnlockPage() {
       <div className="min-h-screen flex items-center justify-center bg-surface-canvas dot-grid">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 rounded bg-surface-panel border border-border-muted flex items-center justify-center animate-pulse">
-            <ShieldCheck className="w-5 h-5 text-accent-emerald" />
+            <ShieldCheck className="w-5 h-5 text-primary" />
           </div>
           <span className="font-mono text-xs text-text-muted">Restoring encrypted vault session...</span>
         </div>
@@ -96,7 +96,7 @@ export default function VaultUnlockPage() {
       <header className="w-full max-w-4xl flex justify-between items-center px-4 py-2 border-b border-border-subtle bg-surface-subtle/80 backdrop-blur-md rounded">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-primary" />
             <span className="font-mono text-[11px] text-text-muted">HOST: 127.0.0.1</span>
           </div>
           <span className="text-border-muted">|</span>
@@ -104,8 +104,8 @@ export default function VaultUnlockPage() {
         </div>
 
         <div className="flex items-center gap-1.5 bg-surface-panel px-2.5 py-1 rounded border border-border-subtle">
-          <ShieldCheck className="w-3.5 h-3.5 text-accent-emerald" />
-          <span className="font-mono text-[11px] text-accent-emerald font-semibold">
+          <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+          <span className="font-mono text-[11px] text-primary font-semibold">
             Local-Only Vault (127.0.0.1)
           </span>
         </div>
@@ -113,19 +113,19 @@ export default function VaultUnlockPage() {
         <div className="hidden sm:flex items-center gap-1.5 font-mono text-[11px] text-text-muted">
           <span>DAEMON: ACTIVE</span>
           <span className="text-border-muted">/</span>
-          <span className="text-accent-emerald font-semibold">v1.0-SEC</span>
+          <span className="text-primary font-semibold">v1.0-SEC</span>
         </div>
       </header>
 
       {/* Main Authentication Canvas */}
       <main className="w-full max-w-md my-auto">
         <div className="bg-surface-subtle border border-border-subtle rounded-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent-emerald to-transparent opacity-80" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-border-muted opacity-80" />
 
           {/* Header */}
           <div className="flex flex-col items-center text-center mb-6">
             <div className="w-12 h-12 rounded bg-surface-panel border border-border-muted flex items-center justify-center mb-2 shadow-inner">
-              <Lock className="w-6 h-6 text-accent-emerald" />
+              <Lock className="w-6 h-6 text-primary" />
             </div>
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Unlock EnvBook Vault</h1>
             <p className="font-mono text-xs text-text-muted mt-1">
@@ -183,7 +183,7 @@ export default function VaultUnlockPage() {
                   </label>
                   <div className="flex items-center gap-1 font-mono text-[10px]">
                     <span className="text-text-muted">TIMEOUT:</span>
-                    <span className="text-accent-emerald">15m IDLE</span>
+                    <span className="text-text-primary font-semibold">15m IDLE</span>
                   </div>
                 </div>
                 {/* Universal Eye Control on Unlock Passphrase */}
@@ -215,10 +215,10 @@ export default function VaultUnlockPage() {
               </div>
             )}
 
-            {/* Cryptographic Badges Cluster matching Stitch layout */}
+            {/* Cryptographic Badges Cluster */}
             <div className="grid grid-cols-2 gap-2 pt-1">
               <div className="bg-surface-panel p-2 rounded border border-border-subtle flex items-center gap-2">
-                <Memory className="w-4 h-4 text-accent-emerald shrink-0" />
+                <Memory className="w-4 h-4 text-secondary shrink-0" />
                 <div className="overflow-hidden">
                   <div className="font-mono text-[10px] text-text-muted leading-tight">DERIVATION</div>
                   <div className="font-mono text-[11px] text-text-primary truncate font-semibold">
@@ -228,7 +228,7 @@ export default function VaultUnlockPage() {
               </div>
 
               <div className="bg-surface-panel p-2 rounded border border-border-subtle flex items-center gap-2">
-                <Shield className="w-4 h-4 text-accent-emerald shrink-0" />
+                <Shield className="w-4 h-4 text-secondary shrink-0" />
                 <div className="overflow-hidden">
                   <div className="font-mono text-[10px] text-text-muted leading-tight">CIPHER</div>
                   <div className="font-mono text-[11px] text-text-primary truncate font-semibold">
@@ -242,7 +242,7 @@ export default function VaultUnlockPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 w-full bg-accent-emerald hover:bg-accent-emerald-bright text-surface-canvas font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 btn-security-glow transition-all disabled:opacity-50 cursor-pointer"
+              className="mt-1 w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
             >
               <Lock className="w-3.5 h-3.5" />
               <span>{loading ? 'Unwrapping DEK...' : 'Unlock Vault'}</span>
@@ -289,7 +289,7 @@ export default function VaultUnlockPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="bg-surface-subtle border border-border-subtle rounded p-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-4 h-4 text-accent-emerald" />
+              <ShieldCheck className="w-4 h-4 text-secondary" />
             </div>
             <div>
               <div className="text-xs font-semibold text-text-primary">Zero Cloud Exposure</div>
@@ -299,7 +299,7 @@ export default function VaultUnlockPage() {
 
           <div className="bg-surface-subtle border border-border-subtle rounded p-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center shrink-0">
-              <Memory className="w-4 h-4 text-accent-emerald" />
+              <Memory className="w-4 h-4 text-secondary" />
             </div>
             <div>
               <div className="text-xs font-semibold text-text-primary">Argon2id Memory Hardened</div>
@@ -309,7 +309,7 @@ export default function VaultUnlockPage() {
 
           <div className="bg-surface-subtle border border-border-subtle rounded p-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center shrink-0">
-              <Lock className="w-4 h-4 text-accent-emerald" />
+              <Lock className="w-4 h-4 text-secondary" />
             </div>
             <div>
               <div className="text-xs font-semibold text-text-primary">AES-256-GCM Authenticated</div>

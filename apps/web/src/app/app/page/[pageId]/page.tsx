@@ -642,20 +642,20 @@ export default function NotePage() {
               </span>
             )}
             {saveStatus === 'saved' && (
-              <span className="text-accent-emerald flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-accent-emerald" />
+              <span className="text-primary flex items-center gap-1 font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
                 Saved
               </span>
             )}
             {saveStatus === 'error' && (
-              <span className="text-status-danger flex items-center gap-1">
+              <span className="text-status-danger flex items-center gap-1 font-semibold">
                 <AlertCircle className="w-3.5 h-3.5 text-status-danger" />
                 Save Failed
               </span>
             )}
             {saveStatus === 'idle' && (
               <span className="text-text-muted flex items-center gap-1 opacity-70">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-emerald/60" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary/60" />
                 Encrypted
               </span>
             )}
@@ -675,7 +675,7 @@ export default function NotePage() {
             >
               <span
                 className={`w-7 h-4 flex items-center rounded-full p-0.5 transition-colors duration-200 ease-in-out ${
-                  autoSaveEnabled ? 'bg-accent-emerald' : 'bg-surface-raised border border-border-muted'
+                  autoSaveEnabled ? 'bg-primary' : 'bg-surface-raised border border-border-muted'
                 }`}
               >
                 <span
@@ -684,7 +684,7 @@ export default function NotePage() {
                   }`}
                 />
               </span>
-              <span className={`text-[11px] font-medium hidden md:inline ${autoSaveEnabled ? 'text-accent-emerald' : 'text-text-muted group-hover:text-text-primary'}`}>
+              <span className={`text-[11px] font-medium hidden md:inline ${autoSaveEnabled ? 'text-primary font-semibold' : 'text-text-muted group-hover:text-text-primary'}`}>
                 Auto-save {autoSaveEnabled ? 'ON' : 'OFF'}
               </span>
             </button>
@@ -695,7 +695,7 @@ export default function NotePage() {
                 onClick={() => triggerSave(title, content, tags, icon)}
                 className={`ml-1 px-2 py-0.5 rounded text-[11px] font-semibold flex items-center gap-1 transition-all ${
                   isDirty
-                    ? 'bg-accent-emerald text-black shadow-sm ring-2 ring-accent-emerald/40'
+                    ? 'bg-primary text-primary-fg shadow-sm'
                     : 'bg-surface-raised text-text-muted hover:text-text-primary'
                 }`}
                 title="Manual Save to Vault (Ctrl+S)"
@@ -746,7 +746,7 @@ export default function NotePage() {
             onClick={handleToggleFavorite}
             className={`p-1.5 rounded border transition-colors ${
               isFavorite
-                ? 'bg-status-warning/15 border-status-warning/40 text-status-warning'
+                ? 'bg-surface-raised border-border-muted text-text-primary'
                 : 'bg-surface-panel hover:bg-surface-raised border-border-subtle text-text-muted hover:text-text-primary'
             }`}
             title={isFavorite ? 'Unfavorite' : 'Add to favorites'}
@@ -761,7 +761,7 @@ export default function NotePage() {
               className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-primary text-xs font-label-ui transition-colors shadow-sm"
               title="Save & Export Options (Markdown, PDF, HTML)"
             >
-              <Download className="w-3.5 h-3.5 text-accent-emerald" />
+              <Download className="w-3.5 h-3.5 text-primary" />
               <span className="hidden sm:inline font-medium">Export</span>
               <ChevronDown className="w-3 h-3 text-text-muted" />
             </button>
@@ -770,7 +770,7 @@ export default function NotePage() {
               <div className="absolute right-0 top-full mt-1.5 w-64 bg-surface-panel border border-border-muted rounded-lg shadow-[0_12px_32px_rgba(0,0,0,0.85)] z-50 overflow-hidden flex flex-col p-1.5 animate-in fade-in zoom-in-95 duration-100">
                 <div className="px-2.5 py-1.5 border-b border-border-subtle/80 flex items-center justify-between text-[10px] font-label-mono text-text-muted uppercase tracking-wider">
                   <span>Save / Export</span>
-                  <span className="text-accent-emerald">3 Formats</span>
+                  <span className="text-primary font-semibold">3 Formats</span>
                 </div>
 
                 {/* Option 1: Markdown (.md) */}
@@ -781,9 +781,9 @@ export default function NotePage() {
                   }}
                   className="flex items-start gap-2.5 px-2.5 py-2 rounded hover:bg-surface-raised transition-colors text-left group w-full"
                 >
-                  <FileCode className="w-4 h-4 text-accent-emerald shrink-0 mt-0.5" />
+                  <FileCode className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                   <div className="flex flex-col">
-                    <span className="text-xs font-medium text-text-primary group-hover:text-accent-emerald transition-colors">
+                    <span className="text-xs font-medium text-text-primary group-hover:text-primary transition-colors">
                       Markdown (.md)
                     </span>
                     <span className="text-[10px] text-text-muted font-label-mono">
@@ -800,9 +800,9 @@ export default function NotePage() {
                   }}
                   className="flex items-start gap-2.5 px-2.5 py-2 rounded hover:bg-surface-raised transition-colors text-left group w-full"
                 >
-                  <FileDown className="w-4 h-4 text-status-warning shrink-0 mt-0.5" />
+                  <FileDown className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
                   <div className="flex flex-col">
-                    <span className="text-xs font-medium text-text-primary group-hover:text-status-warning transition-colors">
+                    <span className="text-xs font-medium text-text-primary group-hover:text-primary transition-colors">
                       PDF Document (.pdf)
                     </span>
                     <span className="text-[10px] text-text-muted font-label-mono">
@@ -857,7 +857,7 @@ export default function NotePage() {
             onClick={() => setShowEnvAi(!showEnvAi)}
             className={`px-2.5 py-1.5 rounded border text-xs font-semibold flex items-center gap-1.5 transition-all ${
               showEnvAi
-                ? 'bg-primary text-black border-primary shadow-sm'
+                ? 'bg-primary text-primary-fg border-primary shadow-sm'
                 : 'bg-surface-panel hover:bg-surface-raised border-border-subtle text-text-primary'
             }`}
             title="Toggle envAi Assistant (/envai)"
@@ -872,7 +872,7 @@ export default function NotePage() {
               {collaborators.slice(0, 3).map((c, i) => (
                 <div
                   key={c.userId || i}
-                  className="w-6 h-6 rounded-full bg-accent-emerald/20 border-2 border-surface-panel flex items-center justify-center text-[10px] font-bold text-accent-emerald uppercase"
+                  className="w-6 h-6 rounded-full bg-surface-raised border-2 border-surface-panel flex items-center justify-center text-[10px] font-bold text-primary uppercase"
                   title={c.username}
                 >
                   {c.username.slice(0, 1)}
@@ -889,10 +889,10 @@ export default function NotePage() {
           {/* Share Page Button */}
           <button
             onClick={() => setShareModalOpen(true)}
-            className="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle hover:border-accent-emerald/40 text-xs font-medium text-text-primary flex items-center gap-1.5 transition-colors"
+            className="px-2.5 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle hover:border-border-muted text-xs font-medium text-text-primary flex items-center gap-1.5 transition-colors"
             title="Share or Publish this note"
           >
-            <Share2 className="w-3.5 h-3.5 text-accent-emerald" />
+            <Share2 className="w-3.5 h-3.5 text-primary" />
             <span className="hidden sm:inline">Share</span>
           </button>
 
@@ -908,10 +908,10 @@ export default function NotePage() {
             <Archive className="w-4 h-4" />
           </button>
 
-          {/* Delete to Trash */}
+          {/* Delete to Trash - Explicitly Styled in Red */}
           <button
             onClick={handleDelete}
-            className="p-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-muted hover:text-status-danger transition-colors"
+            className="p-1.5 rounded border border-destructive/40 text-destructive bg-destructive/10 hover:bg-destructive hover:text-white transition-colors"
             title="Move to Trash"
           >
             <Trash2 className="w-4 h-4" />
@@ -1056,13 +1056,13 @@ export default function NotePage() {
                 <div className="w-full max-w-md bg-surface-panel border border-border-muted rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
                   <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-subtle">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-accent-emerald/10 border border-accent-emerald/30 flex items-center justify-center text-accent-emerald">
+                      <div className="w-8 h-8 rounded-lg bg-surface-raised border border-border-muted flex items-center justify-center text-primary">
                         <FilePlus className="w-4 h-4" />
                       </div>
                       <div>
                         <h3 className="text-sm font-semibold text-text-primary">Create Subpage</h3>
                         <p className="text-[11px] text-text-muted">
-                          Nest a new child page directly inside <span className="text-accent-emerald font-medium">"{title || 'this page'}"</span>
+                          Nest a new child page directly inside <span className="text-primary font-medium">"{title || 'this page'}"</span>
                         </p>
                       </div>
                     </div>
@@ -1090,7 +1090,7 @@ export default function NotePage() {
                         value={childPageTitle}
                         onChange={(e) => setChildPageTitle(e.target.value)}
                         placeholder="e.g. Test 2"
-                        className="w-full px-3 py-2 rounded-lg bg-surface-subtle border border-border-muted text-text-primary text-sm focus:outline-none focus:border-accent-emerald placeholder:text-text-muted transition-colors"
+                        className="w-full px-3 py-2 rounded-lg bg-surface-subtle border border-border-muted text-text-primary text-sm focus:outline-none focus:border-border-accent placeholder:text-text-muted transition-colors"
                       />
                     </div>
 
@@ -1108,11 +1108,11 @@ export default function NotePage() {
                       <button
                         type="submit"
                         disabled={childPageCreating || !childPageTitle.trim()}
-                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-accent-emerald hover:bg-accent-emerald/90 text-black flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-sm"
+                        className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-primary hover:bg-primary-hover text-primary-fg flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-sm"
                       >
                         {childPageCreating ? (
                           <>
-                            <span className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                            <span className="w-3.5 h-3.5 border-2 border-primary-fg/30 border-t-primary-fg rounded-full animate-spin" />
                             <span>Creating...</span>
                           </>
                         ) : (

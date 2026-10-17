@@ -50,7 +50,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen w-screen items-center justify-center bg-surface-canvas dot-grid">
         <div className="flex flex-col items-center gap-3">
           <div className="w-10 h-10 rounded bg-surface-panel border border-border-muted flex items-center justify-center animate-pulse">
-            <Terminal className="w-5 h-5 text-accent-emerald" />
+            <Terminal className="w-5 h-5 text-primary" />
           </div>
           <span className="font-mono text-xs text-text-muted">
             {isRestoring ? 'Restoring encrypted vault session...' : 'Authenticating encrypted session...'}

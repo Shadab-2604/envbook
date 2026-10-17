@@ -41,7 +41,7 @@ const ITEM_TYPES: ItemTypeOption[] = [
     badge: 'Page',
     description: 'A standard document for freely formatted inline notes with rich text and slash commands.',
     icon: FileText,
-    accentColor: 'text-accent-emerald border-accent-emerald/40 bg-accent-emerald/10',
+    accentColor: 'text-primary border-border-subtle bg-surface-raised',
   },
   {
     type: 'section',
@@ -49,7 +49,7 @@ const ITEM_TYPES: ItemTypeOption[] = [
     badge: 'Container',
     description: 'A structural container used to group and organize child pages and nested sections.',
     icon: Folder,
-    accentColor: 'text-amber-400 border-amber-400/40 bg-amber-400/10',
+    accentColor: 'text-primary border-border-subtle bg-surface-raised',
   },
   {
     type: 'environment_page',
@@ -57,7 +57,7 @@ const ITEM_TYPES: ItemTypeOption[] = [
     badge: 'Vault',
     description: 'Dedicated page for bulk pasting, managing, and securely encrypting .env variables.',
     icon: Database,
-    accentColor: 'text-cyan-400 border-cyan-400/40 bg-cyan-400/10',
+    accentColor: 'text-primary border-border-subtle bg-surface-raised',
   },
   {
     type: 'notes_section',
@@ -65,7 +65,7 @@ const ITEM_TYPES: ItemTypeOption[] = [
     badge: 'Collection',
     description: 'A notes-focused container specifically optimized for organizing collections of note pages.',
     icon: BookOpen,
-    accentColor: 'text-indigo-400 border-indigo-400/40 bg-indigo-400/10',
+    accentColor: 'text-primary border-border-subtle bg-surface-raised',
   },
 ];
 
@@ -260,7 +260,7 @@ export function CreateItemModal({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-panel">
           <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded bg-surface-raised border border-border-muted text-accent-emerald">
+            <div className="p-1.5 rounded bg-surface-raised border border-border-muted text-primary">
               <FolderPlus className="w-4 h-4" />
             </div>
             <div>
@@ -286,8 +286,8 @@ export function CreateItemModal({
         <form onSubmit={handleSubmit} className="p-5 flex flex-col gap-4">
           {/* Error Banner */}
           {error && (
-            <div className="p-3 bg-red-950/40 border border-red-500/40 rounded flex items-start gap-2 text-red-300 text-xs font-mono">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
+            <div className="p-3 bg-status-danger/10 border border-status-danger/30 rounded flex items-start gap-2 text-status-danger text-xs font-mono">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-status-danger" />
               <span>{error}</span>
             </div>
           )}
@@ -308,7 +308,7 @@ export function CreateItemModal({
                     onClick={() => setSelectedType(item.type)}
                     className={`flex flex-col p-3 rounded-lg border text-left transition-all relative ${
                       isSelected
-                        ? 'border-accent-emerald bg-surface-raised shadow-[0_0_12px_rgba(16,185,129,0.15)] ring-1 ring-accent-emerald'
+                        ? 'border-primary bg-surface-raised ring-1 ring-primary'
                         : 'border-border-subtle bg-surface-panel hover:border-border-muted hover:bg-surface-raised/60'
                     }`}
                   >
@@ -355,7 +355,7 @@ export function CreateItemModal({
                   : 'e.g., Backend Infrastructure'
               }
               maxLength={120}
-              className="w-full px-3 py-2 bg-surface-panel border border-border-muted rounded text-sm text-text-primary placeholder:text-text-muted/60 focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald transition-colors"
+              className="w-full px-3 py-2 bg-surface-panel border border-border-muted rounded text-sm text-text-primary placeholder:text-text-muted/60 focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
             />
           </div>
 
@@ -364,14 +364,14 @@ export function CreateItemModal({
             <label htmlFor="create-item-parent" className="text-xs font-mono text-text-muted uppercase tracking-wider flex items-center justify-between">
               <span>3. Location in Workspace</span>
               {loadingContainers && (
-                <span className="text-[10px] text-accent-emerald animate-pulse">Loading containers...</span>
+                <span className="text-[10px] text-primary animate-pulse">Loading containers...</span>
               )}
             </label>
             <select
               id="create-item-parent"
               value={parentId || ''}
               onChange={(e) => setParentId(e.target.value || null)}
-              className="w-full px-3 py-2 bg-surface-panel border border-border-muted rounded text-xs text-text-primary focus:border-accent-emerald focus:ring-1 focus:ring-accent-emerald transition-colors font-mono"
+              className="w-full px-3 py-2 bg-surface-panel border border-border-muted rounded text-xs text-text-primary focus:border-primary focus:ring-1 focus:ring-primary transition-colors font-mono"
             >
               <option value="">📁 Workspace Root (Top Level)</option>
               {containers.map((c) => (
@@ -395,7 +395,7 @@ export function CreateItemModal({
             <button
               type="submit"
               disabled={isSubmitting || !title.trim()}
-              className="px-4 py-1.5 text-xs font-medium text-black bg-accent-emerald hover:bg-emerald-400 disabled:opacity-50 disabled:pointer-events-none rounded transition-colors flex items-center gap-1.5 shadow-sm font-semibold"
+              className="px-4 py-1.5 text-xs font-medium text-surface-canvas bg-primary hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none rounded transition-opacity flex items-center gap-1.5 shadow-xs font-semibold"
             >
               {isSubmitting ? (
                 <>

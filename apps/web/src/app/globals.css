@@ -3,80 +3,202 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --bg-canvas: #0d1117;
+  :root,
+  [data-theme="light"],
+  .light {
+    color-scheme: light;
+    --bg-canvas: #F7F7F7;
+    --bg-surface: #EEEEEE;
+    --bg-surface-elevated: #FFFFFF;
+    --bg-surface-panel: #EEEEEE;
+    --bg-surface-subtle: #F7F7F7;
+    --bg-surface-raised: #E5E5E5;
+    --bg-surface-hover: #E0E0E0;
+    --bg-surface-active: #D6D6D6;
+
+    --text-primary: #393E46;
+    --text-secondary: #4A515D;
+    --text-muted: #737B8C;
+
+    --border: #929AAB;
+    --border-subtle: rgba(146, 154, 171, 0.35);
+    --border-muted: rgba(146, 154, 171, 0.6);
+    --border-focus: #393E46;
+
+    --primary: #393E46;
+    --primary-hover: #2B2F36;
+    --primary-fg: #F7F7F7;
+    --primary-glow: rgba(57, 62, 70, 0.15);
+
+    --destructive: #DC2626;
+    --destructive-hover: #B91C1C;
+    --destructive-bg: rgba(220, 38, 38, 0.1);
+    --destructive-border: rgba(220, 38, 38, 0.35);
+    --destructive-fg: #FFFFFF;
+
+    --code-bg: #EAEAEA;
+    --code-border: #929AAB;
+    --code-text: #393E46;
+
+    --selection-bg: rgba(57, 62, 70, 0.15);
+    --selection-fg: #393E46;
   }
-  
+
+  .dark,
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --bg-canvas: #393E46;
+    --bg-surface: #2E333A;
+    --bg-surface-elevated: #282C32;
+    --bg-surface-panel: #2E333A;
+    --bg-surface-subtle: #343940;
+    --bg-surface-raised: #25282E;
+    --bg-surface-hover: rgba(247, 247, 247, 0.08);
+    --bg-surface-active: rgba(247, 247, 247, 0.14);
+
+    --text-primary: #F7F7F7;
+    --text-secondary: #EEEEEE;
+    --text-muted: #929AAB;
+
+    --border: #929AAB;
+    --border-subtle: rgba(146, 154, 171, 0.3);
+    --border-muted: rgba(146, 154, 171, 0.5);
+    --border-focus: #EEEEEE;
+
+    --primary: #EEEEEE;
+    --primary-hover: #F7F7F7;
+    --primary-fg: #393E46;
+    --primary-glow: rgba(238, 238, 238, 0.15);
+
+    --destructive: #EF4444;
+    --destructive-hover: #DC2626;
+    --destructive-bg: rgba(239, 68, 68, 0.15);
+    --destructive-border: rgba(239, 68, 68, 0.4);
+    --destructive-fg: #FFFFFF;
+
+    --code-bg: #2B2F36;
+    --code-border: rgba(146, 154, 171, 0.4);
+    --code-text: #F7F7F7;
+
+    --selection-bg: rgba(238, 238, 238, 0.22);
+    --selection-fg: #F7F7F7;
+  }
+
+  * {
+    border-color: var(--border-subtle);
+  }
+
   body {
-    background-color: #0d1117;
-    color: #f0f6fc;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  ::selection {
+    background-color: var(--selection-bg);
+    color: var(--selection-fg);
   }
 }
 
-/* Micro-dot grid background from Terminal Noir specification */
+/* Subtle dot grid aligned with the 4-color palette */
 .dot-grid {
-  background-color: #0d1117;
-  background-image: radial-gradient(#21262d 1px, transparent 1px);
+  background-color: var(--bg-canvas);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-/* Custom 4px Monospace Scrollbars */
-.custom-scroll::-webkit-scrollbar {
+/* Custom 4px Monospace Scrollbars with design tokens */
+.custom-scroll::-webkit-scrollbar,
+.mono-scroll::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 
-.custom-scroll::-webkit-scrollbar-track {
-  background: #12151a;
+.custom-scroll::-webkit-scrollbar-track,
+.mono-scroll::-webkit-scrollbar-track {
+  background: var(--bg-surface);
 }
 
-.custom-scroll::-webkit-scrollbar-thumb {
-  background: #21262d;
+.custom-scroll::-webkit-scrollbar-thumb,
+.mono-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
   border-radius: 2px;
 }
 
-.custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: #30363d;
+.custom-scroll::-webkit-scrollbar-thumb:hover,
+.mono-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--border);
 }
 
-/* Security Button Glow */
+/* Primary Button Glow aligned with palette */
 .btn-security-glow:hover {
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 0 12px var(--primary-glow);
 }
 
-/* Emerald Outline Glow Focus */
+/* Focus outline based on theme border token */
 .glow-emerald-focus:focus-within {
-  border-color: #10b981;
-  box-shadow: 0 0 0 1px #10b981, 0 0 12px rgba(16, 185, 129, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+/* Explicit Destructive Button Styling - Red in both Light & Dark themes */
+.btn-destructive {
+  background-color: var(--destructive);
+  color: #ffffff !important;
+  border: 1px solid var(--destructive);
+  transition: all 0.15s ease;
+}
+
+.btn-destructive:hover:not(:disabled) {
+  background-color: var(--destructive-hover);
+  border-color: var(--destructive-hover);
+}
+
+.btn-destructive:focus-visible {
+  outline: 2px solid var(--destructive);
+  outline-offset: 2px;
+}
+
+.btn-destructive-outline {
+  background-color: var(--destructive-bg);
+  color: var(--destructive) !important;
+  border: 1px solid var(--destructive-border);
+  transition: all 0.15s ease;
+}
+
+.btn-destructive-outline:hover:not(:disabled) {
+  background-color: var(--destructive);
+  color: #ffffff !important;
+  border-color: var(--destructive);
 }
 
 /* Notion-Style WYSIWYG Block Editor Canvas */
 .ProseMirror {
   outline: none;
   min-height: 480px;
-  color: #f0f6fc;
+  color: var(--text-primary);
   font-family: inherit;
   line-height: 1.7;
 }
 
 /* Notion-Style Block Selection & Highlighting */
 .ProseMirror > [data-block-selected="true"] {
-  background-color: rgba(16, 185, 129, 0.12) !important;
-  outline: 2px solid rgba(16, 185, 129, 0.5) !important;
+  background-color: var(--selection-bg) !important;
+  outline: 2px solid var(--border) !important;
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 4px;
   position: relative;
   transition: background-color 0.1s ease, outline 0.1s ease;
 }
 
 .ProseMirror > [data-block-selected="true"]::selection,
 .ProseMirror > [data-block-selected="true"] *::selection {
-  background-color: rgba(16, 185, 129, 0.35);
+  background-color: var(--selection-bg);
 }
 
 .ProseMirror p.is-editor-empty:first-child::before {
-  color: #6e7681;
+  color: var(--text-muted);
   content: attr(data-placeholder);
   float: left;
   height: 0;
@@ -88,9 +210,9 @@
   font-weight: 700;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
-  color: #ffffff;
+  color: var(--text-primary);
   letter-spacing: -0.025em;
-  border-bottom: 1px solid #21262d;
+  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 0.35rem;
 }
 
@@ -99,7 +221,7 @@
   font-weight: 600;
   margin-top: 1.25rem;
   margin-bottom: 0.5rem;
-  color: #e6edf3;
+  color: var(--text-primary);
   letter-spacing: -0.015em;
 }
 
@@ -108,7 +230,7 @@
   font-weight: 600;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
-  color: #c9d1d9;
+  color: var(--text-secondary);
 }
 
 .ProseMirror p {
@@ -147,42 +269,43 @@
 }
 
 .ProseMirror ul[data-type="taskList"] li > label input[type="checkbox"] {
-  accent-color: #10b981;
+  accent-color: var(--primary);
   width: 14px;
   height: 14px;
   cursor: pointer;
 }
 
 .ProseMirror blockquote {
-  border-left: 3px solid #10b981;
+  border-left: 3px solid var(--primary);
   padding-left: 1rem;
   margin: 1rem 0;
-  color: #8b949e;
+  color: var(--text-secondary);
   font-style: italic;
-  background-color: rgba(16, 185, 129, 0.04);
+  background-color: var(--bg-surface);
   padding-top: 0.35rem;
   padding-bottom: 0.35rem;
   border-radius: 0 4px 4px 0;
 }
 
 .ProseMirror pre {
-  background: #090d13;
-  color: #79c0ff;
+  background: var(--code-bg);
+  color: var(--code-text);
   font-family: 'JetBrains Mono', monospace;
   padding: 0.85rem 1rem;
   border-radius: 6px;
-  border: 1px solid #30363d;
+  border: 1px solid var(--code-border);
   margin: 1rem 0;
   overflow-x: auto;
 }
 
 .ProseMirror code {
   font-family: 'JetBrains Mono', monospace;
-  background: rgba(110, 118, 129, 0.2);
-  color: #38bdf8;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   padding: 0.15rem 0.35rem;
   border-radius: 4px;
   font-size: 0.85em;
+  border: 1px solid var(--border-subtle);
 }
 
 .ProseMirror pre code {
@@ -190,11 +313,12 @@
   padding: 0;
   background: none;
   font-size: 0.85rem;
+  border: none;
 }
 
 .ProseMirror hr {
   border: none;
-  border-top: 1px solid #30363d;
+  border-top: 1px solid var(--border-subtle);
   margin: 1.5rem 0;
 }
 
@@ -208,13 +332,13 @@
 
 .ProseMirror th,
 .ProseMirror td {
-  border: 1px solid #30363d;
+  border: 1px solid var(--border-subtle);
   padding: 0.5rem 0.75rem;
   text-align: left;
 }
 
 .ProseMirror th {
-  background-color: #161b22;
+  background-color: var(--bg-surface-raised);
   font-weight: 600;
-  color: #58a6ff;
+  color: var(--text-primary);
 }

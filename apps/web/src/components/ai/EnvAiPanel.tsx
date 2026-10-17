@@ -361,7 +361,7 @@ export function EnvAiPanel({
               onClick={() => setScope('current_note')}
               className={`px-2 py-0.5 rounded transition-colors ${
                 scope === 'current_note'
-                  ? 'bg-primary text-black font-semibold'
+                  ? 'bg-primary text-surface-canvas font-semibold shadow-sm'
                   : 'text-text-muted hover:text-text-primary'
               }`}
             >
@@ -371,7 +371,7 @@ export function EnvAiPanel({
               onClick={() => setScope('selection')}
               className={`px-2 py-0.5 rounded transition-colors ${
                 scope === 'selection'
-                  ? 'bg-primary text-black font-semibold'
+                  ? 'bg-primary text-surface-canvas font-semibold shadow-sm'
                   : 'text-text-muted hover:text-text-primary'
               }`}
             >
@@ -381,7 +381,7 @@ export function EnvAiPanel({
               onClick={() => setScope('my_notes')}
               className={`px-2 py-0.5 rounded transition-colors ${
                 scope === 'my_notes'
-                  ? 'bg-primary text-black font-semibold'
+                  ? 'bg-primary text-surface-canvas font-semibold shadow-sm'
                   : 'text-text-muted hover:text-text-primary'
               }`}
             >
@@ -540,7 +540,7 @@ export function EnvAiPanel({
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleApplyClick('insert')}
-                      className="px-2 py-1 rounded bg-primary text-black hover:bg-accent-emerald-bright text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                      className="px-2 py-1 rounded bg-primary text-surface-canvas hover:opacity-90 text-[11px] font-semibold flex items-center gap-1 transition-colors shadow-sm"
                       title="Insert at current editor cursor"
                     >
                       <ArrowDownToLine className="w-3 h-3" />
@@ -549,7 +549,7 @@ export function EnvAiPanel({
 
                     <button
                       onClick={() => handleApplyClick('append')}
-                      className="px-2 py-1 rounded bg-surface-raised hover:bg-surface-bright border border-border-subtle text-text-primary text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                      className="px-2 py-1 rounded bg-surface-raised hover:bg-surface-bright border border-border-muted text-text-primary text-[11px] font-semibold flex items-center gap-1 transition-colors"
                       title="Append to the bottom of the note"
                     >
                       <span>Append</span>
@@ -558,7 +558,7 @@ export function EnvAiPanel({
                     {selectedText && (
                       <button
                         onClick={() => handleApplyClick('replace_selected')}
-                        className="px-2 py-1 rounded bg-surface-raised hover:bg-surface-bright border border-border-subtle text-text-primary text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                        className="px-2 py-1 rounded bg-surface-raised hover:bg-surface-bright border border-border-muted text-text-primary text-[11px] font-semibold flex items-center gap-1 transition-colors"
                         title="Replace selected text in editor"
                       >
                         <span>Replace Sel</span>
@@ -567,7 +567,7 @@ export function EnvAiPanel({
 
                     <button
                       onClick={() => handleApplyClick('replace_note')}
-                      className="px-2 py-1 rounded bg-status-danger/10 hover:bg-status-danger/20 border border-status-danger/30 text-status-danger text-[11px] font-semibold flex items-center gap-1 transition-colors"
+                      className="px-2 py-1 rounded bg-destructive/15 hover:bg-destructive/25 border border-destructive/30 text-destructive text-[11px] font-semibold flex items-center gap-1 transition-colors"
                       title="Replace the entire note with this content"
                     >
                       <span>Replace Note</span>
@@ -679,7 +679,7 @@ export function EnvAiPanel({
             <button
               onClick={() => handleGenerate()}
               disabled={loading || !configStatus?.isConfigured}
-              className="p-2 rounded-lg bg-primary text-black hover:bg-accent-emerald-bright transition-colors disabled:opacity-50 flex items-center justify-center"
+              className="p-2 rounded-lg bg-primary text-surface-canvas hover:opacity-90 transition-colors disabled:opacity-50 flex items-center justify-center shadow-sm"
               title="Generate"
             >
               <Send className="w-4 h-4" />
@@ -691,7 +691,7 @@ export function EnvAiPanel({
       {/* Confirmation Modal for Replace Note */}
       {applyModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-surface-panel border border-border-subtle rounded-lg max-w-sm w-full p-5 space-y-4 shadow-2xl">
+          <div className="bg-surface-panel border border-border-muted rounded-lg max-w-sm w-full p-5 space-y-4 shadow-2xl">
             <div className="flex items-center gap-2.5 text-status-warning">
               <AlertTriangle className="w-5 h-5 shrink-0" />
               <h3 className="text-sm font-semibold text-text-primary">Confirm Replace Note</h3>
@@ -703,13 +703,13 @@ export function EnvAiPanel({
             <div className="flex items-center justify-end gap-2 pt-2">
               <button
                 onClick={() => setApplyModalOpen(false)}
-                className="px-3 py-1.5 rounded bg-surface hover:bg-surface-raised border border-border-subtle text-text-primary text-xs"
+                className="px-3 py-1.5 rounded bg-surface hover:bg-surface-raised border border-border-muted text-text-primary text-xs"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmReplaceNote}
-                className="px-3 py-1.5 rounded bg-status-danger text-white hover:bg-red-600 text-xs font-semibold"
+                className="btn-destructive px-3 py-1.5 rounded text-xs font-semibold shadow-sm"
               >
                 Confirm Replace Note
               </button>

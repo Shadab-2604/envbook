@@ -107,9 +107,9 @@ export function CodeBlockView({ node, updateAttributes, extension }: any) {
   };
 
   return (
-    <NodeViewWrapper className="code-block-wrapper my-3 rounded-lg border border-border-muted bg-[#0c0d0e] shadow-sm overflow-hidden select-text">
+    <NodeViewWrapper className="code-block-wrapper my-3 rounded-lg border border-border-subtle bg-surface-panel shadow-xs overflow-hidden select-text">
       {/* Code Block Toolbar (Notion-Style) */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-subtle bg-surface-panel/90 text-xs select-none">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border-subtle bg-surface-panel text-xs select-none">
         {/* Left: Clickable Language Selector with Searchable Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button
@@ -118,7 +118,7 @@ export function CodeBlockView({ node, updateAttributes, extension }: any) {
             className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-surface-raised border border-transparent hover:border-border-subtle text-text-secondary hover:text-text-primary font-mono text-[11px] transition-colors"
             title="Select programming language"
           >
-            <Terminal className="w-3.5 h-3.5 text-accent-emerald" />
+            <Terminal className="w-3.5 h-3.5 text-primary" />
             <span className="font-semibold text-text-primary">{currentLang.label}</span>
             <ChevronDown className="w-3 h-3 text-text-muted" />
           </button>
@@ -126,11 +126,11 @@ export function CodeBlockView({ node, updateAttributes, extension }: any) {
           {/* Searchable Dropdown Menu inside Toolbar */}
           {dropdownOpen && (
             <div
-              className="absolute left-0 top-full mt-1 w-52 max-h-64 bg-surface-raised border border-border-muted rounded-md shadow-2xl z-50 flex flex-col overflow-hidden text-xs font-sans"
+              className="absolute left-0 top-full mt-1 w-52 max-h-64 bg-surface-panel border border-border-muted rounded-md shadow-xl z-50 flex flex-col overflow-hidden text-xs font-sans"
               onKeyDown={handleKeyDown}
             >
               {/* Search input */}
-              <div className="p-2 border-b border-border-subtle bg-surface-panel/80 flex items-center gap-1.5">
+              <div className="p-2 border-b border-border-subtle bg-surface-panel flex items-center gap-1.5">
                 <Search className="w-3.5 h-3.5 text-text-muted shrink-0" />
                 <input
                   ref={searchInputRef}
@@ -164,13 +164,13 @@ export function CodeBlockView({ node, updateAttributes, extension }: any) {
                         onMouseEnter={() => setSelectedIndex(idx)}
                         className={`w-full flex items-center justify-between px-3 py-1.5 text-left text-[11px] transition-colors ${
                           isSelected
-                            ? 'bg-surface-panel text-accent-emerald'
+                            ? 'bg-surface-raised text-primary font-medium'
                             : 'text-text-secondary hover:text-text-primary'
                         }`}
                       >
                         <span className="font-mono">{lang.label}</span>
                         {isCurrent && (
-                          <Check className="w-3.5 h-3.5 text-accent-emerald shrink-0" />
+                          <Check className="w-3.5 h-3.5 text-primary shrink-0" />
                         )}
                       </button>
                     );
@@ -194,8 +194,8 @@ export function CodeBlockView({ node, updateAttributes, extension }: any) {
           >
             {copied ? (
               <>
-                <Check className="w-3.5 h-3.5 text-accent-emerald" />
-                <span className="text-accent-emerald font-semibold">Copied!</span>
+                <Check className="w-3.5 h-3.5 text-primary" />
+                <span className="text-primary font-semibold">Copied!</span>
               </>
             ) : (
               <>
@@ -208,7 +208,7 @@ export function CodeBlockView({ node, updateAttributes, extension }: any) {
       </div>
 
       {/* Editable Code Content */}
-      <pre className="p-4 text-xs font-mono text-text-primary leading-relaxed overflow-x-auto focus:outline-none">
+      <pre className="p-4 text-xs font-mono text-text-primary bg-surface-canvas/40 leading-relaxed overflow-x-auto focus:outline-none">
         <NodeViewContent as={'code' as any} className={`language-${currentLang.id}`} />
       </pre>
     </NodeViewWrapper>

@@ -48,8 +48,8 @@ export default function VaultSetupPage() {
   const calculateEntropy = (text: string) => {
     if (!text) return { label: 'EMPTY (0 BITS)', color: 'text-text-muted', percent: 0 };
     if (text.length < 10) return { label: 'WEAK (32 BITS)', color: 'text-status-danger', percent: 25 };
-    if (text.length < 16) return { label: 'FAIR (64 BITS)', color: 'text-status-warning', percent: 60 };
-    return { label: 'STRONG (128 BITS)', color: 'text-accent-emerald', percent: 100 };
+    if (text.length < 16) return { label: 'FAIR (64 BITS)', color: 'text-text-secondary', percent: 60 };
+    return { label: 'STRONG (128 BITS)', color: 'text-primary font-bold', percent: 100 };
   };
 
   const entropy = calculateEntropy(passphrase);
@@ -100,7 +100,7 @@ export default function VaultSetupPage() {
       <header className="w-full max-w-4xl flex justify-between items-center px-4 py-2 border-b border-border-subtle bg-surface-subtle/80 backdrop-blur-md rounded">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-accent-emerald animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-primary" />
             <span className="font-mono text-[11px] text-text-muted">HOST: 127.0.0.1</span>
           </div>
           <span className="text-border-muted">|</span>
@@ -108,8 +108,8 @@ export default function VaultSetupPage() {
         </div>
 
         <div className="flex items-center gap-1.5 bg-surface-panel px-2.5 py-1 rounded border border-border-subtle">
-          <Shield className="w-3.5 h-3.5 text-accent-emerald" />
-          <span className="font-mono text-[11px] text-accent-emerald font-semibold">
+          <Shield className="w-3.5 h-3.5 text-primary" />
+          <span className="font-mono text-[11px] text-primary font-semibold">
             Zero-Knowledge Vault
           </span>
         </div>
@@ -117,19 +117,19 @@ export default function VaultSetupPage() {
         <div className="hidden sm:flex items-center gap-1.5 font-mono text-[11px] text-text-muted">
           <span>AES-256-GCM</span>
           <span className="text-border-muted">/</span>
-          <span className="text-accent-emerald font-semibold">v1.0</span>
+          <span className="text-primary font-semibold">v1.0</span>
         </div>
       </header>
 
       {/* Main Authentication Canvas */}
       <main className="w-full max-w-md my-auto">
         <div className="bg-surface-subtle border border-border-subtle rounded-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-accent-emerald to-transparent opacity-80" />
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-border-muted opacity-80" />
 
           {/* Header */}
           <div className="flex flex-col items-center text-center mb-6">
             <div className="w-12 h-12 rounded bg-surface-panel border border-border-muted flex items-center justify-center mb-2 shadow-inner">
-              <Lock className="w-6 h-6 text-accent-emerald" />
+              <Lock className="w-6 h-6 text-primary" />
             </div>
             <h1 className="text-xl font-bold text-text-primary tracking-tight">Initialize Master Key — EnvBook</h1>
             <p className="font-mono text-xs text-text-muted mt-1">
@@ -147,7 +147,7 @@ export default function VaultSetupPage() {
               <span>Unlock Vault</span>
             </Link>
             <div className="flex-1 py-1 text-center font-sans text-xs rounded font-semibold bg-surface-raised text-text-primary border border-border-muted shadow-sm flex items-center justify-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-accent-emerald" />
+              <Shield className="w-3.5 h-3.5 text-primary" />
               <span>Initialize New Vault</span>
             </div>
           </div>
@@ -180,10 +180,10 @@ export default function VaultSetupPage() {
                     {entropy.label}
                   </span>
                 </div>
-                <div className="w-full bg-surface-raised h-1 rounded-full overflow-hidden flex gap-1">
+                <div className="w-full bg-surface-raised h-1.5 rounded-full overflow-hidden flex gap-1">
                   <div
                     className={`h-full transition-all duration-300 ${
-                      entropy.percent > 0 ? 'bg-accent-emerald' : 'bg-transparent'
+                      entropy.percent > 0 ? 'bg-primary' : 'bg-transparent'
                     }`}
                     style={{ width: `${entropy.percent}%` }}
                   />
@@ -202,8 +202,8 @@ export default function VaultSetupPage() {
               />
 
               {/* Zero Knowledge Critical Notice */}
-              <div className="p-3 rounded bg-surface-panel border-l-2 border-status-warning bg-opacity-70 flex items-start gap-2 text-xs">
-                <AlertTriangle className="w-4 h-4 text-status-warning shrink-0 mt-0.5" />
+              <div className="p-3 rounded bg-surface-panel border-l-2 border-border-muted flex items-start gap-2 text-xs">
+                <AlertTriangle className="w-4 h-4 text-text-secondary shrink-0 mt-0.5" />
                 <p className="text-text-secondary leading-snug">
                   <strong className="text-text-primary">Zero-knowledge architecture:</strong> If you
                   lose this passphrase, your encrypted vault cannot be recovered by anyone. There is
@@ -215,7 +215,7 @@ export default function VaultSetupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-accent-emerald hover:bg-accent-emerald-bright text-surface-canvas font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 btn-security-glow transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5" />
                 <span>{loading ? 'Deriving Argon2id Key...' : 'Create Encrypted Vault'}</span>
@@ -224,15 +224,15 @@ export default function VaultSetupPage() {
           ) : (
             /* Recovery Key Step */
             <div className="flex flex-col gap-4">
-              <div className="p-3 rounded bg-accent-emerald/10 border border-accent-emerald/30 text-accent-emerald-bright text-xs flex items-start gap-2">
-                <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5" />
+              <div className="p-3 rounded bg-surface-panel border border-border-subtle text-text-primary text-xs flex items-start gap-2">
+                <ShieldCheck className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                 <span>Vault initialized! Save your high-entropy emergency recovery key below.</span>
               </div>
 
               <div className="flex flex-col gap-1.5">
                 <label className="font-mono text-xs text-text-muted">Emergency Recovery Key</label>
                 <div className="flex items-center gap-2 bg-surface-panel border border-border-muted p-3 rounded font-mono text-sm text-text-primary tracking-wider justify-between">
-                  <span className="font-bold text-accent-emerald">{recoveryKey}</span>
+                  <span className="font-bold text-text-primary">{recoveryKey}</span>
                   <button
                     type="button"
                     onClick={handleCopyRecovery}
@@ -240,7 +240,7 @@ export default function VaultSetupPage() {
                     title="Copy Recovery Key"
                   >
                     {copiedRecovery ? (
-                      <Check className="w-4 h-4 text-accent-emerald" />
+                      <Check className="w-4 h-4 text-primary" />
                     ) : (
                       <Copy className="w-4 h-4" />
                     )}
@@ -265,7 +265,7 @@ export default function VaultSetupPage() {
                 type="button"
                 onClick={handleFinish}
                 disabled={!confirmedSaved}
-                className="w-full bg-accent-emerald hover:bg-accent-emerald-bright text-surface-canvas font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 btn-security-glow transition-all disabled:opacity-40 cursor-pointer"
+                className="w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-40 cursor-pointer"
               >
                 <span>Enter EnvBook Workspace</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -280,7 +280,7 @@ export default function VaultSetupPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="bg-surface-subtle border border-border-subtle rounded p-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center shrink-0">
-              <CloudOff className="w-4 h-4 text-accent-emerald" />
+              <CloudOff className="w-4 h-4 text-secondary" />
             </div>
             <div>
               <div className="text-xs font-semibold text-text-primary">Zero Cloud Exposure</div>
@@ -290,7 +290,7 @@ export default function VaultSetupPage() {
 
           <div className="bg-surface-subtle border border-border-subtle rounded p-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center shrink-0">
-              <Memory className="w-4 h-4 text-accent-emerald" />
+              <Memory className="w-4 h-4 text-secondary" />
             </div>
             <div>
               <div className="text-xs font-semibold text-text-primary">Argon2id Hardened</div>
@@ -300,7 +300,7 @@ export default function VaultSetupPage() {
 
           <div className="bg-surface-subtle border border-border-subtle rounded p-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-surface-panel border border-border-muted flex items-center justify-center shrink-0">
-              <Database className="w-4 h-4 text-accent-emerald" />
+              <Database className="w-4 h-4 text-secondary" />
             </div>
             <div>
               <div className="text-xs font-semibold text-text-primary">AES-256-GCM Cipher</div>
