@@ -540,11 +540,11 @@ export function EnvAiPanel({
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => handleApplyClick('insert')}
-                      className="px-2 py-1 rounded bg-primary text-surface-canvas hover:opacity-90 text-[11px] font-semibold flex items-center gap-1 transition-colors shadow-sm"
+                      className="px-2 py-1 rounded bg-primary text-primary-fg hover:opacity-90 text-[11px] font-semibold flex items-center gap-1 transition-colors shadow-sm"
                       title="Insert at current editor cursor"
                     >
-                      <ArrowDownToLine className="w-3 h-3" />
-                      <span>Insert</span>
+                      <ArrowDownToLine className="w-3 h-3 text-primary-fg" />
+                      <span className="text-primary-fg">Insert</span>
                     </button>
 
                     <button
@@ -679,10 +679,10 @@ export function EnvAiPanel({
             <button
               onClick={() => handleGenerate()}
               disabled={loading || !configStatus?.isConfigured}
-              className="p-2 rounded-lg bg-primary text-surface-canvas hover:opacity-90 transition-colors disabled:opacity-50 flex items-center justify-center shadow-sm"
+              className="p-2 rounded-lg bg-primary text-primary-fg hover:opacity-90 transition-colors disabled:opacity-50 flex items-center justify-center shadow-sm"
               title="Generate"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4 text-primary-fg" />
             </button>
           </div>
         </div>

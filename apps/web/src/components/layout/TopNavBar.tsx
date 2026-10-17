@@ -151,10 +151,10 @@ export function TopNavBar({
           <button
             type="button"
             onClick={onExport}
-            className="px-2.5 py-1 text-xs font-semibold bg-primary text-surface-canvas hover:opacity-90 rounded transition-all flex items-center gap-1 shadow-xs"
+            className="px-2.5 py-1 text-xs font-semibold bg-primary text-primary-fg hover:opacity-90 rounded transition-all flex items-center gap-1 shadow-xs"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export</span>
+            <Download className="w-3.5 h-3.5 text-primary-fg" />
+            <span className="text-primary-fg">Export</span>
           </button>
         )}
       </div>

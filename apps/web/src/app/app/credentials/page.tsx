@@ -282,10 +282,10 @@ export default function CredentialsPage() {
               resetForm();
               setIsAddModalOpen(true);
             }}
-            className="px-3 py-1.5 rounded bg-primary text-surface-canvas hover:opacity-90 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
+            className="px-3 py-1.5 rounded bg-primary text-primary-fg hover:opacity-90 text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
           >
-            <Plus className="w-4 h-4" />
-            <span>Add Secret</span>
+            <Plus className="w-4 h-4 text-primary-fg" />
+            <span className="text-primary-fg">Add Secret</span>
           </button>
         </div>
       </header>

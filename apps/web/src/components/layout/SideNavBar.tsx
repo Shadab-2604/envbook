@@ -619,10 +619,10 @@ export function SideNavBar({
                 <button
                   type="button"
                   onClick={() => handleOpenCreateModal('notes_page', null)}
-                  className="px-3 py-1.5 rounded bg-primary text-surface-canvas text-xs font-semibold hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-sm mt-1"
+                  className="px-3 py-1.5 rounded bg-primary text-primary-fg text-xs font-semibold hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-sm mt-1"
                 >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Create first page</span>
+                  <Plus className="w-3.5 h-3.5 text-primary-fg" />
+                  <span className="text-primary-fg">Create first page</span>
                 </button>
               </div>
             ) : (

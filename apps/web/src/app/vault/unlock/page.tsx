@@ -242,10 +242,10 @@ export default function VaultUnlockPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-1 w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+              className="mt-1 w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
             >
-              <Lock className="w-3.5 h-3.5" />
-              <span>{loading ? 'Unwrapping DEK...' : 'Unlock Vault'}</span>
+              <Lock className="w-3.5 h-3.5 text-primary-fg" />
+              <span className="text-primary-fg">{loading ? 'Unwrapping DEK...' : 'Unlock Vault'}</span>
             </button>
           </form>
 

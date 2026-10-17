@@ -395,7 +395,7 @@ export function CreateItemModal({
             <button
               type="submit"
               disabled={isSubmitting || !title.trim()}
-              className="px-4 py-1.5 text-xs font-medium text-surface-canvas bg-primary hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none rounded transition-opacity flex items-center gap-1.5 shadow-xs font-semibold"
+              className="px-4 py-1.5 text-xs font-medium text-primary-fg bg-primary hover:opacity-90 disabled:opacity-50 disabled:pointer-events-none rounded transition-opacity flex items-center gap-1.5 shadow-xs font-semibold"
             >
               {isSubmitting ? (
                 <>

@@ -165,10 +165,10 @@ export default function NotFound() {
           <button
             type="button"
             onClick={handleNavigateHome}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-primary text-surface-canvas hover:opacity-90 font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-sm"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-primary text-primary-fg hover:opacity-90 font-semibold text-xs flex items-center justify-center gap-2 transition-all shadow-sm"
           >
-            <Home className="w-4 h-4" />
-            <span>Back to Home</span>
+            <Home className="w-4 h-4 text-primary-fg" />
+            <span className="text-primary-fg">Back to Home</span>
           </button>
 
           <button

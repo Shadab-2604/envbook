@@ -197,10 +197,10 @@ export default function SignupPage() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full bg-primary hover:opacity-90 text-surface-canvas font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+              className="mt-2 w-full bg-primary hover:opacity-90 text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
             >
-              <Lock className="w-3.5 h-3.5" />
-              <span>{loading ? 'Creating Account...' : 'Sign Up for EnvBook'}</span>
+              <Lock className="w-3.5 h-3.5 text-primary-fg" />
+              <span className="text-primary-fg">{loading ? 'Creating Account...' : 'Sign Up for EnvBook'}</span>
             </button>
           </form>
 

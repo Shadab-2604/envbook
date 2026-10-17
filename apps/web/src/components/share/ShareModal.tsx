@@ -476,7 +476,7 @@ export function ShareModal({
                         type="button"
                         disabled={!selectedUser || inviting}
                         onClick={handleAddCollaborator}
-                        className="px-3 py-1.5 rounded bg-primary text-surface-canvas font-semibold hover:opacity-90 disabled:opacity-40 transition-colors shrink-0 shadow-sm"
+                        className="px-3 py-1.5 rounded bg-primary text-primary-fg font-semibold hover:opacity-90 disabled:opacity-40 transition-colors shrink-0 shadow-sm"
                       >
                         {inviting ? 'Inviting...' : 'Invite'}
                       </button>
@@ -615,7 +615,7 @@ export function ShareModal({
                         type="button"
                         onClick={handlePublish}
                         disabled={publishing}
-                        className="px-3.5 py-1.5 rounded bg-primary text-surface-canvas font-semibold hover:opacity-90 transition-colors shadow-sm"
+                        className="px-3.5 py-1.5 rounded bg-primary text-primary-fg font-semibold hover:opacity-90 transition-colors shadow-sm"
                       >
                         {publishing ? 'Publishing...' : 'Publish to Web'}
                       </button>

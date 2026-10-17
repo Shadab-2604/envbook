@@ -986,7 +986,7 @@ export function BlockEditor({
               onMouseDown={(e) => handleHandleMouseDown(e, hoveredBlock.index)}
               className={`absolute left-0 w-5 h-5 -mt-0.5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing transition-all z-20 group select-none ${
                 selectedBlockIndices.has(hoveredBlock.index)
-                  ? 'bg-primary text-surface-canvas border border-primary'
+                  ? 'bg-primary text-primary-fg border border-primary'
                   : 'text-text-muted hover:text-text-primary hover:bg-surface-hover border border-transparent hover:border-border-subtle'
               }`}
             >

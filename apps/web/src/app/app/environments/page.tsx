@@ -465,11 +465,11 @@ export default function EnvironmentsPage() {
               setParseResult(null);
               setIsImportModalOpen(true);
             }}
-            className="px-3 py-1.5 rounded bg-primary text-surface-canvas hover:opacity-90 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
+            className="px-3 py-1.5 rounded bg-primary text-primary-fg hover:opacity-90 text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs"
             title="Import or paste .env file contents"
           >
-            <Upload className="w-3.5 h-3.5" />
-            <span>Import / Paste .env</span>
+            <Upload className="w-3.5 h-3.5 text-primary-fg" />
+            <span className="text-primary-fg">Import / Paste .env</span>
           </button>
 
           {/* Add Variable Button */}

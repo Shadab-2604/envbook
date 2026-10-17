@@ -361,3 +361,25 @@
   font-weight: 600;
   color: var(--text-primary);
 }
+
+@layer components {
+  /* Guarantee readable text contrast on all primary elements across themes */
+  button.bg-primary,
+  a.bg-primary,
+  .bg-primary {
+    color: var(--primary-fg);
+  }
+}
+
+@layer utilities {
+  .text-primary-fg {
+    color: var(--primary-fg) !important;
+  }
+  .bg-primary-fg {
+    background-color: var(--primary-fg) !important;
+  }
+  .border-primary-fg {
+    border-color: var(--primary-fg) !important;
+  }
+}
+

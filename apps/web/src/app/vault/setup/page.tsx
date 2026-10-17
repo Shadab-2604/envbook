@@ -215,10 +215,10 @@ export default function VaultSetupPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
               >
-                <Lock className="w-3.5 h-3.5" />
-                <span>{loading ? 'Deriving Argon2id Key...' : 'Create Encrypted Vault'}</span>
+                <Lock className="w-3.5 h-3.5 text-primary-fg" />
+                <span className="text-primary-fg">{loading ? 'Deriving Argon2id Key...' : 'Create Encrypted Vault'}</span>
               </button>
             </form>
           ) : (
@@ -265,10 +265,10 @@ export default function VaultSetupPage() {
                 type="button"
                 onClick={handleFinish}
                 disabled={!confirmedSaved}
-                className="w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-40 cursor-pointer"
+                className="w-full bg-primary hover:bg-primary-hover text-primary-fg font-semibold py-2 px-4 rounded text-xs flex items-center justify-center gap-2 transition-all disabled:opacity-40 cursor-pointer shadow-sm"
               >
-                <span>Enter EnvBook Workspace</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <span className="text-primary-fg">Enter EnvBook Workspace</span>
+                <ArrowRight className="w-3.5 h-3.5 text-primary-fg" />
               </button>
             </div>
           )}
