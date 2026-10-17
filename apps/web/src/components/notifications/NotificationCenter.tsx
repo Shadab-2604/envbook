@@ -156,7 +156,7 @@ export function NotificationCenter() {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-surface border border-border-muted rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col font-sans animate-fade-in text-xs">
+        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-surface-elevated border border-border-muted rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col font-sans animate-fade-in text-xs">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle bg-surface-panel/80">
             <div className="flex items-center gap-2">

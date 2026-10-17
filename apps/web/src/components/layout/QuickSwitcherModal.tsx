@@ -217,7 +217,7 @@ export function QuickSwitcherModal({ isOpen, onClose }: QuickSwitcherProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-100">
       <div
-        className="w-full max-w-xl bg-surface-panel border border-border-muted rounded-xl shadow-[0_16px_36px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col"
+        className="w-full max-w-xl bg-surface-elevated border border-border-muted rounded-xl shadow-[0_16px_36px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}

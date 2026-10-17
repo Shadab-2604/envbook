@@ -267,7 +267,7 @@ export function BlockEditor({
       CustomCodeBlock,
       ChildPageNode,
       Placeholder.configure({
-        placeholder: "Type '/' for commands or start writing in Markdown...",
+        placeholder: "Write something, or press '/' for commands...",
       }),
       TaskList,
       TaskItem.configure({ nested: true }),
@@ -279,7 +279,7 @@ export function BlockEditor({
     content: markdownToHtml(content),
     editorProps: {
       attributes: {
-        class: 'focus:outline-none min-h-[480px] pl-10 pr-6 py-6 text-sm text-text-primary leading-relaxed',
+        class: 'focus:outline-none min-h-[140px] pl-6 sm:pl-7 pr-1 py-1 text-sm sm:text-base text-text-primary leading-relaxed',
       },
       handleKeyDown: (_view, event) => {
         // Intercept block selection keys (Delete, Backspace, Esc, Shift+Arrow)
@@ -864,15 +864,15 @@ export function BlockEditor({
   }, [editor]);
 
   return (
-    <div ref={editorContainerRef} className="relative w-full max-w-[860px] mx-auto flex flex-col gap-3">
+    <div ref={editorContainerRef} className="relative w-full max-w-[860px] mx-auto flex flex-col gap-2">
       {/* Floating Slash Command Picker anchored near Caret */}
       {slashMenuOpen && (
         <div
           ref={slashMenuRef}
           style={{ top: `${slashPosition.top}px`, left: `${slashPosition.left}px` }}
-          className="absolute w-80 bg-surface-panel border border-border-muted rounded-lg shadow-[0_12px_32px_rgba(0,0,0,0.85)] z-50 overflow-hidden flex flex-col animate-in fade-in duration-100"
+          className="absolute w-80 bg-surface-elevated border border-border-muted rounded-lg shadow-2xl z-50 overflow-hidden flex flex-col animate-in fade-in duration-100"
         >
-          <div className="px-3 py-2 border-b border-border-subtle bg-surface-subtle flex items-center justify-between">
+          <div className="px-3 py-2 border-b border-border-subtle bg-surface-panel flex items-center justify-between">
             <span className="font-mono text-text-muted text-[10px] uppercase tracking-wider font-semibold">
               Insert Block
             </span>
@@ -900,7 +900,7 @@ export function BlockEditor({
                   className={`flex items-center justify-between px-2.5 py-1.5 rounded cursor-pointer transition-colors ${
                     isSelected
                       ? 'bg-surface-raised border-l-2 border-primary text-text-primary font-medium'
-                      : 'text-text-secondary hover:bg-surface-raised'
+                      : 'text-text-secondary hover:bg-surface-hover'
                   }`}
                 >
                   <div className="flex items-center gap-2 truncate">
@@ -916,7 +916,7 @@ export function BlockEditor({
                       </span>
                     </div>
                   </div>
-                  <kbd className="font-mono text-[10px] bg-surface-subtle border border-border-muted px-1 rounded text-text-muted shrink-0 ml-2">
+                  <kbd className="font-mono text-[10px] bg-surface-panel border border-border-muted px-1 rounded text-text-muted shrink-0 ml-2">
                     ↵
                   </kbd>
                 </div>
@@ -930,7 +930,7 @@ export function BlockEditor({
             )}
           </div>
 
-          <div className="px-3 py-1.5 border-t border-border-subtle bg-surface-subtle flex items-center justify-between font-mono text-text-muted text-[10px]">
+          <div className="px-3 py-1.5 border-t border-border-subtle bg-surface-panel flex items-center justify-between font-mono text-text-muted text-[10px]">
             <span>
               Navigate <strong className="text-text-primary">↑↓</strong>
             </span>
@@ -956,17 +956,25 @@ export function BlockEditor({
             onChange={handleRawChange}
             placeholder="Type raw Markdown..."
             rows={24}
-            className="w-full p-4 bg-surface-canvas border border-border-muted rounded-lg font-mono text-xs text-text-primary placeholder:text-text-muted/60 focus:border-border-focus focus:ring-1 focus:ring-border-focus leading-relaxed custom-scroll"
+            className="w-full p-4 bg-surface-panel border border-border-muted rounded-lg font-mono text-xs text-text-primary placeholder:text-text-muted/60 focus:border-border-focus focus:ring-1 focus:ring-border-focus leading-relaxed custom-scroll"
           />
         </div>
       ) : (
-        /* Genuine Inline WYSIWYG Block Editor Canvas with Notion-Style Block Handle & Selection */
+        /* Genuine Inline WYSIWYG Block Editor Canvas directly on page canvas */
         <article
           ref={articleRef}
           onMouseMove={handleArticleMouseMove}
           onMouseLeave={handleArticleMouseLeave}
           onMouseDown={handleArticleMouseDown}
-          className="relative w-full bg-surface-subtle border border-border-muted rounded-xl shadow-sm min-h-[500px] overflow-hidden focus-within:border-border-focus transition-colors"
+          onClick={(e) => {
+            const target = e.target as HTMLElement;
+            if (!target.closest('.ProseMirror') && !target.closest('.slash-command-picker')) {
+              if (editor && !editor.isFocused) {
+                editor.commands.focus('end');
+              }
+            }
+          }}
+          className="relative w-full cursor-text"
         >
           {/* Notion-style floating block handle */}
           {hoveredBlock !== null && (
@@ -976,10 +984,10 @@ export function BlockEditor({
               title="Click to select block (Shift-click to extend, Drag to select)"
               style={{ top: `${hoveredBlock.top}px` }}
               onMouseDown={(e) => handleHandleMouseDown(e, hoveredBlock.index)}
-              className={`absolute left-2.5 w-6 h-6 -mt-0.5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing transition-all z-20 group select-none ${
+              className={`absolute left-0 w-5 h-5 -mt-0.5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing transition-all z-20 group select-none ${
                 selectedBlockIndices.has(hoveredBlock.index)
                   ? 'bg-primary text-surface-canvas border border-primary'
-                  : 'text-text-muted hover:text-text-primary hover:bg-surface-panel/80 border border-transparent hover:border-border-muted'
+                  : 'text-text-muted hover:text-text-primary hover:bg-surface-hover border border-transparent hover:border-border-subtle'
               }`}
             >
               <GripVertical className="w-3.5 h-3.5 group-hover:text-text-primary transition-colors" />
@@ -991,7 +999,7 @@ export function BlockEditor({
 
           {/* Floating Action Pill when blocks are selected */}
           {selectedBlockIndices.size > 0 && (
-            <div className="sticky bottom-6 mx-auto w-fit px-4 py-2 bg-surface-panel/95 backdrop-blur border border-border-muted rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.3)] flex items-center gap-3 text-xs z-30 animate-in fade-in slide-in-from-bottom-2 duration-150">
+            <div className="sticky bottom-6 mx-auto w-fit px-4 py-2 bg-surface-elevated/95 backdrop-blur border border-border-muted rounded-full shadow-2xl flex items-center gap-3 text-xs z-30 animate-in fade-in slide-in-from-bottom-2 duration-150">
               <div className="flex items-center gap-1.5 text-text-primary font-medium">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span>

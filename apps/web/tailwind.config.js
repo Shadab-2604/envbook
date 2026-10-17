@@ -18,6 +18,8 @@ module.exports = {
         },
         // Semantic design tokens powered by CSS variables
         'surface-canvas': 'var(--bg-canvas)',
+        'surface-sidebar': 'var(--bg-sidebar)',
+        'surface-toolbar': 'var(--bg-toolbar)',
         'surface-subtle': 'var(--bg-surface-subtle)',
         'surface-panel': 'var(--bg-surface-panel)',
         'surface-raised': 'var(--bg-surface-raised)',

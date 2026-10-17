@@ -7,22 +7,30 @@
   [data-theme="light"],
   .light {
     color-scheme: light;
+    /* Primary light-theme background (#F7F7F7) */
     --bg-canvas: #F7F7F7;
+
+    /* Secondary surfaces, sidebar, and cards (#EEEEEE) */
+    --bg-sidebar: #EEEEEE;
+    --bg-toolbar: #FFFFFF;
     --bg-surface: #EEEEEE;
-    --bg-surface-elevated: #FFFFFF;
     --bg-surface-panel: #EEEEEE;
-    --bg-surface-subtle: #F7F7F7;
-    --bg-surface-raised: #E5E5E5;
+    --bg-surface-subtle: #EEEEEE;
+    --bg-surface-elevated: #FFFFFF;
+    --bg-surface-raised: #E2E2E2;
     --bg-surface-hover: #E0E0E0;
     --bg-surface-active: #D6D6D6;
 
+    /* Primary text in light mode (#393E46) */
     --text-primary: #393E46;
     --text-secondary: #4A515D;
+    /* Muted text (#929AAB) */
     --text-muted: #737B8C;
 
+    /* Borders (#929AAB) */
     --border: #929AAB;
-    --border-subtle: rgba(146, 154, 171, 0.35);
-    --border-muted: rgba(146, 154, 171, 0.6);
+    --border-subtle: rgba(146, 154, 171, 0.28);
+    --border-muted: rgba(146, 154, 171, 0.55);
     --border-focus: #393E46;
 
     --primary: #393E46;
@@ -30,39 +38,48 @@
     --primary-fg: #F7F7F7;
     --primary-glow: rgba(57, 62, 70, 0.15);
 
+    /* Destructive reserved strictly for delete actions */
     --destructive: #DC2626;
     --destructive-hover: #B91C1C;
-    --destructive-bg: rgba(220, 38, 38, 0.1);
+    --destructive-bg: rgba(220, 38, 38, 0.08);
     --destructive-border: rgba(220, 38, 38, 0.35);
     --destructive-fg: #FFFFFF;
 
     --code-bg: #EAEAEA;
-    --code-border: #929AAB;
+    --code-border: rgba(146, 154, 171, 0.35);
     --code-text: #393E46;
 
-    --selection-bg: rgba(57, 62, 70, 0.15);
+    --selection-bg: rgba(57, 62, 70, 0.12);
     --selection-fg: #393E46;
   }
 
   .dark,
   [data-theme="dark"] {
     color-scheme: dark;
+    /* Primary dark-theme background (#393E46) */
     --bg-canvas: #393E46;
+
+    /* Distinct dark surfaces derived from palette tonal variations */
+    --bg-sidebar: #2B2F36;
+    --bg-toolbar: #31363E;
     --bg-surface: #2E333A;
-    --bg-surface-elevated: #282C32;
     --bg-surface-panel: #2E333A;
-    --bg-surface-subtle: #343940;
-    --bg-surface-raised: #25282E;
+    --bg-surface-subtle: #30343C;
+    --bg-surface-elevated: #26292F;
+    --bg-surface-raised: #363C44;
     --bg-surface-hover: rgba(247, 247, 247, 0.08);
     --bg-surface-active: rgba(247, 247, 247, 0.14);
 
+    /* Readable foreground in dark mode (#F7F7F7 & #EEEEEE) */
     --text-primary: #F7F7F7;
     --text-secondary: #EEEEEE;
+    /* Muted text (#929AAB) */
     --text-muted: #929AAB;
 
+    /* Borders (#929AAB) */
     --border: #929AAB;
-    --border-subtle: rgba(146, 154, 171, 0.3);
-    --border-muted: rgba(146, 154, 171, 0.5);
+    --border-subtle: rgba(146, 154, 171, 0.22);
+    --border-muted: rgba(146, 154, 171, 0.45);
     --border-focus: #EEEEEE;
 
     --primary: #EEEEEE;
@@ -70,17 +87,18 @@
     --primary-fg: #393E46;
     --primary-glow: rgba(238, 238, 238, 0.15);
 
+    /* Destructive reserved strictly for delete actions */
     --destructive: #EF4444;
     --destructive-hover: #DC2626;
     --destructive-bg: rgba(239, 68, 68, 0.15);
     --destructive-border: rgba(239, 68, 68, 0.4);
     --destructive-fg: #FFFFFF;
 
-    --code-bg: #2B2F36;
-    --code-border: rgba(146, 154, 171, 0.4);
+    --code-bg: #282C32;
+    --code-border: rgba(146, 154, 171, 0.3);
     --code-text: #F7F7F7;
 
-    --selection-bg: rgba(238, 238, 238, 0.22);
+    --selection-bg: rgba(238, 238, 238, 0.2);
     --selection-fg: #F7F7F7;
   }
 
@@ -176,10 +194,10 @@
 /* Notion-Style WYSIWYG Block Editor Canvas */
 .ProseMirror {
   outline: none;
-  min-height: 480px;
+  min-height: 120px;
   color: var(--text-primary);
   font-family: inherit;
-  line-height: 1.7;
+  line-height: 1.75;
 }
 
 /* Notion-Style Block Selection & Highlighting */
@@ -199,6 +217,7 @@
 
 .ProseMirror p.is-editor-empty:first-child::before {
   color: var(--text-muted);
+  opacity: 0.55;
   content: attr(data-placeholder);
   float: left;
   height: 0;

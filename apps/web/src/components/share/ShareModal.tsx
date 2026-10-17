@@ -263,7 +263,7 @@ export function ShareModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-xl bg-surface border border-border-muted rounded-xl shadow-2xl overflow-hidden flex flex-col font-sans">
+      <div className="w-full max-w-xl bg-surface-elevated border border-border-muted rounded-xl shadow-2xl overflow-hidden flex flex-col font-sans">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle bg-surface-panel/80">
           <div className="flex items-center gap-2.5">

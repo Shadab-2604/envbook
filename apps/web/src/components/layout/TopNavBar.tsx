@@ -35,7 +35,7 @@ export function TopNavBar({
   const { lock } = useVault();
 
   return (
-    <header className="flex justify-between items-center h-12 px-4 w-full bg-surface border-b border-border-subtle shrink-0 z-20 select-none">
+    <header className="flex justify-between items-center h-12 px-4 w-full bg-surface-toolbar border-b border-border-subtle shrink-0 z-20 select-none">
       {/* Mobile Drawer Trigger & Breadcrumbs */}
       <div className="flex items-center gap-2 min-w-0">
         <button

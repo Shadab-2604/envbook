@@ -294,12 +294,12 @@ export function SideNavBar({
     return (
       <div key={item.entry.entryId} className="flex flex-col">
         <div
-          className={`group flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium transition-colors ${
+          className={`group flex items-center justify-between px-2 py-1.5 rounded-md text-xs transition-all ${
             isActive
-              ? 'bg-surface-panel text-primary border border-border-subtle font-semibold'
-              : 'text-text-secondary hover:bg-surface-panel hover:text-text-primary'
+              ? 'bg-surface-elevated text-text-primary border border-border-subtle font-semibold shadow-xs'
+              : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary font-normal'
           }`}
-          style={{ paddingLeft: `${Math.max(8, depth * 14 + 8)}px` }}
+          style={{ paddingLeft: `${Math.max(8, depth * 12 + 8)}px` }}
         >
             {/* Main click target */}
             <div className="flex items-center gap-1.5 min-w-0 flex-1">
@@ -307,7 +307,7 @@ export function SideNavBar({
                 <button
                   type="button"
                   onClick={(e) => toggleContainer(item.entry.entryId, e)}
-                  className="p-0.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel shrink-0 transition-transform"
+                  className="p-0.5 rounded text-text-muted hover:text-text-primary hover:bg-surface-hover shrink-0 transition-transform"
                   aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
                 >
                   {isExpanded ? (
@@ -349,7 +349,8 @@ export function SideNavBar({
                 onClick={() => {
                   if (onCloseMobile) onCloseMobile();
                 }}
-                className="truncate flex-1"
+                className="truncate flex-1 min-w-0"
+                title={item.title}
               >
                 {item.title}
               </Link>
@@ -362,7 +363,7 @@ export function SideNavBar({
                   type="button"
                   title="Add inside this section"
                   onClick={(e) => handleOpenCreateModal('notes_page', item.entry.entryId, e)}
-                  className="p-1 rounded text-text-muted hover:text-primary hover:bg-surface-panel transition-colors"
+                  className="p-1 rounded text-text-muted hover:text-primary hover:bg-surface-hover transition-colors"
                   aria-label="Add child item"
                 >
                   <Plus className="w-3 h-3" />
@@ -376,7 +377,7 @@ export function SideNavBar({
                     e.stopPropagation();
                     setActiveMenuId(activeMenuId === item.entry.entryId ? null : item.entry.entryId);
                   }}
-                  className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel transition-colors"
+                  className="p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-hover transition-colors"
                   aria-label="Item options"
                 >
                   <MoreVertical className="w-3 h-3" />
@@ -493,7 +494,7 @@ export function SideNavBar({
       />
 
       <aside
-        className={`fixed md:static inset-y-0 left-0 w-64 h-screen flex flex-col justify-between p-3 bg-surface-subtle border-r border-border-subtle shrink-0 select-none z-40 transition-transform duration-200 ${
+        className={`fixed md:static inset-y-0 left-0 w-64 h-screen flex flex-col justify-between p-3 bg-surface-sidebar border-r border-border-subtle shrink-0 select-none z-40 transition-transform duration-200 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
@@ -501,7 +502,7 @@ export function SideNavBar({
           {/* Header & Vault Status & Mobile Close */}
           <div className="flex items-center justify-between px-1 py-1">
             <Link href="/app" className="flex items-center gap-2 group">
-              <div className="w-7 h-7 rounded bg-surface-panel flex items-center justify-center border border-border-subtle text-primary group-hover:border-primary transition-colors">
+              <div className="w-7 h-7 rounded bg-surface-elevated flex items-center justify-center border border-border-subtle text-primary group-hover:border-primary transition-colors shadow-xs">
                 <Terminal className="w-4 h-4 text-primary" />
               </div>
               <div className="flex flex-col">
@@ -523,7 +524,7 @@ export function SideNavBar({
                 <button
                   type="button"
                   onClick={onCloseMobile}
-                  className="md:hidden p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-panel ml-1"
+                  className="md:hidden p-1 rounded text-text-muted hover:text-text-primary hover:bg-surface-hover ml-1"
                   aria-label="Close navigation drawer"
                 >
                   <X className="w-4 h-4" />
@@ -537,7 +538,7 @@ export function SideNavBar({
             <button
               type="button"
               onClick={onOpenQuickSwitcher}
-              className="flex items-center justify-between w-full px-2.5 py-1.5 bg-surface-panel border border-border-subtle rounded text-text-muted hover:border-border-muted hover:text-text-primary transition-colors text-xs"
+              className="flex items-center justify-between w-full px-2.5 py-1.5 bg-surface-elevated border border-border-subtle rounded-md text-text-muted hover:border-border-muted hover:text-text-primary hover:bg-surface-hover transition-colors text-xs shadow-xs"
             >
               <div className="flex items-center gap-1.5">
                 <Search className="w-3.5 h-3.5" />
@@ -556,10 +557,10 @@ export function SideNavBar({
               onClick={() => {
                 if (onCloseMobile) onCloseMobile();
               }}
-              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs transition-all ${
                 pathname === '/app'
-                  ? 'bg-surface-panel text-primary border border-border-subtle font-semibold'
-                  : 'text-text-secondary hover:bg-surface-panel hover:text-text-primary'
+                  ? 'bg-surface-elevated text-text-primary border border-border-subtle font-semibold shadow-xs'
+                  : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary font-normal'
               }`}
             >
               <Home className="w-4 h-4 text-primary" />
@@ -571,10 +572,10 @@ export function SideNavBar({
               onClick={() => {
                 if (onCloseMobile) onCloseMobile();
               }}
-              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs transition-all ${
                 pathname === '/app/entries'
-                  ? 'bg-surface-panel text-primary border border-border-subtle font-semibold'
-                  : 'text-text-secondary hover:bg-surface-panel hover:text-text-primary'
+                  ? 'bg-surface-elevated text-text-primary border border-border-subtle font-semibold shadow-xs'
+                  : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary font-normal'
               }`}
             >
               <FileText className="w-4 h-4 text-text-muted" />
@@ -642,10 +643,10 @@ export function SideNavBar({
                 onClick={() => {
                   if (onCloseMobile) onCloseMobile();
                 }}
-                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs transition-all ${
                   isActive
-                    ? 'bg-surface-panel text-primary font-semibold border border-border-subtle'
-                    : 'text-text-muted hover:bg-surface-panel hover:text-text-primary'
+                    ? 'bg-surface-elevated text-text-primary font-semibold border border-border-subtle shadow-xs'
+                    : 'text-text-muted hover:bg-surface-hover hover:text-text-primary font-normal'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
