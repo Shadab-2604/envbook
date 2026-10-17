@@ -7,12 +7,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Base 4-color palette tokens
+        // Base black and white palette tokens
         palette: {
-          lightBg: '#F7F7F7',
-          lightSurface: '#EEEEEE',
-          dark: '#393E46',
-          slate: '#929AAB',
+          lightBg: '#FFFFFF',
+          lightSurface: '#FFFFFF',
+          dark: '#000000',
+          slate: '#000000',
           red: '#DC2626',
           redDark: '#EF4444',
         },

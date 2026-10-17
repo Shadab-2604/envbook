@@ -7,36 +7,36 @@
   [data-theme="light"],
   .light {
     color-scheme: light;
-    /* Primary light-theme background (#F7F7F7) */
-    --bg-canvas: #F7F7F7;
+    /* Primary light-theme background: pure white */
+    --bg-canvas: #FFFFFF;
 
-    /* Secondary surfaces, sidebar, and cards (#EEEEEE) */
-    --bg-sidebar: #EEEEEE;
+    /* Secondary surfaces, sidebar, and cards: pure white */
+    --bg-sidebar: #FFFFFF;
     --bg-toolbar: #FFFFFF;
-    --bg-surface: #EEEEEE;
-    --bg-surface-panel: #EEEEEE;
-    --bg-surface-subtle: #EEEEEE;
+    --bg-surface: #FFFFFF;
+    --bg-surface-panel: #FFFFFF;
+    --bg-surface-subtle: #FFFFFF;
     --bg-surface-elevated: #FFFFFF;
-    --bg-surface-raised: #E2E2E2;
-    --bg-surface-hover: #E0E0E0;
-    --bg-surface-active: #D6D6D6;
+    --bg-surface-raised: #FFFFFF;
+    --bg-surface-hover: rgba(0, 0, 0, 0.05);
+    --bg-surface-active: rgba(0, 0, 0, 0.1);
 
-    /* Primary text in light mode (#393E46) */
-    --text-primary: #393E46;
-    --text-secondary: #4A515D;
-    /* Muted text (#929AAB) */
-    --text-muted: #737B8C;
+    /* Primary text in light mode: pure black */
+    --text-primary: #000000;
+    --text-secondary: #000000;
+    /* Muted text in light mode */
+    --text-muted: rgba(0, 0, 0, 0.6);
 
-    /* Borders (#929AAB) */
-    --border: #929AAB;
-    --border-subtle: rgba(146, 154, 171, 0.28);
-    --border-muted: rgba(146, 154, 171, 0.55);
-    --border-focus: #393E46;
+    /* Borders: clean crisp black */
+    --border: #000000;
+    --border-subtle: rgba(0, 0, 0, 0.15);
+    --border-muted: rgba(0, 0, 0, 0.35);
+    --border-focus: #000000;
 
-    --primary: #393E46;
-    --primary-hover: #2B2F36;
-    --primary-fg: #F7F7F7;
-    --primary-glow: rgba(57, 62, 70, 0.15);
+    --primary: #000000;
+    --primary-hover: #1A1A1A;
+    --primary-fg: #FFFFFF;
+    --primary-glow: rgba(0, 0, 0, 0.12);
 
     /* Destructive reserved strictly for delete actions */
     --destructive: #DC2626;
@@ -45,47 +45,47 @@
     --destructive-border: rgba(220, 38, 38, 0.35);
     --destructive-fg: #FFFFFF;
 
-    --code-bg: #EAEAEA;
-    --code-border: rgba(146, 154, 171, 0.35);
-    --code-text: #393E46;
+    --code-bg: #FFFFFF;
+    --code-border: rgba(0, 0, 0, 0.25);
+    --code-text: #000000;
 
-    --selection-bg: rgba(57, 62, 70, 0.12);
-    --selection-fg: #393E46;
+    --selection-bg: rgba(0, 0, 0, 0.12);
+    --selection-fg: #000000;
   }
 
   .dark,
   [data-theme="dark"] {
     color-scheme: dark;
-    /* Primary dark-theme background (#393E46) */
-    --bg-canvas: #393E46;
+    /* Primary dark-theme background: pure black */
+    --bg-canvas: #000000;
 
-    /* Distinct dark surfaces derived from palette tonal variations */
-    --bg-sidebar: #2B2F36;
-    --bg-toolbar: #31363E;
-    --bg-surface: #2E333A;
-    --bg-surface-panel: #2E333A;
-    --bg-surface-subtle: #30343C;
-    --bg-surface-elevated: #26292F;
-    --bg-surface-raised: #363C44;
-    --bg-surface-hover: rgba(247, 247, 247, 0.08);
-    --bg-surface-active: rgba(247, 247, 247, 0.14);
+    /* Secondary surfaces, sidebar, and cards: pure black */
+    --bg-sidebar: #000000;
+    --bg-toolbar: #000000;
+    --bg-surface: #000000;
+    --bg-surface-panel: #000000;
+    --bg-surface-subtle: #000000;
+    --bg-surface-elevated: #000000;
+    --bg-surface-raised: #000000;
+    --bg-surface-hover: rgba(255, 255, 255, 0.1);
+    --bg-surface-active: rgba(255, 255, 255, 0.18);
 
-    /* Readable foreground in dark mode (#F7F7F7 & #EEEEEE) */
-    --text-primary: #F7F7F7;
-    --text-secondary: #EEEEEE;
-    /* Muted text (#929AAB) */
-    --text-muted: #929AAB;
+    /* Readable foreground in dark mode: pure white */
+    --text-primary: #FFFFFF;
+    --text-secondary: #FFFFFF;
+    /* Muted text in dark mode */
+    --text-muted: rgba(255, 255, 255, 0.65);
 
-    /* Borders (#929AAB) */
-    --border: #929AAB;
-    --border-subtle: rgba(146, 154, 171, 0.22);
-    --border-muted: rgba(146, 154, 171, 0.45);
-    --border-focus: #EEEEEE;
+    /* Borders: clean crisp white */
+    --border: #FFFFFF;
+    --border-subtle: rgba(255, 255, 255, 0.2);
+    --border-muted: rgba(255, 255, 255, 0.45);
+    --border-focus: #FFFFFF;
 
-    --primary: #EEEEEE;
-    --primary-hover: #F7F7F7;
-    --primary-fg: #393E46;
-    --primary-glow: rgba(238, 238, 238, 0.15);
+    --primary: #FFFFFF;
+    --primary-hover: #F0F0F0;
+    --primary-fg: #000000;
+    --primary-glow: rgba(255, 255, 255, 0.15);
 
     /* Destructive reserved strictly for delete actions */
     --destructive: #EF4444;
@@ -94,12 +94,12 @@
     --destructive-border: rgba(239, 68, 68, 0.4);
     --destructive-fg: #FFFFFF;
 
-    --code-bg: #282C32;
-    --code-border: rgba(146, 154, 171, 0.3);
-    --code-text: #F7F7F7;
+    --code-bg: #000000;
+    --code-border: rgba(255, 255, 255, 0.3);
+    --code-text: #FFFFFF;
 
-    --selection-bg: rgba(238, 238, 238, 0.2);
-    --selection-fg: #F7F7F7;
+    --selection-bg: rgba(255, 255, 255, 0.2);
+    --selection-fg: #FFFFFF;
   }
 
   * {
@@ -122,7 +122,7 @@
 /* Subtle dot grid aligned with the 4-color palette */
 .dot-grid {
   background-color: var(--bg-canvas);
-  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-image: radial-gradient(var(--border-subtle) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
