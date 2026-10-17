@@ -54,7 +54,7 @@ export default function DashboardPage() {
 
         for (const entry of entries) {
           if (entry.type === 'credential') credCount++;
-          if (entry.type === 'environment') envCount++;
+          if (entry.type === 'environment' || entry.type === 'environment_page') envCount++;
           if (entry.type === 'idea') ideaCount++;
 
           try {

@@ -142,21 +142,23 @@ export function QuickSwitcherModal({ isOpen, onClose }: QuickSwitcherProps) {
             const icon =
               entry.type === 'credential'
                 ? Key
-                : entry.type === 'environment'
+                : entry.type === 'environment' || entry.type === 'environment_page'
                 ? Database
                 : entry.type === 'idea'
                 ? Lightbulb
-                : entry.type === 'folder'
+                : entry.type === 'folder' || entry.type === 'section' || entry.type === 'notes_section'
                 ? Folder
                 : FileText;
 
             const targetUrl =
               entry.type === 'credential'
                 ? '/app/credentials'
-                : entry.type === 'environment'
-                ? '/app/environments'
+                : entry.type === 'environment' || entry.type === 'environment_page'
+                ? `/app/environments?id=${entry.entryId}`
                 : entry.type === 'idea'
                 ? '/app/ideas'
+                : entry.type === 'folder' || entry.type === 'section' || entry.type === 'notes_section'
+                ? `/app/folder/${entry.entryId}`
                 : `/app/page/${entry.entryId}`;
 
             searchItems.push({

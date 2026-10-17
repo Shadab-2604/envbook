@@ -97,11 +97,14 @@ export default function GlobalSearchPage() {
   const getHref = (item: SearchResultItem) => {
     switch (item.type) {
       case 'folder':
+      case 'section':
+      case 'notes_section':
         return `/app/folder/${item.record.entryId}`;
       case 'credential':
         return '/app/credentials';
       case 'environment':
-        return '/app/environments';
+      case 'environment_page':
+        return `/app/environments?id=${item.record.entryId}`;
       case 'idea':
         return '/app/ideas';
       case 'snippet':

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseDotenv, deduplicateVariables } from '../src/lib/dotenv';
+import { parseDotenv, deduplicateVariables, generateDotenv } from '../src/lib/dotenv';
 
 describe('Dotenv Parser Unit Tests (ENVBOOK_ENV_IMPORT_CORRECTION_PROMPT.md Section 3)', () => {
   it('parses valid KEY=VALUE pairs ignoring comments and blank lines', () => {
@@ -158,5 +158,55 @@ NEW_VAR=brand_new_value
     expect(result.validCount).toBe(150);
     expect(result.errorCount).toBe(0);
     expect(duration).toBeLessThan(50); // parses in < 50ms
+  });
+
+  describe('generateDotenv Export Tests', () => {
+    it('generates valid .env file preserving keys, values, and comments', () => {
+      const vars = [
+        { key: 'PORT', value: '3000', comment: 'Server port' },
+        { key: 'MONGODB_URI', value: 'mongodb://localhost:27017/example' },
+        { key: 'JWT_SECRET', value: 'example-secret' },
+        { key: 'API_ENDPOINT', value: 'https://api.example.com/v1?token=abc=def' },
+      ];
+
+      const exported = generateDotenv(vars);
+      expect(exported).toContain('# Server port\nPORT=3000\n');
+      expect(exported).toContain('MONGODB_URI=mongodb://localhost:27017/example\n');
+      expect(exported).toContain('JWT_SECRET=example-secret\n');
+      expect(exported).toContain('API_ENDPOINT=https://api.example.com/v1?token=abc=def\n');
+    });
+
+    it('correctly quotes values with spaces, newlines, or special characters', () => {
+      const vars = [
+        { key: 'WITH_SPACES', value: '  spaced value  ' },
+        { key: 'MULTILINE', value: 'line1\nline2\ttab' },
+        { key: 'WITH_HASH', value: 'postgres://user:pass#123@localhost/db' },
+      ];
+
+      const exported = generateDotenv(vars);
+      expect(exported).toContain('WITH_SPACES="  spaced value  "');
+      expect(exported).toContain('MULTILINE="line1\\nline2\\ttab"');
+      expect(exported).toContain('WITH_HASH="postgres://user:pass#123@localhost/db"');
+    });
+
+    it('performs exact roundtrip: export -> import restores identical keys and values', () => {
+      const original = [
+        { key: 'DB_HOST', value: '127.0.0.1' },
+        { key: 'COMPLEX_SECRET', value: 'abc=123&def=456==789' },
+        { key: 'QUOTED_DATA', value: 'some "special" quote' },
+        { key: 'URL_WITH_HASH', value: 'https://example.com/api#section' },
+      ];
+
+      const exported = generateDotenv(original);
+      const parsed = parseDotenv(exported);
+
+      expect(parsed.validCount).toBe(4);
+      expect(parsed.errorCount).toBe(0);
+      for (const orig of original) {
+        const found = parsed.variables.find((v) => v.key === orig.key);
+        expect(found).toBeDefined();
+        expect(found?.value).toBe(orig.value);
+      }
+    });
   });
 });

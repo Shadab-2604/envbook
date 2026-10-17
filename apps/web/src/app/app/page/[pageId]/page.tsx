@@ -602,16 +602,32 @@ export default function NotePage() {
 
   if (error || !entry) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center h-full bg-surface-canvas p-6 text-center">
-        <AlertCircle className="w-8 h-8 text-status-danger mb-3" />
-        <h2 className="text-headline-sm font-semibold text-text-primary mb-1">Page Unavailable</h2>
-        <p className="text-body-sm text-text-muted mb-4 max-w-md">{error || 'This page could not be found or decrypted.'}</p>
-        <Link
-          href="/app"
-          className="px-3 py-1.5 rounded bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-secondary text-xs font-label-ui transition-colors"
-        >
-          Return to Dashboard
-        </Link>
+      <div className="flex-1 flex flex-col items-center justify-center h-full bg-surface-canvas p-6 text-center select-none">
+        <div className="w-14 h-14 rounded-2xl bg-surface-panel border border-border-subtle flex items-center justify-center mb-4 text-text-muted shadow-sm">
+          <FileText className="w-7 h-7 text-text-muted" />
+        </div>
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-label-mono bg-surface-panel border border-border-subtle text-text-muted mb-3">
+          RECORD_UNAVAILABLE
+        </div>
+        <h2 className="text-headline-sm font-semibold text-text-primary mb-2">Page Record Not Found</h2>
+        <p className="text-body-sm text-text-muted mb-6 max-w-md">
+          {error || 'This record could not be found, may have been moved, deleted, or is not accessible with your current vault authorization.'}
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/app"
+            className="px-4 py-2 rounded-lg bg-surface-panel hover:bg-surface-raised border border-border-subtle text-text-primary text-xs font-label-ui font-medium transition-colors"
+          >
+            Return to Dashboard
+          </Link>
+          <Link
+            href="/app/trash"
+            className="px-4 py-2 rounded-lg bg-transparent hover:bg-surface-panel border border-border-subtle text-text-secondary text-xs font-label-ui transition-colors inline-flex items-center gap-1.5"
+          >
+            <Trash2 className="w-3.5 h-3.5 text-text-muted" />
+            Check Trash
+          </Link>
+        </div>
       </div>
     );
   }

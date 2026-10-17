@@ -210,3 +210,52 @@ export function deduplicateVariables(
 
   return Array.from(map.values());
 }
+
+/**
+ * Formats structured environment variables into standard .env file content.
+ * Complies with reverse-operation of parseDotenv:
+ * - Formats KEY=VALUE
+ * - Preserves comments if present (# comment)
+ * - Quotes values containing spaces, newlines, quotes, or '#'
+ * - Escapes internal quotes and newlines in quoted values
+ * - Preserves equal signs in values
+ */
+export function generateDotenv(
+  variables: Array<{ key: string; value: string; comment?: string }>
+): string {
+  if (!variables || variables.length === 0) {
+    return '';
+  }
+
+  const lines: string[] = [];
+
+  for (const v of variables) {
+    if (v.comment && v.comment.trim()) {
+      lines.push(`# ${v.comment.trim()}`);
+    }
+
+    const key = v.key.trim();
+    const val = v.value ?? '';
+
+    // Check if value needs quoting:
+    // Needs quotes if it has newlines, leading/trailing whitespace, quotes, or contains '#'
+    const hasNewlines = val.includes('\n') || val.includes('\r');
+    const hasQuotes = val.includes('"') || val.includes("'");
+    const hasWhitespace = /^\s|\s$/.test(val);
+    const hasCommentChar = val.includes('#');
+
+    if (hasNewlines || hasWhitespace || hasQuotes || hasCommentChar) {
+      const escaped = val
+        .replace(/\\/g, '\\\\')
+        .replace(/"/g, '\\"')
+        .replace(/\n/g, '\\n')
+        .replace(/\r/g, '\\r')
+        .replace(/\t/g, '\\t');
+      lines.push(`${key}="${escaped}"`);
+    } else {
+      lines.push(`${key}=${val}`);
+    }
+  }
+
+  return lines.join('\n') + '\n';
+}

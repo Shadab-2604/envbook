@@ -19,8 +19,8 @@ export default function GenericEntryPage() {
           router.replace(`/app/folder/${entryId}`);
         } else if (type === 'credential') {
           router.replace('/app/credentials');
-        } else if (type === 'environment') {
-          router.replace('/app/environments');
+        } else if (type === 'environment' || type === 'environment_page') {
+          router.replace(`/app/environments?id=${entryId}`);
         } else if (type === 'idea') {
           router.replace('/app/ideas');
         } else {

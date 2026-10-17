@@ -60,11 +60,14 @@ export default function RecentItemsPage() {
   const getHref = (rec: EntryRecord) => {
     switch (rec.type) {
       case 'folder':
+      case 'section':
+      case 'notes_section':
         return `/app/folder/${rec.entryId}`;
       case 'credential':
         return '/app/credentials';
       case 'environment':
-        return '/app/environments';
+      case 'environment_page':
+        return `/app/environments?id=${rec.entryId}`;
       case 'idea':
         return '/app/ideas';
       case 'snippet':

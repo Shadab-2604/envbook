@@ -122,11 +122,14 @@ export default function AllEntriesPage() {
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'folder':
+      case 'section':
+      case 'notes_section':
         return <Folder className="w-4 h-4 text-status-warning" />;
       case 'credential':
         return <Key className="w-4 h-4 text-primary" />;
       case 'environment':
-        return <Terminal className="w-4 h-4 text-accent-emerald-bright" />;
+      case 'environment_page':
+        return <Terminal className="w-4 h-4 text-primary" />;
       case 'idea':
         return <Lightbulb className="w-4 h-4 text-primary" />;
       case 'snippet':
@@ -139,11 +142,14 @@ export default function AllEntriesPage() {
   const getEntryHref = (item: UnifiedEntry) => {
     switch (item.record.type) {
       case 'folder':
+      case 'section':
+      case 'notes_section':
         return `/app/folder/${item.record.entryId}`;
       case 'credential':
         return '/app/credentials';
       case 'environment':
-        return '/app/environments';
+      case 'environment_page':
+        return `/app/environments?id=${item.record.entryId}`;
       case 'idea':
         return '/app/ideas';
       case 'snippet':
