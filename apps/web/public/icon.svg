@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Notion App Tile -->
+  <rect x="3" y="3" width="58" height="58" rx="14" fill="#FFFFFF" stroke="#191919" stroke-width="3" />
+  
+  <!-- Notebook Spine Detail -->
+  <line x1="15" y1="4" x2="15" y2="60" stroke="#191919" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.3" />
+
+  <!-- Notion-Style Architectural Monogram 'E' -->
+  <path d="M 17 16 L 49 16 L 49 24.5 L 46.5 24.5 L 27.5 24.5 L 27.5 28.5 L 44 28.5 L 44 35.5 L 27.5 35.5 L 27.5 39.5 L 46.5 39.5 L 49 39.5 L 49 48 L 17 48 L 17 42 L 19.5 42 L 19.5 22 L 17 22 Z" fill="#191919" />
+</svg>

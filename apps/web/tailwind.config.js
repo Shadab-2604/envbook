@@ -7,14 +7,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Base black and white palette tokens
+        // Base palette tokens - Notion palette
         palette: {
           lightBg: '#FFFFFF',
-          lightSurface: '#FFFFFF',
-          dark: '#000000',
-          slate: '#000000',
-          red: '#DC2626',
-          redDark: '#EF4444',
+          lightSurface: '#F7F6F3',
+          dark: '#191919',
+          slate: '#37352F',
+          red: '#EB5757',
+          redDark: '#EB5757',
         },
         // Semantic design tokens powered by CSS variables
         'surface-canvas': 'var(--bg-canvas)',

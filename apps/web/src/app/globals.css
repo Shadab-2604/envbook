@@ -7,99 +7,99 @@
   [data-theme="light"],
   .light {
     color-scheme: light;
-    /* Primary light-theme background: pure white */
+    /* Notion Light Canvas */
     --bg-canvas: #FFFFFF;
 
-    /* Secondary surfaces, sidebar, and cards: pure white */
-    --bg-sidebar: #FFFFFF;
+    /* Notion Light Surfaces & Sidebar (#F7F6F3) */
+    --bg-sidebar: #F7F6F3;
     --bg-toolbar: #FFFFFF;
     --bg-surface: #FFFFFF;
-    --bg-surface-panel: #FFFFFF;
-    --bg-surface-subtle: #FFFFFF;
+    --bg-surface-panel: #F7F6F3;
+    --bg-surface-subtle: #F7F6F3;
     --bg-surface-elevated: #FFFFFF;
-    --bg-surface-raised: #FFFFFF;
-    --bg-surface-hover: rgba(0, 0, 0, 0.05);
-    --bg-surface-active: rgba(0, 0, 0, 0.1);
+    --bg-surface-raised: #EFEFED;
+    --bg-surface-hover: rgba(55, 53, 47, 0.08);
+    --bg-surface-active: rgba(55, 53, 47, 0.16);
 
-    /* Primary text in light mode: pure black */
-    --text-primary: #000000;
-    --text-secondary: #000000;
-    /* Muted text in light mode */
-    --text-muted: rgba(0, 0, 0, 0.6);
+    /* Notion Light Typography (#37352F) */
+    --text-primary: #37352F;
+    --text-secondary: #4A5157;
+    --text-muted: #787774;
 
-    /* Borders: clean crisp black */
-    --border: #000000;
-    --border-subtle: rgba(0, 0, 0, 0.15);
-    --border-muted: rgba(0, 0, 0, 0.35);
-    --border-focus: #000000;
+    /* Notion Light Borders */
+    --border: rgba(55, 53, 47, 0.16);
+    --border-subtle: rgba(55, 53, 47, 0.09);
+    --border-muted: rgba(55, 53, 47, 0.16);
+    --border-focus: #2F3437;
 
-    --primary: #000000;
-    --primary-hover: #1A1A1A;
+    /* Notion Primary Button: Solid Dark (#2F3437) with Pure White (#FFFFFF) text */
+    --primary: #2F3437;
+    --primary-hover: #191A1B;
     --primary-fg: #FFFFFF;
-    --primary-glow: rgba(0, 0, 0, 0.12);
+    --primary-glow: rgba(55, 53, 47, 0.12);
 
-    /* Destructive reserved strictly for delete actions */
-    --destructive: #DC2626;
-    --destructive-hover: #B91C1C;
-    --destructive-bg: rgba(220, 38, 38, 0.08);
-    --destructive-border: rgba(220, 38, 38, 0.35);
+    /* Destructive reserved strictly for delete actions (Notion Red #EB5757) */
+    --destructive: #EB5757;
+    --destructive-hover: #D84747;
+    --destructive-bg: rgba(235, 87, 87, 0.1);
+    --destructive-border: rgba(235, 87, 87, 0.35);
     --destructive-fg: #FFFFFF;
 
-    --code-bg: #FFFFFF;
-    --code-border: rgba(0, 0, 0, 0.25);
-    --code-text: #000000;
+    --code-bg: #F7F6F3;
+    --code-border: rgba(55, 53, 47, 0.12);
+    --code-text: #EB5757;
 
-    --selection-bg: rgba(0, 0, 0, 0.12);
-    --selection-fg: #000000;
+    --selection-bg: rgba(35, 131, 226, 0.2);
+    --selection-fg: #37352F;
   }
 
   .dark,
   [data-theme="dark"] {
     color-scheme: dark;
-    /* Primary dark-theme background: pure black */
-    --bg-canvas: #000000;
+    /* Notion Dark Canvas (#191919) */
+    --bg-canvas: #191919;
 
-    /* Secondary surfaces, sidebar, and cards: pure black */
-    --bg-sidebar: #000000;
-    --bg-toolbar: #000000;
-    --bg-surface: #000000;
-    --bg-surface-panel: #000000;
-    --bg-surface-subtle: #000000;
-    --bg-surface-elevated: #000000;
-    --bg-surface-raised: #000000;
-    --bg-surface-hover: rgba(255, 255, 255, 0.1);
-    --bg-surface-active: rgba(255, 255, 255, 0.18);
+    /* Notion Dark Surfaces & Sidebar (#202020) */
+    --bg-sidebar: #202020;
+    --bg-toolbar: #191919;
+    --bg-surface: #202020;
+    --bg-surface-panel: #202020;
+    --bg-surface-subtle: #202020;
+    --bg-surface-elevated: #252525;
+    --bg-surface-raised: #2F2F2F;
+    --bg-surface-hover: rgba(255, 255, 255, 0.07);
+    --bg-surface-active: rgba(255, 255, 255, 0.14);
 
-    /* Readable foreground in dark mode: pure white */
-    --text-primary: #FFFFFF;
-    --text-secondary: #FFFFFF;
-    /* Muted text in dark mode */
-    --text-muted: rgba(255, 255, 255, 0.65);
+    /* Notion Dark Typography */
+    --text-primary: #EDEDED;
+    --text-secondary: #C7C7C7;
+    --text-muted: #9B9B9B;
 
-    /* Borders: clean crisp white */
-    --border: #FFFFFF;
-    --border-subtle: rgba(255, 255, 255, 0.2);
-    --border-muted: rgba(255, 255, 255, 0.45);
+    /* Notion Dark Borders */
+    --border: rgba(255, 255, 255, 0.13);
+    --border-subtle: rgba(255, 255, 255, 0.09);
+    --border-muted: rgba(255, 255, 255, 0.18);
     --border-focus: #FFFFFF;
 
+    /* Notion Dark Primary Button: Solid White (#FFFFFF) with Dark (#191919) text */
     --primary: #FFFFFF;
-    --primary-hover: #F0F0F0;
-    --primary-fg: #000000;
+    --primary-hover: #E5E5E5;
+    --primary-fg: #191919;
     --primary-glow: rgba(255, 255, 255, 0.15);
 
     /* Destructive reserved strictly for delete actions */
-    --destructive: #EF4444;
-    --destructive-hover: #DC2626;
-    --destructive-bg: rgba(239, 68, 68, 0.15);
-    --destructive-border: rgba(239, 68, 68, 0.4);
+    --destructive: #EB5757;
+    --destructive-hover: #D84747;
+    --destructive-bg: rgba(235, 87, 87, 0.15);
+    --destructive-border: rgba(235, 87, 87, 0.4);
     --destructive-fg: #FFFFFF;
 
-    --code-bg: #000000;
-    --code-border: rgba(255, 255, 255, 0.3);
-    --code-text: #FFFFFF;
+    --code-bg: #242424;
+    --code-border: rgba(255, 255, 255, 0.12);
+    --code-text: #EDEDED;
 
-    --selection-bg: rgba(255, 255, 255, 0.2);
-    --selection-fg: #FFFFFF;
+    --selection-bg: rgba(35, 131, 226, 0.3);
+    --selection-fg: #EDEDED;
   }
 
   * {
